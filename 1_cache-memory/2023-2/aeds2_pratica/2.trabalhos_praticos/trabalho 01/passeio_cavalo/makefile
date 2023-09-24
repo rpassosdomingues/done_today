@@ -18,11 +18,8 @@ CC=gcc
 # Flags (opções) para o compilador
 CC_FLAGS=-c         \
          -Wall      \
-         -g         \
+		 -g         \
          -pedantic
-
-# Comando para executar o Python após a compilação
-RUN_PYTHON=python gerador_caminhos.py
 
 #########################
 # Compilação e linkagem #
@@ -38,9 +35,5 @@ $(PROJ_NAME): $(OBJ)
 main.o: main.c $(H_SOURCE)
 	$(CC) -o $@ $< $(CC_FLAGS)
 
-run: all
-	$(RUN_PYTHON)
-
 clean:
 	rm -rf *.o $(PROJ_NAME) *~
-
