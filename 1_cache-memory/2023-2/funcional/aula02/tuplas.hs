@@ -3,19 +3,6 @@
 --   | x <= y		= x
 --   | otherwise	= y
 
-{-
-type Nome = String	-- Sinônimo para String [Nome]
-type Idade = Int	-- Sinônimo para Int [Idade]
-type CPF = Integer	-- Sinônimo para Integer [CPF]
-
-cadastro :: CPF -> (Nome, Idade)
-cadastro cpf
-   | cpf == 11111111111		= ("Jose", 12)
-   | cpf == 11111111111		= ("Joao", 77)
-   | cpf == 22222222222		= ("Maria", 50)
-   | otherwise			= ("Desconhecido", 0)
--}
-
 type Meu_tipo = (String, Float, Char)
 
 menor :: Float -> Float
@@ -44,6 +31,7 @@ sexo (nome,idade,s) = s
 ehFeminino :: Meu_tipo -> Bool
 ehFeminino (n,i,s) = s == 'f'
 
+--função incompleta
 contaFeminino :: Float -> Int
 contaFeminino n
    | n == 1 && ehFeminino == True = --contaFeminino++
