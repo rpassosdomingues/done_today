@@ -21,15 +21,20 @@ Node *create_link() {
 
 // Function to display the menu
 void display_menu() {
-    printf("\nMenu:\n");
+    printf("---------------------------\n");
+    printf("\t Menu \n");
+    printf("---------------------------\n");
     printf("0. Quit\n");
+    printf("...........................\n");
     printf("1. Insert at the beginning\n");
     printf("2. Remove from the beginning\n");
     printf("3. Insert in the middle\n");
     printf("4. Remove from the middle\n");
     printf("5. Insert at the end\n");
     printf("6. Remove from the end\n");
-    printf("7. Print the chain\n");
+    printf("7. Print the queue\n");
+    printf("8. Search for an element\n");
+    printf("---------------------------\n");
     printf("Enter your choice: ");
 }
 
@@ -161,6 +166,18 @@ void print_chain(Node *chain) {
     printf("\n");
 }
 
+// Function to search for an element in the chain
+Node *search(Node *chain, int value) {
+    Node *current = chain;
+    while (current != NULL) {
+        if (current->data == value) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
 // Function to free the memory used by the chain
 void free_chain(Node *chain) {
     while (chain != NULL) {
@@ -172,7 +189,8 @@ void free_chain(Node *chain) {
 
 int main() {
     Node *chain = NULL;
-    int choice, data, position;
+    int choice, data, position, searchValue;
+    Node *searchResult;
 
     while (1) {
         display_menu();
@@ -213,6 +231,16 @@ int main() {
                 break;
             case 7:
                 print_chain(chain);
+                break;
+            case 8:
+                printf("Enter value to search for: ");
+                scanf("%d", &searchValue);
+                searchResult = search(chain, searchValue);
+                if (searchResult != NULL) {
+                    printf("Found %d in the chain.\n", searchValue);
+                } else {
+                    printf("%d not found in the chain.\n", searchValue);
+                }
                 break;
             default:
                 printf("Invalid choice. Please try again.\n");

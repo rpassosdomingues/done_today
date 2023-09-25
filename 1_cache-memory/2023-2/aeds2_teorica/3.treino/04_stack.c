@@ -68,7 +68,8 @@ void showMenu(int *choice) {
     printf("---------------------------\n");
     printf("\t Menu \n");
     printf("---------------------------\n");
-    printf("0. Exit      \n");
+    printf("0. Quit\n");
+    printf("...........................\n");
     printf("1. Push\n");
     printf("2. Pop\n");
     printf("3. Show Stack\n");

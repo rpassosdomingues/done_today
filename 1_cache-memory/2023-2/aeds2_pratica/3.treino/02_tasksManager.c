@@ -88,6 +88,7 @@ void viewTasks(Task*** list, int* size) {
 }
 
 int main() {
+    int choice;
     int capacity = 10; // Initial capacity of the list
     int size = 0;     // Current size of the list
     Task** list = (Task**)malloc(capacity * sizeof(Task*));
@@ -100,17 +101,27 @@ int main() {
     printf("Welcome to the Task Manager!\n");
 
     while (1) {
-        printf("\nMAIN:\n");
+        printf("---------------------------\n");
+        printf("\t Menu \n");
+        printf("---------------------------\n");
+        printf("0. Quit\n");
+        printf("...........................\n");
         printf("1. Add task\n");
         printf("2. Remove task\n");
         printf("3. View task list\n");
-        printf("4. Exit\n");
-
-        int choice;
+        printf("---------------------------\n");
         printf("\nChoose an option: ");
         scanf("%d", &choice);
 
         switch (choice) {
+            case 0:
+                // Exit the program
+                // Free allocated memory
+                for (int i = 0; i < size; i++) {
+                    freeTask(list[i]);
+                }
+                free(list);
+                return 0;
             case 1:
                 addTask(&list, &size, &capacity);
                 break;
@@ -120,14 +131,6 @@ int main() {
             case 3:
                 viewTasks(&list, &size);
                 break;
-            case 4:
-                // Exit the program
-                // Free allocated memory
-                for (int i = 0; i < size; i++) {
-                    freeTask(list[i]);
-                }
-                free(list);
-                return 0;
             default:
                 printf("Invalid option.\n");
                 break;

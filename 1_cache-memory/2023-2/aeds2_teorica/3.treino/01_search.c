@@ -39,7 +39,7 @@ int main () {
   if (found == -1) {
     printf("\nWanted not found.\n\n");
   } else {
-      printf("\nWanted was found in the %dª position.\n\n", found);
+      printf("\nWanted was found in the position %d.\n\n", found);
     }
   
   return (0);
