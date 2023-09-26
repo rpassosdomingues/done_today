@@ -26,10 +26,10 @@ void define_idade (int *idade) {
 */
 
 void preenche_struct (PessoaFisica *pessoa) {
-    printf("Digite o nome: ");
-    scanf(" %s", &pessoa->nome);
+    //printf("Digite o nome: ");
+    //scanf(" %s", &pessoa->nome);
     //scanf(" %s", &(*pessoa).nome);
-    getchar();
+    //getchar();
     printf("Digite o sexo: ");
     scanf(" %c", &pessoa->sexo);
     //scanf(" %c", &(*pessoa).sexo);
