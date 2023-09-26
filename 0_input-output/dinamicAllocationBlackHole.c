@@ -1,5 +1,6 @@
 /**
  * This code demonstrates how to work with spherical coordinates and create a 4-dimensional figure.
+ * Author: Rafael Passos Domingues
 */
 
 #include <stdio.h>
@@ -15,21 +16,21 @@
 #define PI 3.1415
 
 // Convert spherical coordinates to Cartesian coordinates
-void spherical_to_cartesian(double r, double theta, double phi, double *x, double *y, double *z) {
+void spherical_to_cartesian (double r, double theta, double phi, double *x, double *y, double *z) {
     *x = r * sin(theta) * cos(phi);
     *y = r * sin(theta) * sin(phi);
     *z = r * cos(theta);
 }
 
 // Convert Cartesian coordinates to spherical coordinates
-void cartesian_to_spherical(double x, double y, double z, double *r, double *theta, double *phi) {
+void cartesian_to_spherical (double x, double y, double z, double *r, double *theta, double *phi) {
     *r = sqrt(x * x + y * y + z * z);
     *theta = acos(z / *r);
     *phi = atan2(y, x);
 }
 
 // Fill the dynamically allocated memory positions in spherical coordinates
-void fill_values(int ****ptr, int dim_r, int dim_theta, int dim_phi, int dim_t) {
+void fill_values (int ****ptr, int dim_r, int dim_theta, int dim_phi, int dim_t) {
     // Allocate the first dimension (r)
     for (int i = 0; i < dim_r; i++) {
         double r = i + 1.0; // Arbitrary value for r
@@ -54,7 +55,7 @@ void fill_values(int ****ptr, int dim_r, int dim_theta, int dim_phi, int dim_t) 
 }
 
 // Print the values on the console
-void print_values(int ****ptr, int dim_r, int dim_theta, int dim_phi, int dim_t) {
+void print_values (int ****ptr, int dim_r, int dim_theta, int dim_phi, int dim_t) {
     for (int i = 0; i < dim_r; i++) {
         for (int j = 0; j < dim_theta; j++) {
             for (int k = 0; k < dim_phi; k++) {
@@ -70,7 +71,7 @@ void print_values(int ****ptr, int dim_r, int dim_theta, int dim_phi, int dim_t)
 }
 
 // Free the dynamically allocated memory
-void deallocate_4D_figure(int ****ptr, int dim_r, int dim_theta, int dim_phi) {
+void deallocate_4D_figure (int ****ptr, int dim_r, int dim_theta, int dim_phi) {
     for (int i = 0; i < dim_r; i++) {
         for (int j = 0; j < dim_theta; j++) {
             for (int k = 0; k < dim_phi; k++) {
@@ -83,7 +84,7 @@ void deallocate_4D_figure(int ****ptr, int dim_r, int dim_theta, int dim_phi) {
     free(ptr);
 }
 
-int main() {
+int main () {
     int ****fourD_figure;
 
     // Dimensions of the 4D figure in spherical coordinates
