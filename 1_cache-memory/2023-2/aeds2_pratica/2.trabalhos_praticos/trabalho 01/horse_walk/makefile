@@ -1,7 +1,7 @@
 # Automatizando o makefile
 
 # Nome do projeto
-PROJ_NAME=passeio
+PROJ_NAME=horseWalk
 
 # Arquivos .c
 C_SOURCE=$(wildcard *.c)
