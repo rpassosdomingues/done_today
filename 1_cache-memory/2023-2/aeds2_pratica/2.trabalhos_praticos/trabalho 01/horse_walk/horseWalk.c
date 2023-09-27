@@ -81,7 +81,7 @@ void addEnd (Horse* start, int x, int y) {
 /**
  * Check whether a move is valid within the chessboard
 */
-int validMove(int x, int y, int M, int N) {
+int validMove (int x, int y, int M, int N) {
     return (x >= 0 && x < M && y >= 0 && y < N);
 }
 
@@ -106,7 +106,7 @@ int countTripsClosed (Horse horse, int M, int N, bool **chessboard) {
         for (int i = 0; i < 8; i++) {
             int newX = x + horse.moves[i][0];
             int newY = y + horse.moves[i][1];
-            if (validMove(newX, newY, M, N) && !visited[newX][newY] && !chessboard[newX][newY]) {
+            if (validMove (newX, newY, M, N) && !visited[newX][newY] && !chessboard[newX][newY]) {
                 if (next == NULL && allHouses (visited, M, N) && newX == horse.x && newY == horse.y) {
                     countClosed++;
                 } else {
@@ -146,8 +146,8 @@ void calculatesTrips (bool **chessboard) {
     int open = 0;
     
     // Chesschessboard dimensions
-    int M = 2;  
-    int N = 2;
+    int M = 8;  
+    int N = 8;
 
     Horse horse = {0, 0, {{2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}, {1, -2}, {2, -1}}};
     closed = countTripsClosed(horse, M, N, chessboard);
@@ -198,7 +198,7 @@ bool **readInstance(int instance_num) {
     // Allocating the chessboard dynamically
     // Using calloc instead of malloc to initialize the entire chesschessboard with zeros
     bool** chessboard = (bool**)calloc(n, sizeof(bool*));
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         chessboard[i] = (bool*)calloc(m, sizeof(bool));
     }
 
