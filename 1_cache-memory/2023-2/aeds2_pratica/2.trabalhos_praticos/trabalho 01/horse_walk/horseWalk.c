@@ -99,7 +99,50 @@ int allHouses(int** visited, int N, int M) {
     return 1;
 }
 
-int countTripsClosed(Horse horse, int N, int M, bool **chessboard) {
+int countOpenTrips(Horse horse, int N, int M, bool **chessboard) {
+    int** visited = (int**)malloc(M * sizeof(int*));
+    for (int i = 0; i < M; i++) {
+        visited[i] = (int*)malloc(N * sizeof(int));
+        for (int j = 0; j < N; j++) {
+            visited[i][j] = 0;
+        }
+    }
+
+    Horse* list = newHouse(horse.x, horse.y);
+    int countOpen = 0;
+
+    while (list != NULL) {
+        int x = list->x;
+        int y = list->y;
+        visited[x][y] = 1;
+        Horse* next = list->next;
+
+        for (int i = 0; i < 8; i++) {
+            int newX = x + horse.moves[i][0];
+            int newY = y + horse.moves[i][1];
+            if (validMove(newX, newY, M, N) && !visited[newX][newY] && !chessboard[newX][newY]) {
+                if (next == NULL && allHouses(visited, M, N) && !(newX == horse.x && newY == horse.y)) {
+                    countOpen++;
+                } else {
+                    addEnd(next, newX, newY);
+                }
+                visited[newX][newY] = 0;
+            }
+        }
+        free(list);
+        list = next;
+    }
+
+    for (int i = 0; i < M; i++) {
+        free(visited[i]);
+    }
+    free(visited);
+
+    return countOpen;
+}
+
+
+int countClosedTrips (Horse horse, int N, int M, bool **chessboard) {
     int** visited = (int**)malloc(M * sizeof(int*));
     for (int i = 0; i < M; i++) {
         visited[i] = (int*)malloc(N * sizeof(int));
@@ -153,11 +196,12 @@ void calculatesTrips(bool **chessboard, int N, int M) {
         for (int j = 0; j < M; j++) {
             // Check if the square is not visited and not blocked
             if (!chessboard[i][j]) {
-                int trips = countTripsClosed(horse, N, M, chessboard);
-                if (trips > 0) {
-                    closed += trips;
-                } else {
-                    open++;
+                int openTrips = countOpenTrips(horse, N, M, chessboard);
+                int closedTrips = countClosedTrips(horse, N, M, chessboard);
+                if (closedTrips > 0) {
+                    closed += closedTrips;
+                } else if (openTrips > 0) {
+                    open += openTrips;
                 }
             }
         }
