@@ -16,7 +16,7 @@ typedef struct horse {
 } Horse;
 
 Horse* newHouse (int x, int y);
-void addHouse (Horse** head, int x, int y);
+void addHouse (Horse** head, int x, int y, bool atEnd);
 int allHouses (int** visited, int N, int M);
 int validMove(int x, int y, int N, int M);
 //int countOpenTrips(Horse horse, int N, int M, bool **chessboard);
