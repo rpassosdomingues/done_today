@@ -212,5 +212,10 @@ int main(int argc, char* argv[]) {
 
     calculatesTrips(chessboard, n, m);
 
+    for (int i = 0; i < n; i++) {
+        free(chessboard[i]);
+    }
+    free(chessboard);
+
     return 0;
 }
