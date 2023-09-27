@@ -17,11 +17,10 @@ typedef struct horse {
 
 Horse* newHouse (int x, int y);
 void addHouse (Horse** head, int x, int y);
-void printList (Horse* head);
-void addEnd (Horse* start, int x, int y);
-int validMove(int x, int y, int N, int M);
-int countTripsClosed (Horse horse, int N, int M, bool **chessboard);
 int allHouses (int** visited, int N, int M);
+int validMove(int x, int y, int N, int M);
+//int countOpenTrips(Horse horse, int N, int M, bool **chessboard);
+int countTripsClosed (Horse horse, int N, int M, bool **chessboard);
 
 bool **readInstance(int instance_num, int *n, int *m);
 void calculatesTrips(bool **chessboard, int N, int M);

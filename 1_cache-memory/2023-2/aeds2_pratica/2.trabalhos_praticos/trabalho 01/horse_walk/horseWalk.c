@@ -21,7 +21,7 @@
  * malloc function, sets the node coordinates, and
  * initializes the next and prev pointers to NULL.
  */
-Horse* newHouse(int x, int y) {
+Horse* newHouse (int x, int y) {
     Horse* horse = (Horse*)malloc(sizeof(Horse));
     horse->x = x;
     horse->y = y;
@@ -40,7 +40,7 @@ Horse* newHouse(int x, int y) {
  * Otherwise, it traverses the list to the end and adds
  * the new node there.
  */
-void addHouse(Horse** head, int x, int y) {
+void addHouse (Horse** head, int x, int y, bool atEnd) {
     Horse* horse = newHouse(x, y);
     if (*head == NULL) {
         *head = horse;
@@ -54,41 +54,10 @@ void addHouse(Horse** head, int x, int y) {
     }
 }
 
-void addEnd(Horse* start, int x, int y) {
-    Horse* lastHouse = newHouse(x, y);
-    Horse* temp = start;
-    while (temp->next != NULL) {
-        temp = temp->next;
-    }
-    temp->next = lastHouse;
-    lastHouse->prev = temp;
-}
-
-/**
- * This function prints the coordinates of each node in the linked list.
- * 
- * It starts at the head node of the list and follows the next pointers until
- * it reaches the end of the list.
- */
-void printList(Horse* head) {
-    Horse* temp = head;
-    while (temp != NULL) {
-        printf("(%d, %d)\n", temp->x, temp->y);
-        temp = temp->next;
-    }
-}
-
-/**
- * Check whether a move is valid within the chessboard
- */
-int validMove(int x, int y, int N, int M) {
-    return (x >= 0 && x < M && y >= 0 && y < N);
-}
-
 /**
  * Check if all squares on the chessboard have been visited
  */
-int allHouses(int** visited, int N, int M) {
+int allHouses (int** visited, int N, int M) {
     for (int i = 0; i < M; i++) {
         for (int j = 0; j < N; j++) {
             if (!visited[i][j]) {
@@ -99,6 +68,14 @@ int allHouses(int** visited, int N, int M) {
     return 1;
 }
 
+/**
+ * Check whether a move is valid within the chessboard
+ */
+int validMove (int x, int y, int N, int M) {
+    return (x >= 0 && x < M && y >= 0 && y < N);
+}
+
+/*
 int countOpenTrips(Horse horse, int N, int M, bool **chessboard) {
     int** visited = (int**)malloc(M * sizeof(int*));
     for (int i = 0; i < M; i++) {
@@ -124,7 +101,7 @@ int countOpenTrips(Horse horse, int N, int M, bool **chessboard) {
                 if (next == NULL && allHouses(visited, M, N) && !(newX == horse.x && newY == horse.y)) {
                     countOpen++;
                 } else {
-                    addEnd(next, newX, newY);
+                    addHouse(next, newX, newY);
                 }
                 visited[newX][newY] = 0;
             }
@@ -140,7 +117,7 @@ int countOpenTrips(Horse horse, int N, int M, bool **chessboard) {
 
     return countOpen;
 }
-
+*/
 
 int countClosedTrips (Horse horse, int N, int M, bool **chessboard) {
     int** visited = (int**)malloc(M * sizeof(int*));
@@ -167,7 +144,7 @@ int countClosedTrips (Horse horse, int N, int M, bool **chessboard) {
             if (next == NULL && allHouses(visited, M, N) && newX == horse.x && newY == horse.y) {
                 countClosed++;
             } else {
-                addEnd(next, newX, newY);
+                addHouse(&next, newX, newY, true);
             }
             visited[newX][newY] = 0;
         }
@@ -184,7 +161,7 @@ int countClosedTrips (Horse horse, int N, int M, bool **chessboard) {
     return countClosed;
 }
 
-void calculatesTrips(bool **chessboard, int N, int M) {
+void calculatesTrips (bool **chessboard, int N, int M) {
     int closed = 0;
     int open = 0;
 
@@ -196,21 +173,21 @@ void calculatesTrips(bool **chessboard, int N, int M) {
         for (int j = 0; j < M; j++) {
             // Check if the square is not visited and not blocked
             if (!chessboard[i][j]) {
-                int openTrips = countOpenTrips(horse, N, M, chessboard);
+                //int openTrips = countOpenTrips(horse, N, M, chessboard);
                 int closedTrips = countClosedTrips(horse, N, M, chessboard);
                 if (closedTrips > 0) {
                     closed += closedTrips;
-                } else if (openTrips > 0) {
-                    open += openTrips;
+                } else {
+                    open++;
+                    //open += openTrips;
                 }
             }
         }
     }
-
     printf("%d\n%d\n", closed, open);
 }
 
-bool **readInstance(int instance_num, int *n, int *m) {
+bool **readInstance (int instance_num, int *n, int *m) {
     int i;
     // Mount the trip to instance
     char *file_instance = "./instances/";
@@ -240,7 +217,7 @@ bool **readInstance(int instance_num, int *n, int *m) {
     return chessboard;
 }
 
-int main(int argc, char* argv[]) {
+int main (int argc, char* argv[]) {
     int instance_num = -1;
     instance_num = atoi(argv[1]);
     if (instance_num <= 0 || instance_num > 10) {
