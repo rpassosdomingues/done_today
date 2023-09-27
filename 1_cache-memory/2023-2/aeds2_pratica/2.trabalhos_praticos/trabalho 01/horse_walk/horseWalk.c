@@ -147,28 +147,23 @@ void calculatesTrips(bool **chessboard, int N, int M) {
 
     // Possible movements of the horse.
     Horse horse = {0, 0, {{2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}, {1, -2}, {2, -1}}};
-    closed = countTripsClosed(horse, N, M, chessboard);
-
-    printf("%d\n%d\n", closed, open);
-}
-
-int main(int argc, char* argv[]) {
-    int instance_num = -1;
-    instance_num = atoi(argv[1]);
-    if (instance_num <= 0 || instance_num > 10) {
-        printf("To run the code, type ./horseWalk x\nwhere x is a number between 1 and 10 that symbolizes the instance used.\n");
-        exit(0);
+    
+    // Loop through each square on the chessboard
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            // Check if the square is not visited and not blocked
+            if (!chessboard[i][j]) {
+                int trips = countTripsClosed(horse, N, M, chessboard);
+                if (trips > 0) {
+                    closed += trips;
+                } else {
+                    open++;
+                }
+            }
+        }
     }
 
-    // Dimensions of the chessboard
-    int n, m;
-
-    // Create the chessboard
-    bool **chessboard = readInstance(instance_num, &n, &m);
-
-    calculatesTrips(chessboard, n, m);
-
-    return 0;
+    printf("%d\n%d\n", closed, open);
 }
 
 bool **readInstance(int instance_num, int *n, int *m) {
@@ -199,4 +194,23 @@ bool **readInstance(int instance_num, int *n, int *m) {
         chessboard[i] = (bool*)calloc(*m, sizeof(bool));
     }
     return chessboard;
+}
+
+int main(int argc, char* argv[]) {
+    int instance_num = -1;
+    instance_num = atoi(argv[1]);
+    if (instance_num <= 0 || instance_num > 10) {
+        printf("To run the code, type ./horseWalk x\nwhere x is a number between 1 and 10 that symbolizes the instance used.\n");
+        exit(0);
+    }
+
+    // Dimensions of the chessboard
+    int n, m;
+
+    // Create the chessboard
+    bool **chessboard = readInstance(instance_num, &n, &m);
+
+    calculatesTrips(chessboard, n, m);
+
+    return 0;
 }
