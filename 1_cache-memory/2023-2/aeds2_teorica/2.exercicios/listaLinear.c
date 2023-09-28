@@ -107,14 +107,13 @@ no* inserir(no * ptlista, no* novo_no){
 */
 
 no* remover(no * ptlista, int x){
-    //TODO
-    //Voce deve implementar esta função
-    //usando no máximo 8 ; (ponto e vírgula)
-    
-    //O return a seguir deve ser removido.
-    //Foi inserido apenas para não termos erro
-    //de compilação.
-    return NULL;
+    int removido = NULL;
+    no *ant, *pont;
+    buscar(ptlista, x , &ant, &pont);
+    if (pont != NULL) {
+        ant->prox = pont->prox;
+        removido = pont;
+    }
 }
 
 void imprimir(no * ptlista){
