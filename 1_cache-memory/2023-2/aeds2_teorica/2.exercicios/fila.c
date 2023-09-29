@@ -3,51 +3,48 @@
 
 // Estrutura que representa um nó da fila
 typedef struct No {
-    int valor; // valor do nó
     int chave; // chave do nó
+    int valor; // valor do nó
     struct No *proximo; // ponteiro para o próximo nó
 } No;
 
-// Função que cria um novo nó com um valor e uma chave
-No *criarNo(int valor, int chave) {
-    No *no = (No *) malloc(sizeof(No)); // aloca memória para o nó
+// Função que cria um novo nó com uma chave e um valor
+No *criarNo(int chave, int valor) {
+    No *no = malloc(sizeof(No)); // aloca memória para o nó
     if (no != NULL) { // se a alocação foi bem sucedida
-        no->valor = valor; // atribui o valor ao campo valor do nó
         no->chave = chave; // atribui a chave ao campo chave do nó
+        no->valor = valor; // atribui o valor ao campo valor do nó
         no->proximo = NULL; // atribui NULL ao campo proximo do nó
     }
     return no; // retorna o ponteiro para o nó
 }
 
 // Função que insere um novo nó no final da fila
-void insere(No **fila, int valor, int chave) {
-    No *novo = criarNo(valor, chave); // cria um novo nó com o valor e a chave
-    if (novo != NULL) { // se a criação foi bem sucedida
-        if (*fila == NULL) { // se a fila estiver vazia
-            *fila = novo; // o novo nó se torna o primeiro elemento da fila
-        } else { // senão
-            No *aux = *fila; // cria um ponteiro auxiliar para percorrer a fila
-            while (aux->proximo != NULL) { // enquanto não chegar no último nó da fila
-                aux = aux->proximo; // avança para o próximo nó
-            }
-            aux->proximo = novo; // insere o novo nó após o último nó da fila
-        }
+void insere(No **fila, int chave, int valor) {
+    No *novo = criarNo(chave, valor); // cria um novo nó com a chave e o valor
+    if (novo != NULL && *fila == NULL) { // se a criação foi bem sucedida e se a fila estiver vazia
+        *fila = novo; // o novo nó se torna o primeiro elemento da fila
     } else { // senão
-        printf("Erro na alocação de memória!\n"); // imprime uma mensagem de erro
+        No *aux = *fila; // cria um ponteiro auxiliar para percorrer a fila
+        while (aux->proximo != NULL) { // enquanto não chegar no último nó da fila
+            aux = aux->proximo; // avança para o próximo nó
+        }
+        aux->proximo = novo; // insere o novo nó após o último nó da fila
     }
+    //printf("Erro na alocação de memória!\n"); // imprime uma mensagem de erro
 }
 
-// Função que imprime os valores e as chaves dos nós da fila
-void imprime(No *fila) {
+// Função que imprime as chaves e os valores dos nós da fila
+void imprime (No *fila) {
     No *aux = fila; // cria um ponteiro auxiliar para percorrer a fila
     while (aux != NULL) { // enquanto não chegar no final da fila
-        printf("Valor: %d, Chave: %d\n", aux->valor, aux->chave); // imprime o valor e a chave do nó atual
+        printf("Valor: %d, Chave: %d\n", aux->chave, aux->valor); // imprime a chave e o valor do nó atual
         aux = aux->proximo; // avança para o próximo nó
     }
 }
 
 // Função que libera a memória alocada para os nós da fila
-void liberar(No *fila) {
+void liberar (No *fila) {
     No *aux = fila; // cria um ponteiro auxiliar para percorrer a fila
     while (aux != NULL) { // enquanto não chegar no final da fila
         No *temp = aux; // guarda o ponteiro para o nó atual em uma variável temporária
