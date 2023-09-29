@@ -1,17 +1,4 @@
---menor :: Float -> Float
---menor x y
---   | x <= y		= x
---   | otherwise	= y
-
 type Meu_tipo = (String, Float, Char)
-
-menor :: Float -> Float
-menor x y
-| x1 <= x2	= x
-| otherwise	= y
-   where
-	x1 = idade x
-	x2 = idade y
 
 pessoa :: Float -> Meu_tipo
 pessoa rg
@@ -28,14 +15,13 @@ idade (nome, idade, sexo) = i
 sexo :: Meu_tipo -> Char
 sexo (nome,idade,s) = s
 
-ehFeminino :: Meu_tipo -> Bool
-ehFeminino (n,i,s) = s == 'f'
-
---função incompleta
-contaFeminino :: Float -> Int
-contaFeminino n
-   | n == 1 && ehFeminino == True = --contaFeminino++
-
+menor :: Float -> Float
+menor x y
+	| x1 <= x2	= x
+	| otherwise	= y
+		where
+			x1 = idade x
+			x2 = idade y
 
 menorIdade :: Float -> Meu_tipo
 menorIdade x
