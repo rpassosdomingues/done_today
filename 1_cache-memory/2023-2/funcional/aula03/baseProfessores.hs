@@ -39,35 +39,33 @@ contaMulheres professor
 	| (professor == 0) = ehMulher (base 0)
 	|        otherwise = ehMulher (base professor) + contaMulheres (professor - 1)
 
-{-
 --contaMestresMasculino
 
-ehMestre :: Professor -> Bool
-ehMestre (_,_,t,_) = (t == "MESTRE")
+ehMestre :: Professor -> Int
+ehMestre (_,_,t,_)
+	| (t == "MESTRE") = 1
+	|       otherwise = 0
 
-ehMasculino :: Professor -> Bool
-ehMasculino (_,_,_,s) = (s == 'M')
+ehMasculino :: Professor -> Int
+ehMasculino (_,_,_,s)
+	| (s == 'M') = 1
+	| otherwise  = 0
 
-ehMestreMasculino :: Professor -> Bool
-ehMestreMasculino (_,_,t,s) = ehMestre (base professor) && ehMasculino (base professor)
-
-contaMestresMasculino :: Professor -> Int
+contaMestresMasculino :: Int -> Int
 contaMestresMasculino professor
-	| (professor == 0) = ehMestreMasculino (base 0)
-	|        otherwise = ehMestreMasculino (base professor) + contaMestresMasculino (professor - 1)
--}
+	| (professor == 0) = ehMestre (base 0) * ehMasculino (base 0)
+	|        otherwise = ehMestre (base professor) * ehMasculino (base professor) + contaMestresMasculino (professor - 1)
 
-{-
 --professorMaisAntigo
-menor :: Int -> Int
-menor x y
-	| x <= y	= x
-	| otherwise	= y
 
-menorMatricula :: Int -> Professor
-menorMatricula professor
-   | professor == 0	= professor 1
-   |      otherwise = menorMatricula (base professor) (menorMatricula (professor-1))
+menorMatricula :: Int -> Int -> Int
+menorMatricula x y
+	| x <= y    = x
+	| otherwise = y
 
-professorMaisAntigo
--}
+professorMaisAntigo :: Int -> Professor
+professorMaisAntigo professor
+	| (professor == 0) = base 0
+	|        otherwise = let antigo = professorMaisAntigo (professor - 1)
+                             atual = base professor
+                         in if fst atual < fst antigo then atual else antigo
