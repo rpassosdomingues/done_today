@@ -11,15 +11,15 @@ Node* newNode(int item) {
 }
 
 // Function to insert a new node with a given value into the binary tree
-Node* insert(Node* node, int value) {
+Node* insertNode(Node* node, int value) {
     if (node == NULL) {
         return newNode(value);
     }
 
     if (value < node->value) {
-        node->left = insert(node->left, value);
+        node->left = insertNode(node->left, value);
     } else if (value > node->value) {
-        node->right = insert(node->right, value);
+        node->right = insertNode(node->right, value);
     }
 
     return node;
@@ -67,12 +67,30 @@ Node* removeNode(Node* root, int value) {
     return root;
 }
 
-// Function to print the binary tree in-order
+// Function to print the binary tree in order
 void printInOrder(Node* root) {
     if (root != NULL) {
         printInOrder(root->left);
         printf("%d ", root->value);
         printInOrder(root->right);
+    }
+}
+
+// Function to print the binary tree pre order
+void printPreOrder(Node* root) {
+    if (root != NULL) {
+        printf("%d ", root->value);
+        printPreOrder(root->left);
+        printPreOrder(root->right);
+    }
+}
+
+// Function to print the binary tree pos order
+void printPosOrder(Node* root) {
+    if (root != NULL) {
+        printPosOrder(root->left);
+        printPosOrder(root->right);
+        printf("%d ", root->value);
     }
 }
 
@@ -89,12 +107,13 @@ void deallocateTree(Node* root) {
 void displayMenu() {
     printf("================================\n");
     printf("Menu:\n");
-    printf("================================\n");
+    printf("--------------------------------\n");
     printf("0 - Quit\n");
-    printf("................................\n");
     printf("1 - Insert a value\n");
     printf("2 - Remove a value\n");
-    printf("3 - Print the tree in-order\n");
+    printf("3 - Print In Order\n");
+    printf("4 - Print Pre Order\n");
+    printf("5 - Print Pos Order\n");
     printf("================================\n");
 }
 
@@ -114,20 +133,33 @@ int main() {
                 break;
             case 1:
                 // Insert a value
-                printf("Enter a value to insert: ");
-                scanf("%d", &value);
-                root = insert(root, value);
+                // Order of the insertion: 8 3 1 6 4 7 10 14 13
+                printf("\tEnter a value to insert: ");
+                scanf(" %d", &value);
+                root = insertNode(root, value);
                 break;
             case 2:
                 // Remove a value
-                printf("Enter a value to remove: ");
-                scanf("%d", &value);
+                printf("\tEnter a value to remove: ");
+                scanf(" %d", &value);
                 root = removeNode(root, value);
                 break;
             case 3:
-                // Print the tree in-order
-                printf("In-order traversal: ");
+                // Print In Order
+                printf("\nIn Order: ");
                 printInOrder(root);
+                printf("\n");
+                break;
+            case 4:
+                // Print Pre Order
+                printf("\nPre Order: ");
+                printPreOrder(root);
+                printf("\n");
+                break;
+            case 5:
+                // Print Pos Order
+                printf("\nPos Order: ");
+                printPosOrder(root);
                 printf("\n");
                 break;
             default:
