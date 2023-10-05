@@ -78,17 +78,18 @@ no *buscar(no *ptlista, int x) {
  *
  * Sua função deve ter no máximo 7 ; (ponto e vírgula).
  */
-no *inserir(no *ptlista, no *novo_no, int inserido)
+no *inserir(no **ptlista, no *novo_no, int inserido)
 {
-    no *pont = buscar(ptlista, novo_no->chave);
+    no *pont = buscar(*ptlista, novo_no->chave);
 
-    if (pont != NULL) {
+    if (pont == NULL) {
         novo_no->valor = inserido;
-        novo_no->prox = ptlista;
-        ptlista = novo_no;
+        novo_no->prox = *ptlista;
+        *ptlista = novo_no;
+        return novo_no;
+    } else {
+        return NULL;
     }
-
-    return pont;
 }
 
 /**
@@ -101,17 +102,9 @@ no *inserir(no *ptlista, no *novo_no, int inserido)
  *
  * Sua função deve ter no máximo 5 ; (ponto e vírgula).
  */
-no *remover(no *ptlista, int x)
+no *remover(no **ptlista, int x)
 {
-    no *pont = buscar(ptlista, x);
-
-    if (pont != NULL) {
-        no *temp = ptlista;
-        ptlista = ptlista->prox;
-        free(temp);
-    }
-
-    return NULL;
+    //to-do
 }
 
 void imprimir_crescente(no *ptlista, char *arq_saida)
