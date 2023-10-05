@@ -104,7 +104,19 @@ no *inserir(no **ptlista, no *novo_no, int inserido)
  */
 no *remover(no **ptlista, int x)
 {
-    //to-do
+    no *atual = (*ptlista)->prox;
+    while (atual != *ptlista)
+    {
+        if (atual->chave == x)
+        {
+            // Remova o nó da lista
+            atual->ant->prox = atual->prox;
+            atual->prox->ant = atual->ant;
+            return atual;
+        }
+        atual = atual->prox;
+    }
+    return NULL; // Retorne NULL se o nó não for encontrado
 }
 
 void imprimir_crescente(no *ptlista, char *arq_saida)
@@ -228,7 +240,7 @@ void main(int argc, char **argv)
             int chave = ler_valor(entrada);
             int valor = ler_valor(entrada);
             no *novo_no = alocar_no(chave, valor);
-            if (inserir(ptlista, novo_no, valor) != NULL)
+            if (inserir(&ptlista, novo_no, valor) != NULL)
             {
                 free(novo_no);
             }
@@ -237,7 +249,7 @@ void main(int argc, char **argv)
         {
             // remover
             int chave = ler_valor(entrada);
-            no *no_removido = remover(ptlista, chave);
+            no *no_removido = remover(&ptlista, chave);
             if (no_removido != NULL)
             {
                 free(no_removido);
