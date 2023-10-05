@@ -57,17 +57,17 @@ typedef struct no_
  *
  * Sua função deve ter no máximo 5 ; (ponto e vírgula).
  */
-// Função para buscar por um valor na lista
-no *buscar(no *ptlista, int x) {
+no *buscar(no *ptlista, int x)
+{
     no *ultimo = ptlista->ant;
-    while (ultimo != NULL) {
-        if (ultimo->valor == x) {
-            return ultimo;
-        }
-        ultimo = ultimo->prox;
-    }
-    return NULL;
+
+    /**
+     * acrescente seu código aqui.
+     */
+
+    return ptlista;
 }
+
 /**
  * Complete a função a seguir.
  * Ela deve retornar uma das seguintes opções:
@@ -78,18 +78,15 @@ no *buscar(no *ptlista, int x) {
  *
  * Sua função deve ter no máximo 7 ; (ponto e vírgula).
  */
-no *inserir(no **ptlista, no *novo_no, int inserido)
+no *inserir(no *ptlista, no *novo_no)
 {
-    no *pont = buscar(*ptlista, novo_no->chave);
+    no *pont = buscar(ptlista, novo_no->chave);
 
-    if (pont == NULL) {
-        novo_no->valor = inserido;
-        novo_no->prox = *ptlista;
-        *ptlista = novo_no;
-        return novo_no;
-    } else {
-        return NULL;
-    }
+    /**
+     * acrescente seu código aqui.
+     */
+
+    return pont;
 }
 
 /**
@@ -102,21 +99,15 @@ no *inserir(no **ptlista, no *novo_no, int inserido)
  *
  * Sua função deve ter no máximo 5 ; (ponto e vírgula).
  */
-no *remover(no **ptlista, int x)
+no *remover(no *ptlista, int x)
 {
-    no *atual = (*ptlista)->prox;
-    while (atual != *ptlista)
-    {
-        if (atual->chave == x)
-        {
-            // Remova o nó da lista
-            atual->ant->prox = atual->prox;
-            atual->prox->ant = atual->ant;
-            return atual;
-        }
-        atual = atual->prox;
-    }
-    return NULL; // Retorne NULL se o nó não for encontrado
+    no *pont = buscar(ptlista, x);
+
+    /**
+     * acrescente seu código aqui.
+     */
+
+    return NULL;
 }
 
 void imprimir_crescente(no *ptlista, char *arq_saida)
@@ -240,7 +231,7 @@ void main(int argc, char **argv)
             int chave = ler_valor(entrada);
             int valor = ler_valor(entrada);
             no *novo_no = alocar_no(chave, valor);
-            if (inserir(&ptlista, novo_no, valor) != NULL)
+            if (inserir(ptlista, novo_no) != NULL)
             {
                 free(novo_no);
             }
@@ -249,7 +240,7 @@ void main(int argc, char **argv)
         {
             // remover
             int chave = ler_valor(entrada);
-            no *no_removido = remover(&ptlista, chave);
+            no *no_removido = remover(ptlista, chave);
             if (no_removido != NULL)
             {
                 free(no_removido);
