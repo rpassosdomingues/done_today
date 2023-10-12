@@ -37,5 +37,5 @@ plt.ylabel("Hit Ratio (%)")
 plt.legend()
 
 plt.tight_layout()
-plt.ion()
-#plt.show()
+#plt.ion()
+plt.show()
