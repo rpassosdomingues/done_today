@@ -3,13 +3,6 @@
 #include <time.h>
 #include "tree.h"
 
-// Structure for a binary tree node
-typedef struct Node {
-    int value;
-    struct Node* left;
-    struct Node* right;
-} Node;
-
 // Function to create a new tree node
 Node* newNode(int item) {
     Node* temp = malloc(sizeof(Node));
