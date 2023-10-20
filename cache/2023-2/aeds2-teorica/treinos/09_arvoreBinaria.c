@@ -7,7 +7,7 @@
 
 typedef struct _no {
     struct _no *esquerda;
-    int chave;
+    //int chave;
     int valor;
     struct _no *direita;
 } no;
@@ -22,15 +22,35 @@ no *busca (no *raiz, int k) {
     }
 }
 
-no *insere (no *raiz, no *novoNo) {
+no *insere(no *raiz, int galhoNovo) {
+    // Crie um novo nó
+    no *novoNo = malloc(sizeof(no));
+
+    novoNo->esquerda = NULL;
+    novoNo->valor = galhoNovo;
+    novoNo->direita = NULL;
+
+    // Verifique se a raiz é nula
     if (raiz == NULL) {
         return novoNo;
-    } if ( (raiz->valor) > (novoNo->valor) ) {
-        raiz->esquerda = insere(raiz->esquerda, novoNo);
-    } else {
-        raiz->direita = insere(raiz->direita, novoNo);
     }
+
+    // Insira o novo nó na posição apropriada na árvore
+    if (galhoNovo < raiz->valor) {
+        raiz->esquerda = insere(raiz->esquerda, galhoNovo);
+    } else {
+        raiz->direita = insere(raiz->direita, galhoNovo);
+    }
+
     return raiz;
+}
+/**
+void podaRaiz () {
+    //to-do
+}
+
+void buscaPai () {
+    //to-do
 }
 
 no *poda (no *raiz, int galhoSeco) {
@@ -55,7 +75,7 @@ no *poda (no *raiz, int galhoSeco) {
     }
     return raiz;
 }
-
+*/
 void imprimeEmOrdem(no *raiz) {
     if (raiz != NULL) {
         imprimeEmOrdem(raiz->esquerda);
@@ -101,32 +121,42 @@ void menu () {
     printf("================================\n");
 }
 
-void main () {
+int main () {
     no *raiz = NULL;
-    int opcao, valor;
+    int opcao;
+    //int valor;
 
     do {
         menu();
-        printf("O que vai fazer? ");
+        printf("O que quer fazer? ");
         scanf("%d", &opcao);
 
         switch (opcao) {
             case 0:
                 // Some com a árvore
                 desmatamento(raiz);
-                break;
+                return 0;
             case 1:
                 // Insere um valor
                 // Ordem de inserção sugerida: 8 3 1 6 4 7 10 14 13
-                printf("\tQual valor que inserir? ");
-                scanf(" %d", &valor);
-                raiz = insere(raiz, valor);
+                //printf("\tQual valor que inserir? ");
+                //scanf(" %d", &valor);
+                raiz = insere(raiz, 8);
+                raiz = insere(raiz, 3);
+                raiz = insere(raiz, 1);
+                raiz = insere(raiz, 6);
+                raiz = insere(raiz, 4);
+                raiz = insere(raiz, 7);
+                raiz = insere(raiz, 10);
+                raiz = insere(raiz, 14);
+                raiz = insere(raiz, 13);
+                printf("\nElementos inseridos com sucesso!\n");
                 break;
             case 2:
                 // Remove um valor
-                printf("\tQual valor quer remover? ");
-                scanf(" %d", &valor);
-                raiz = poda(raiz, valor);
+                //printf("\tQual valor quer remover? ");
+                //scanf(" %d", &valor);
+                //raiz = poda(raiz, valor);
                 break;
             case 3:
                 // Imprimir em Ordem
