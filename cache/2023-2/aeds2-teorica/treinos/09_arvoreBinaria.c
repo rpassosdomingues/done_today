@@ -12,70 +12,39 @@ typedef struct _no {
     struct _no *direita;
 } no;
 
-no *busca (no *raiz, int k) {
-    if ( (raiz == NULL) || (raiz->valor == k) ) {
+no *busca (no *raiz, int procurado) {
+    if ( (raiz == NULL) || (raiz->valor == procurado) ) {
         return raiz;
-    } if ( (raiz->valor) > k) {
-        return busca(raiz->esquerda, k);
+    } if ( (raiz->valor) > procurado) {
+        return busca(raiz->esquerda, procurado);
     } else {
-        return busca(raiz->direita, k);
+        return busca(raiz->direita, procurado);
     }
 }
 
-no *insere(no *raiz, int galhoNovo) {
+no *planta(no *raiz, int semente) {
     // Crie um novo nó
-    no *novoNo = malloc(sizeof(no));
+    no *folhaNova = malloc(sizeof(no));
 
-    novoNo->esquerda = NULL;
-    novoNo->valor = galhoNovo;
-    novoNo->direita = NULL;
+    folhaNova->esquerda = NULL;
+    folhaNova->valor = semente;
+    folhaNova->direita = NULL;
 
     // Verifique se a raiz é nula
     if (raiz == NULL) {
-        return novoNo;
+        return folhaNova;
     }
 
     // Insira o novo nó na posição apropriada na árvore
-    if (galhoNovo < raiz->valor) {
-        raiz->esquerda = insere(raiz->esquerda, galhoNovo);
+    if (semente < raiz->valor) {
+        raiz->esquerda = planta(raiz->esquerda, semente);
     } else {
-        raiz->direita = insere(raiz->direita, galhoNovo);
+        raiz->direita = planta(raiz->direita, semente);
     }
 
     return raiz;
 }
-/**
-void podaRaiz () {
-    //to-do
-}
 
-void buscaPai () {
-    //to-do
-}
-
-no *poda (no *raiz, int galhoSeco) {
-    // verifica se o nó existe
-    no *n = busca(raiz, galhoSeco);
-    if (n) {
-        // descobre quem é o nó pai
-        no *pai = buscaPai(raiz, n);
-        // caso tenha nó pai
-        if (pai) {
-            // O nó a ser removido é filho à direita
-            if ( (pai->direita) == n ) {
-                pai->direita = podaRaiz(n);
-              // O nó a ser removido é filho à esquerda
-            } else {
-                pai->esquerda = podaRaiz(n);
-            }
-          // Não possui pai, logo é o próprio nó raiz
-        } else {
-            raiz = podaRaiz(n);
-        }
-    }
-    return raiz;
-}
-*/
 void imprimeEmOrdem(no *raiz) {
     if (raiz != NULL) {
         imprimeEmOrdem(raiz->esquerda);
@@ -137,19 +106,19 @@ int main () {
                 desmatamento(raiz);
                 return 0;
             case 1:
-                // Insere um valor
+                // planta um valor
                 // Ordem de inserção sugerida: 8 3 1 6 4 7 10 14 13
                 //printf("\tQual valor que inserir? ");
                 //scanf(" %d", &valor);
-                raiz = insere(raiz, 8);
-                raiz = insere(raiz, 3);
-                raiz = insere(raiz, 1);
-                raiz = insere(raiz, 6);
-                raiz = insere(raiz, 4);
-                raiz = insere(raiz, 7);
-                raiz = insere(raiz, 10);
-                raiz = insere(raiz, 14);
-                raiz = insere(raiz, 13);
+                raiz = planta(raiz, 8);
+                raiz = planta(raiz, 3);
+                raiz = planta(raiz, 1);
+                raiz = planta(raiz, 6);
+                raiz = planta(raiz, 4);
+                raiz = planta(raiz, 7);
+                raiz = planta(raiz, 10);
+                raiz = planta(raiz, 14);
+                raiz = planta(raiz, 13);
                 printf("\nElementos inseridos com sucesso!\n");
                 break;
             case 2:
