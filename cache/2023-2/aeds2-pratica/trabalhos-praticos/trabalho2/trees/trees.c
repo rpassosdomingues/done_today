@@ -18,7 +18,7 @@ tree *createSubTree(int data) {
 
 tree *insertBinaryTree(tree *root, int data) {
     if (root == NULL) {
-        return createTreeNode(data);
+        return createSubTree(data);
     }
     if (data < root->data) {
         root->left = insertBinaryTree(root->left, data);
@@ -50,7 +50,39 @@ tree *insertAVLTree(tree* root, int data) {
 }
 
 tree *removeBinaryTree(tree *root, int data) {
-    //to-do
+    if (root == NULL) {
+        return root;
+    }
+
+    // Recursively search for the node to remove
+    if (data < root->data) {
+        root->left = removeBinaryTree(root->left, data);
+    } else if (data > root->data) {
+        root->right = removeBinaryTree(root->right, data);
+    } else {
+        // Node with the key to be deleted found
+
+        // Case 1: Node with only one child or no child
+        if (root->left == NULL) {
+            tree *temp = root->right;
+            free(root);
+            return temp;
+        } else if (root->right == NULL) {
+            tree *temp = root->left;
+            free(root);
+            return temp;
+        }
+
+        // Case 2: Node with two children, get the inorder successor
+        tree *temp = minValueNode(root->right);
+
+        // Copy the inorder successor's data to this node
+        root->data = temp->data;
+
+        // Delete the inorder successor
+        root->right = removeBinaryTree(root->right, temp->data);
+    }
+    return root;
 }
 
 tree *removeAVLTree(tree *root, int data) {
@@ -104,6 +136,34 @@ tree *removeAVLTree(tree *root, int data) {
     return root;
 }
 
+tree *search(tree *root, int data) {
+    if (root == NULL || root->data == data) {
+        return root;
+    }
+
+    if (data < root->data) {
+        return search(root->left, data);
+    } else {
+        return search(root->right, data);
+    }
+}
+
+tree *searchFather(tree *root, tree *node, tree *parent) {
+    if (root == NULL || node == NULL) {
+        return NULL;  // Node not found or tree is empty
+    }
+
+    if (root->left == node || root->right == node) {
+        return root;  // Found the parent of the given node
+    }
+
+    if (node->data < root->data) {
+        return searchFather(root->left, node, root);
+    } else {
+        return searchFather(root->right, node, root);
+    }
+}
+
 int height(tree *node) {
     if (node == NULL) {
         return -1;
@@ -118,6 +178,17 @@ void updateHeight(tree* node) {
     int leftHeight = height(node->left);
     int rightHeight = height(node->right);
     node->height = (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
+}
+
+tree *minValueNode(tree *node) {
+    tree *current = node;
+
+    // Find the leftmost leaf node
+    while (current->left != NULL) {
+        current = current->left;
+    }
+
+    return current;
 }
 
 tree* rotateRight(tree *node) {
@@ -185,25 +256,22 @@ double binaryTree(tree *root, int instance) {
     double time = 0;
     clock_t begin = clock();
 
-    insertBinaryTree(root, instance);
+    root = insertBinaryTree(root, instance);
     
     clock_t end = clock();
-    // calcula o tempo decorrido encontrando a diferença (end - begin) e
-    // dividindo a diferença por CLOCKS_PER_SEC para converter em segundos
-    time += (double)(end - begin) / 1000 * CLOCKS_PER_SEC;
-    return (time);
+    time += (double)(end - begin) / CLOCKS_PER_SEC;
+    return (1000 * time);
 }
 
 double avlTree(tree *root, int instance) {
     double time = 0;
     clock_t begin = clock();
 
-    
+    root = insertAVLTree(root, instance);
+
     clock_t end = clock();
-    // calcula o tempo decorrido encontrando a diferença (end - begin) e
-    // dividindo a diferença por CLOCKS_PER_SEC para converter em milisegundos
-    time += (double)(end - begin) / 1000 * CLOCKS_PER_SEC;
-    return (time);
+    time += (double)(end - begin) / CLOCKS_PER_SEC;
+    return (1000 * time);
 }
 
 
@@ -211,7 +279,7 @@ int main(int argc, char* argv[]) {
 
     int instance = -1;
     instance = atoi(argv[1]);
-    if (instance <= 1 || instance > 3) {
+    if (instance < 1 || instance > 3) {
         printf("Enter a ./tree x\n\twhere x is number between 1 and 3 of instances.\n");
         exit(0);
     }
