@@ -71,7 +71,7 @@ void freeBinaryTree(struct TreeNode* root) {
 // Função para calcular a altura de um nó da árvore AVL
 int height(struct AVLNode* node) {
     if (node == NULL) {
-        return 0;
+        return -1;
     }
     return node->height;
 }
