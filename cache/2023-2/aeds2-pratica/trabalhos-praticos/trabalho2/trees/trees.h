@@ -32,7 +32,6 @@ void printInOrder(tree *root);
 
 void freeTree(tree *root);
 
-
 double binaryTree(tree *root, int instance);
 double avlTree(tree *root, int instance);
 
