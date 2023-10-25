@@ -1,7 +1,7 @@
 # Automatizando o makefile
 
 # Nome do projeto
-PROJ_NAME=tree
+PROJ_NAME=trees
 
 # Arquivos .c
 C_SOURCE=$(wildcard *.c)
