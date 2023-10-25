@@ -256,7 +256,8 @@ double binaryTree(tree *root, int instance) {
     double time = 0;
     clock_t begin = clock();
 
-    root = insertBinaryTree(root, instance);
+    insertBinaryTree(root, instance);
+    removeBinaryTree(root, instance);
     
     clock_t end = clock();
     time += (double)(end - begin) / CLOCKS_PER_SEC;
@@ -267,7 +268,8 @@ double avlTree(tree *root, int instance) {
     double time = 0;
     clock_t begin = clock();
 
-    root = insertAVLTree(root, instance);
+    insertAVLTree(root, instance);
+    removeAVLTree(root, instance);
 
     clock_t end = clock();
     time += (double)(end - begin) / CLOCKS_PER_SEC;
