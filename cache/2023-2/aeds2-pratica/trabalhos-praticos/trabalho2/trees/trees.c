@@ -250,7 +250,7 @@ tree *balanceNode(tree* node) {
     return node;
 }
 
-// Function to perform an in-order traversal of the tree and print the values
+// Function to perform an in-order traversal of the tree and print the values (used to inputs tests)
 void printInOrder(tree *root) {
     if (root != NULL) {
         printInOrder(root->left);
@@ -320,9 +320,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Initialize tree roots pointers with NULL 
     tree *binaryTreeRoot = NULL;
     tree *avlTreeRoot = NULL;
 
+    // Call the function of the benckmarks operations on an trees 
     double time_binaryTree = binaryTree(binaryTreeRoot, instance);
     double time_avlTree = avlTree(avlTreeRoot, instance);
 
