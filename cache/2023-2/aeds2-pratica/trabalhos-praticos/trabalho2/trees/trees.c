@@ -4,7 +4,7 @@
 #include <time.h>
 #include "trees.h"
 
-// Function to create a new tree node with the given data
+// Function to create a new tree node with the given data [Rafael Passos]
 tree *createSubTree(int data) {
     tree *newNode = malloc(sizeof(tree));
     if (newNode == NULL) {
@@ -17,7 +17,7 @@ tree *createSubTree(int data) {
     return newNode;
 }
 
-// Function to insert a node into a binary search tree
+// Function to insert a node into a binary search tree [Rafael Passos]
 tree *insertBinaryTree(tree *root, int data) {
     if (root == NULL) {
         return createSubTree(data);
@@ -30,7 +30,7 @@ tree *insertBinaryTree(tree *root, int data) {
     return root;
 }
 
-// Function to insert a node into an AVL tree
+// Function to insert a node into an AVL tree [Pedro Mendes]
 tree *insertAVLTree(tree* root, int data) {
     if (root == NULL) {
         tree* newNode = malloc(sizeof(tree));
@@ -52,7 +52,7 @@ tree *insertAVLTree(tree* root, int data) {
     return balanceNode(root);
 }
 
-// Function to remove a node from a binary search tree
+// Function to remove a node from a binary search tree [Pablo Rocha]
 tree *removeBinaryTree(tree *root, int data) {
     if (root == NULL) {
         return root;
@@ -89,7 +89,7 @@ tree *removeBinaryTree(tree *root, int data) {
     return root;
 }
 
-// Function to remove a node from an AVL tree
+// Function to remove a node from an AVL tree [Pedro Mendes]
 tree *removeAVLTree(tree *root, int data) {
     tree *oldNode = search(root, data);
 
@@ -141,7 +141,7 @@ tree *removeAVLTree(tree *root, int data) {
     return root;
 }
 
-// Function to search for a node with a specific data value
+// Function to search for a node with a specific data value [Rafael Passos]
 tree *search(tree *root, int data) {
     if (root == NULL || root->data == data) {
         return root;
@@ -154,7 +154,7 @@ tree *search(tree *root, int data) {
     }
 }
 
-// Function to find the parent node of a given node in the tree
+// Function to find the parent node of a given node in the tree [Rafael Passos]
 tree *searchFather(tree *root, tree *node, tree *parent) {
     if (root == NULL || node == NULL) {
         return NULL;  // Node not found or tree is empty
@@ -171,7 +171,7 @@ tree *searchFather(tree *root, tree *node, tree *parent) {
     }
 }
 
-// Function to get the height of a node (used in AVL trees)
+// Function to get the height of a node (used in AVL trees) [Pablo Rocha]
 int height(tree *node) {
     if (node == NULL) {
         return -1;
@@ -179,7 +179,7 @@ int height(tree *node) {
     return node->height;
 }
 
-// Function to update the height of a node
+// Function to update the height of a node [Pablo Rocha]
 void updateHeight(tree* node) {
     if (node == NULL) {
         return;
@@ -189,7 +189,7 @@ void updateHeight(tree* node) {
     node->height = (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
 }
 
-// Function to find the node with the minimum value in a tree
+// Function to find the node with the minimum value in a tree [Pablo Rocha]
 tree *minValueNode(tree *node) {
     tree *current = node;
 
@@ -201,7 +201,7 @@ tree *minValueNode(tree *node) {
     return current;
 }
 
-// Function to perform a right rotation on a node in an AVL tree
+// Function to perform a right rotation on a node in an AVL tree [Pedro Mendes]
 tree* rotateRight(tree *node) {
     tree* newRoot = node->left;
     node->left = newRoot->right;
@@ -211,7 +211,7 @@ tree* rotateRight(tree *node) {
     return newRoot;
 }
 
-// Function to perform a left rotation on a node in an AVL tree
+// Function to perform a left rotation on a node in an AVL tree [Pedro Mendes]
 tree* rotateLeft(tree* node) {
     tree* newRoot = node->right;
     node->right = newRoot->left;
@@ -221,7 +221,7 @@ tree* rotateLeft(tree* node) {
     return newRoot;
 }
 
-// Function to calculate the balance factor of a node (used in AVL trees)
+// Function to calculate the balance factor of a node (used in AVL trees) [Pedro Mendes]
 int balanceFactor(tree *node) {
     if (node == NULL) {
         return 0;
@@ -229,7 +229,7 @@ int balanceFactor(tree *node) {
     return height(node->left) - height(node->right);
 }
 
-// Function to balance an AVL tree node
+// Function to balance an AVL tree node [Pedro Mendes]
 tree *balanceNode(tree* node) {
     updateHeight(node);
     int factor = balanceFactor(node);
@@ -250,7 +250,7 @@ tree *balanceNode(tree* node) {
     return node;
 }
 
-// Function to perform an in-order traversal of the tree and print the values (used to inputs tests)
+// Function to perform an in-order traversal of the tree and print the values (used to inputs tests) [Rafael Passos]
 void printInOrder(tree *root) {
     if (root != NULL) {
         printInOrder(root->left);
@@ -259,7 +259,7 @@ void printInOrder(tree *root) {
     }
 }
 
-// Function to free the memory used by the tree
+// Function to free the memory used by the tree [Rafael Passos]
 void freeTree(tree *root) {
     if (root != NULL) {
         freeTree(root->left);
@@ -273,11 +273,11 @@ double binaryTree(tree *root, int instance) {
     double time = 0;
     clock_t begin = clock();
 
-    // Insert data from 0 to 10,000 into the insertion functions
+    // Insert data from 0 to 10,000 into the insertion functions [Pablo Rocha]
     for (int row = 0; row <= 10000; row++) {
         root = insertBinaryTree(root, row);
     }
-    // Remove data from 10000 to 20000 from the removal functions
+    // Remove data from 10000 to 20000 from the removal functions [Pablo Rocha]
     for (int row = 10001; row <= 20000; row++) {
         root = removeBinaryTree(root, row);
     }
@@ -292,11 +292,11 @@ double avlTree(tree *root, int instance) {
     double time = 0;
     clock_t begin = clock();
 
-    // Insert data from 0 to 10,000 into the insertion functions
+    // Insert data from 0 to 10,000 into the insertion functions [Pablo Rocha]
     for (int row = 0; row <= 10000; row++) {
         root = insertAVLTree(root, row);
     }
-    // Remove data from 10001 to 20000 from the removal functions
+    // Remove data from 10001 to 20000 from the removal functions [Pablo Rocha]
     for (int row = 10001; row <= 20000; row++) {
         root = removeAVLTree(root, row);
     }
@@ -320,19 +320,19 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Initialize tree roots pointers with NULL 
+    // Initialize tree roots pointers with NULL [Rafael Passos]
     tree *binaryTreeRoot = NULL;
     tree *avlTreeRoot = NULL;
 
-    // Call the function of the benckmarks operations on an trees 
+    // Call the function of the benckmarks operations on an trees [Rafael Passos] 
     double time_binaryTree = binaryTree(binaryTreeRoot, instance);
     double time_avlTree = avlTree(avlTreeRoot, instance);
 
-    // Show results of the benckmarks operations on an trees
+    // Show results of the benckmarks operations on an trees [Rafael Passos]
     printf("\nTime taken for Binary Tree: %f ms\n", time_binaryTree);
     printf("Time taken for AVL Tree: %f ms\n\n", time_avlTree);
 
-    // Free the memory used by the trees
+    // Free the memory used by the trees [Rafael Passos]
     freeTree(binaryTreeRoot);
     freeTree(avlTreeRoot);
 
