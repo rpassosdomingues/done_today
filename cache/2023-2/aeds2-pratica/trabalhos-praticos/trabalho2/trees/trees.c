@@ -313,6 +313,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Instance Reader
     int instance = atoi(argv[1]);
     if (instance < 1 || instance > 3) {
         printf("Invalid instance. Please provide 1, 2, or 3.\n");
@@ -325,6 +326,7 @@ int main(int argc, char* argv[]) {
     double time_binaryTree = binaryTree(binaryTreeRoot, instance);
     double time_avlTree = avlTree(avlTreeRoot, instance);
 
+    // Show results of the benckmarks operations on an trees
     printf("\nTime taken for Binary Tree: %f ms\n", time_binaryTree);
     printf("Time taken for AVL Tree: %f ms\n\n", time_avlTree);
 
