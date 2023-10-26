@@ -1,10 +1,10 @@
 **Nome do Projeto: Feira Livre Alfenas**
 
-**Descrição do Site:**
+**Descrição do app:**
 
-O site "Feira Livre Alfenas" é uma plataforma online dedicada a fornecer informações atualizadas sobre a feira livre da cidade de Alfenas, Minas Gerais. Oferecemos detalhes sobre os vendedores, horários de funcionamento, localização da feira, notícias e atualizações relacionadas à feira, além de um comparador de preços de produtos e disponibilidade em tempo real.
+O app "Feira Livre Alfenas" é uma plataforma online dedicada a fornecer informações atualizadas sobre a feira livre da cidade de Alfenas, Minas Gerais. Oferecemos detalhes sobre os vendedores, horários de funcionamento, localização da feira, notícias e atualizações relacionadas à feira, além de um comparador de preços de produtos e disponibilidade em tempo real.
 
-**Recursos do Site:**
+**Recursos do app:**
 
 1. **Página Inicial**: Uma visão geral da feira com fotos e informações básicas.
 
@@ -22,7 +22,7 @@ O site "Feira Livre Alfenas" é uma plataforma online dedicada a fornecer inform
 
 **Descrição do Aplicativo:**
 
-O aplicativo "Feira Livre Alfenas" complementa o site, oferecendo uma experiência interativa e prática para os frequentadores da feira, incluindo a função de comparador de preços e disponibilidade.
+O aplicativo "Feira Livre Alfenas" complementa o app, oferecendo uma experiência interativa e prática para os frequentadores da feira, incluindo a função de comparador de preços e disponibilidade.
 
 **Recursos do Aplicativo:**
 
