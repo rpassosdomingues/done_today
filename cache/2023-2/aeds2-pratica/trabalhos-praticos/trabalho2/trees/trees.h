@@ -1,11 +1,12 @@
 #ifndef _H_TREES
 #define _H_TREES
 
+// Structure to represent a node in the tree
 typedef struct tree_ {
-    int data;
-    int height;
-    struct tree_ *left;
-    struct tree_ *right;
+    int data;          // Data value stored in the node
+    int height;        // Height of the node (for AVL trees)
+    struct tree_ *left;  // Pointer to the left child
+    struct tree_ *right; // Pointer to the right child
 } tree;
 
 tree *createSubTree(int data);

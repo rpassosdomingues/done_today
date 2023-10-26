@@ -4,6 +4,7 @@
 #include <time.h>
 #include "trees.h"
 
+// Function to create a new tree node with the given data
 tree *createSubTree(int data) {
     tree *newNode = malloc(sizeof(tree));
     if (newNode == NULL) {
@@ -16,6 +17,7 @@ tree *createSubTree(int data) {
     return newNode;
 }
 
+// Function to insert a node into a binary search tree
 tree *insertBinaryTree(tree *root, int data) {
     if (root == NULL) {
         return createSubTree(data);
@@ -28,6 +30,7 @@ tree *insertBinaryTree(tree *root, int data) {
     return root;
 }
 
+// Function to insert a node into an AVL tree
 tree *insertAVLTree(tree* root, int data) {
     if (root == NULL) {
         tree* newNode = malloc(sizeof(tree));
@@ -49,6 +52,7 @@ tree *insertAVLTree(tree* root, int data) {
     return balanceNode(root);
 }
 
+// Function to remove a node from a binary search tree
 tree *removeBinaryTree(tree *root, int data) {
     if (root == NULL) {
         return root;
@@ -85,29 +89,30 @@ tree *removeBinaryTree(tree *root, int data) {
     return root;
 }
 
+// Function to remove a node from an AVL tree
 tree *removeAVLTree(tree *root, int data) {
     tree *oldNode = search(root, data);
 
     if (oldNode == NULL) {
-        printf("\nSub-Tree not found");
+        //printf("\nSub-Tree not found");
         return root;
     }
 
     tree *father = searchFather(root, oldNode, NULL);
 
     if (oldNode->left == NULL && oldNode->right == NULL) {
-        // Case 1: No childs
+        // Case 1: No children
         if (father == NULL) {
             // Remove root
             free(root);
             return NULL;
         } else if (father->left == oldNode) {
-                free(father->left);
-                father->left = NULL;
-            } else {
-                free(father->right);
-                father->right = NULL;
-            }
+            free(father->left);
+            father->left = NULL;
+        } else {
+            free(father->right);
+            father->right = NULL;
+        }
     } else if (oldNode->left == NULL || oldNode->right == NULL) {
         // Case 2: One child
         tree *child = (oldNode->left != NULL) ? oldNode->left : oldNode->right;
@@ -115,27 +120,28 @@ tree *removeAVLTree(tree *root, int data) {
             free(root);
             return child;
         } else if (father->left == oldNode) {
-                free(father->left);
-                father->left = child;
-            } else {
-                free(father->right);
-                father->right = child;
-            }
+            free(father->left);
+            father->left = child;
         } else {
-            // Case 3: Two childs.
-            tree *successor = oldNode->right;
-            while (successor->left != NULL) {
-                successor = successor->left;
-            }
-
-            int tmp = successor->data;
-            root = removeAVLTree(root, tmp);
-            oldNode->data = tmp;
+            free(father->right);
+            father->right = child;
         }
+    } else {
+        // Case 3: Two children.
+        tree *successor = oldNode->right;
+        while (successor->left != NULL) {
+            successor = successor->left;
+        }
+
+        int tmp = successor->data;
+        root = removeAVLTree(root, tmp);
+        oldNode->data = tmp;
+    }
 
     return root;
 }
 
+// Function to search for a node with a specific data value
 tree *search(tree *root, int data) {
     if (root == NULL || root->data == data) {
         return root;
@@ -148,6 +154,7 @@ tree *search(tree *root, int data) {
     }
 }
 
+// Function to find the parent node of a given node in the tree
 tree *searchFather(tree *root, tree *node, tree *parent) {
     if (root == NULL || node == NULL) {
         return NULL;  // Node not found or tree is empty
@@ -164,6 +171,7 @@ tree *searchFather(tree *root, tree *node, tree *parent) {
     }
 }
 
+// Function to get the height of a node (used in AVL trees)
 int height(tree *node) {
     if (node == NULL) {
         return -1;
@@ -171,6 +179,7 @@ int height(tree *node) {
     return node->height;
 }
 
+// Function to update the height of a node
 void updateHeight(tree* node) {
     if (node == NULL) {
         return;
@@ -180,6 +189,7 @@ void updateHeight(tree* node) {
     node->height = (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
 }
 
+// Function to find the node with the minimum value in a tree
 tree *minValueNode(tree *node) {
     tree *current = node;
 
@@ -191,6 +201,7 @@ tree *minValueNode(tree *node) {
     return current;
 }
 
+// Function to perform a right rotation on a node in an AVL tree
 tree* rotateRight(tree *node) {
     tree* newRoot = node->left;
     node->left = newRoot->right;
@@ -200,6 +211,7 @@ tree* rotateRight(tree *node) {
     return newRoot;
 }
 
+// Function to perform a left rotation on a node in an AVL tree
 tree* rotateLeft(tree* node) {
     tree* newRoot = node->right;
     node->right = newRoot->left;
@@ -209,6 +221,7 @@ tree* rotateLeft(tree* node) {
     return newRoot;
 }
 
+// Function to calculate the balance factor of a node (used in AVL trees)
 int balanceFactor(tree *node) {
     if (node == NULL) {
         return 0;
@@ -216,6 +229,7 @@ int balanceFactor(tree *node) {
     return height(node->left) - height(node->right);
 }
 
+// Function to balance an AVL tree node
 tree *balanceNode(tree* node) {
     updateHeight(node);
     int factor = balanceFactor(node);
@@ -236,6 +250,7 @@ tree *balanceNode(tree* node) {
     return node;
 }
 
+// Function to perform an in-order traversal of the tree and print the values
 void printInOrder(tree *root) {
     if (root != NULL) {
         printInOrder(root->left);
@@ -244,6 +259,7 @@ void printInOrder(tree *root) {
     }
 }
 
+// Function to free the memory used by the tree
 void freeTree(tree *root) {
     if (root != NULL) {
         freeTree(root->left);
@@ -252,46 +268,69 @@ void freeTree(tree *root) {
     }
 }
 
+// Function to benchmark operations on a binary tree
 double binaryTree(tree *root, int instance) {
     double time = 0;
     clock_t begin = clock();
 
-    insertBinaryTree(root, instance);
-    removeBinaryTree(root, instance);
+    // Insert data from 0 to 10,000 into the insertion functions
+    for (int row = 0; row <= 10000; row++) {
+        root = insertBinaryTree(root, row);
+    }
+    // Remove data from 10000 to 20000 from the removal functions
+    for (int row = 10001; row <= 20000; row++) {
+        root = removeBinaryTree(root, row);
+    }
     
     clock_t end = clock();
     time += (double)(end - begin) / CLOCKS_PER_SEC;
-    return (1000 * time);
+    return (1000 * time); // Convert to milliseconds
 }
 
+// Function to benchmark operations on an AVL tree
 double avlTree(tree *root, int instance) {
     double time = 0;
     clock_t begin = clock();
 
-    insertAVLTree(root, instance);
-    removeAVLTree(root, instance);
+    // Insert data from 0 to 10,000 into the insertion functions
+    for (int row = 0; row <= 10000; row++) {
+        root = insertAVLTree(root, row);
+    }
+    // Remove data from 10001 to 20000 from the removal functions
+    for (int row = 10001; row <= 20000; row++) {
+        root = removeAVLTree(root, row);
+    }
 
     clock_t end = clock();
     time += (double)(end - begin) / CLOCKS_PER_SEC;
-    return (1000 * time);
+    return (1000 * time); // Convert to milliseconds
 }
 
-
 int main(int argc, char* argv[]) {
-
-    int instance = -1;
-    instance = atoi(argv[1]);
-    if (instance < 1 || instance > 3) {
-        printf("Enter a ./tree x\n\twhere x is number between 1 and 3 of instances.\n");
-        exit(0);
+    if (argc < 2) {
+        printf("Usage: %s [instance]\n", argv[0]);
+        printf("Please provide an instance (1, 2, or 3) as a command-line argument.\n");
+        return 1;
     }
-    
-    tree *root = NULL;
 
-    double time_binaryTree = binaryTree(root, instance);
-    double time_avlTree = avlTree(root, instance);
-    
-    printf("%f\n%f\n", time_binaryTree, time_avlTree);
+    int instance = atoi(argv[1]);
+    if (instance < 1 || instance > 3) {
+        printf("Invalid instance. Please provide 1, 2, or 3.\n");
+        return 1;
+    }
 
-    return (1);
+    tree *binaryTreeRoot = NULL;
+    tree *avlTreeRoot = NULL;
+
+    double time_binaryTree = binaryTree(binaryTreeRoot, instance);
+    double time_avlTree = avlTree(avlTreeRoot, instance);
+
+    printf("\nTime taken for Binary Tree: %f ms\n", time_binaryTree);
+    printf("Time taken for AVL Tree: %f ms\n\n", time_avlTree);
+
+    // Free the memory used by the trees
+    freeTree(binaryTreeRoot);
+    freeTree(avlTreeRoot);
+
+    return 0;
 }
