@@ -1,3 +1,12 @@
+/***
+ * Authors:
+ * 
+ * Pedro Mendes
+ * Rafael Domingues
+ * Rikson Pablo Rocha
+ ***
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
