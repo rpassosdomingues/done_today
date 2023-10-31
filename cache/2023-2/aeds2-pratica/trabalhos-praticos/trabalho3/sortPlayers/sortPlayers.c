@@ -9,7 +9,7 @@ int readPlayers(struct Player playersArray[], int maxPlayers) {
     FILE *file = fopen("players.csv", "r");
     if (file == NULL) {
         perror("Error opening the file");
-        return 0;
+        return (0);
     }
 
     int count = 0;
@@ -34,9 +34,9 @@ int readPlayers(struct Player playersArray[], int maxPlayers) {
 
         count++;
     }
-
     fclose(file);
-    return count;
+
+    return (count);
 }
 
 // Function to print a player
@@ -67,7 +67,7 @@ int bubbleSort(struct Player array[], int length, int* comparisons, int* exchang
             }
         }
     }
-    return bubbleUsage;
+    return (bubbleUsage);
 }
 
 // Function to perform Selection Sort
@@ -91,7 +91,7 @@ int selectionSort(struct Player array[], int length, int* comparisons, int* exch
             (*exchanges)++;  // Increment exchanges count
         }
     }
-    return selectionUsage;
+    return (selectionUsage);
 }
 
 // Function to perform Insertion Sort
@@ -113,7 +113,7 @@ int insertionSort(struct Player array[], int length, int* comparisons, int* exch
         }
         array[j + 1] = handle;
     }
-    return insertionUsage;
+    return (insertionUsage);
 }
 
 // Function to perform Merge Sort and count merge operations
@@ -172,7 +172,7 @@ int mergeSort(struct Player array[], int length, int* comparisons, int* exchange
         (*exchanges)++;  // Increment exchanges count
     }
 
-    return mergeUsage;
+    return (mergeUsage);
 }
 
 // Function to perform Quick Sort
@@ -220,19 +220,19 @@ int quickSort(struct Player array[], int length, int* comparisons, int* exchange
     }
     quickUsage += leftLength + rightLength; // Count the copy operations
 
-    return quickUsage;
+    return (quickUsage);
 }
 
 // Function to display sorting results
 void sortMetrics(const char *sortName, double timeUsed, int comparisons, int exchanges, int memoryUsage) {
-    printf("\n==========================================");
+    printf("\n===============================================");
     printf("\n\t%s Sort Performance Metrics", sortName);
-    printf("\n------------------------------------------");
-    printf("\nTime taken: %.9f milliseconds", timeUsed);
+    printf("\n-----------------------------------------------");
+    printf("\nTime taken: %.4f milliseconds", timeUsed);
     printf("\nComparison operations: %d", comparisons);
     printf("\nExchange operations: %d", exchanges);
     printf("\nMemory used: %d bytes", memoryUsage);
-    printf("\n==========================================");
+    printf("\n===============================================");
 }
 
 void displayMenu() {
@@ -255,7 +255,7 @@ int main() {
     int numPlayers = readPlayers(playersArray, maxPlayers);
 
     if (numPlayers == 0) {
-        return 1;
+        return (1);
     }
 
     int choice = -1;
