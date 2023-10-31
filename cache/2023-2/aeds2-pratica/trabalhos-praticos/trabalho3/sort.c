@@ -157,7 +157,7 @@ int quickSort(int array[], int length) {
 }
 
 // Function to generate an ordered array and shuffle it
-void randomArrayGenerator(int start, int length, int randomArray[]) {
+void randomArrayGenerator(int step, int length, int randomArray[]) {
     for (int i = 0; i < length; i++) {
         randomArray[i] = i;
     }
@@ -171,7 +171,7 @@ void randomArrayGenerator(int start, int length, int randomArray[]) {
     }
 
     for (int i = 0; i < length; i++) {
-        randomArray[i] += start;
+        randomArray[i] += step;
     }
 }
 
@@ -193,10 +193,10 @@ int main() {
   srand(time(NULL));
 
   int length = 50;
-  int start = 10;
+  int step = 10;
 
   int array[length];
-  randomArrayGenerator(start, length, array);
+  randomArrayGenerator(step, length, array);
 
   int choice = -1;
   while (1) {
