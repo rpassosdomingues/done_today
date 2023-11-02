@@ -1,50 +1,85 @@
 import pandas as pd
-import tensorflow as tf
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_squared_error, r2_score
+import numpy as np
 import matplotlib.pyplot as plt
+import tensorflow as tf
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import mean_squared_error
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
 
-# Passo 1: Carregar os dados
-coffee_data = pd.read_csv('dados_cafe.csv')  # Substitua 'dados_cafe.csv' pelo seu arquivo de dados
+# Carregar os dados a partir do arquivo CSV
+file_path = "insights/solucoes_locais/coffee-prices/globalCoffeePrices_data.csv"
+df = pd.read_csv(file_path, parse_dates=["DATE"])
 
-# Passo 2: Explorar os dados
-print(coffee_data.head())  # Exibe as primeiras linhas dos dados
-print(coffee_data.info())  # Verifica informações sobre os dados, como valores faltantes
+# Selecionar a coluna de preços
+data = df["PCOFFOTMUSDM"].values
+data = data.reshape(-1, 1)
 
-# Passo 3: Pré-processamento
-# Suponhamos que você queira usar 'Tempo', 'Chuva' e 'Fertilizante' como recursos para prever o preço do café.
-features = coffee_data[['Tempo', 'Chuva', 'Fertilizante']]
-target = coffee_data['Preco']
+# Normalizar os dados entre 0 e 1
+scaler = MinMaxScaler()
+data = scaler.fit_transform(data)
 
-# Normalização dos recursos
-scaler = StandardScaler()
-features = scaler.fit_transform(features)
+# Dividir os dados em treinamento e teste
+train_size = int(len(data) * 0.67)
+train_data, test_data = data[0:train_size, :], data[train_size:len(data), :]
 
-# Divisão dos dados em conjuntos de treino, validação e teste
-X_train, X_temp, y_train, y_temp = train_test_split(features, target, test_size=0.3, random_state=42)
-X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+# Função para criar sequências de dados com base no histórico
+def create_sequences(data, seq_length):
+    X, y = [], []
+    for i in range(len(data) - seq_length):
+        X.append(data[i:i + seq_length])
+        y.append(data[i + seq_length])
+    return np.array(X), np.array(y)
 
-# Passo 4: Escolher um algoritmo de IA e definir a arquitetura
-model = tf.keras.models.Sequential([
-    tf.keras.layers.Input(shape=(3,)),  # 3 recursos
-    tf.keras.layers.Dense(1)  # Camada de saída com 1 neurônio
-])
+# Definir o comprimento das sequências
+seq_length = 12
 
-model.compile(optimizer='adam', loss='mean_squared_error')
+# Criar sequências de treinamento
+X_train, y_train = create_sequences(train_data, seq_length)
 
-# Passo 5: Treinar o modelo
-model.fit(X_train, y_train, epochs=100, validation_data=(X_val, y_val))
+# Criar sequências de teste
+X_test, y_test = create_sequences(test_data, seq_length)
 
-# Passo 6: Avaliar o modelo
-y_pred = model.predict(X_test)
-mse = mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
-print(f'MSE: {mse}')
-print(f'R²: {r2}')
+# Construir o modelo de rede neural
+model = Sequential()
+model.add(LSTM(50, input_shape=(X_train.shape[1], X_train.shape[2])))
+model.add(Dense(1))
+model.compile(loss="mean_squared_error", optimizer="adam")
 
-# Passo 7: Visualizar os resultados
-plt.scatter(y_test, y_pred)
-plt.xlabel('Preço Real')
-plt.ylabel('Preço Previsto')
+# Treinar o modelo
+model.fit(X_train, y_train, epochs=100, batch_size=32)
+
+# Realizar previsões
+train_predict = model.predict(X_train)
+test_predict = model.predict(X_test)
+
+# Inverter a escala das previsões para obter valores reais
+train_predict = scaler.inverse_transform(train_predict)
+test_predict = scaler.inverse_transform(test_predict)
+
+# Calcular o erro médio quadrado (MSE) das previsões
+train_score = np.sqrt(mean_squared_error(y_train, train_predict))
+test_score = np.sqrt(mean_squared_error(y_test, test_predict))
+
+# Previsões para os próximos 20 anos (240 meses)
+future_data = data[-seq_length:].copy()
+future_predictions = []
+
+for i in range(240):
+    next_month = model.predict(future_data.reshape(1, seq_length, 1))
+    future_predictions.append(next_month[0][0])
+    future_data = np.append(future_data[1:], next_month, axis=0)
+
+# Inverter a escala das previsões futuras
+future_predictions = scaler.inverse_transform(np.array(future_predictions).reshape(-1, 1))
+
+# Plotar os resultados
+plt.figure(figsize=(12, 6))
+plt.plot(df["DATE"].values, df["PCOFFOTMUSDM"].values, label="Dados Reais")
+plt.plot(df["DATE"].values[train_size+seq_length:], np.concatenate((train_predict, test_predict, future_predictions)),
+         label="Previsões", color="red")
+plt.title("Previsão de Preços do Café")
+plt.xlabel("Data")
+plt.ylabel("Preço (USDM)")
+plt.legend()
 plt.show()
