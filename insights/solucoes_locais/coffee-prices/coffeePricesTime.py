@@ -2,8 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import mean_squared_error
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 
@@ -16,8 +14,9 @@ data = df["PCOFFOTMUSDM"].values
 data = data.reshape(-1, 1)
 
 # Normalizar os dados entre 0 e 1
-scaler = MinMaxScaler()
-data = scaler.fit_transform(data)
+data_min = np.min(data)
+data_max = np.max(data)
+data = (data - data_min) / (data_max - data_min)
 
 # Dividir os dados em treinamento e teste
 train_size = int(len(data) * 0.67)
@@ -54,30 +53,15 @@ train_predict = model.predict(X_train)
 test_predict = model.predict(X_test)
 
 # Inverter a escala das previsões para obter valores reais
-train_predict = scaler.inverse_transform(train_predict)
-test_predict = scaler.inverse_transform(test_predict)
-
-# Calcular o erro médio quadrado (MSE) das previsões
-train_score = np.sqrt(mean_squared_error(y_train, train_predict))
-test_score = np.sqrt(mean_squared_error(y_test, test_predict))
-
-# Previsões para os próximos 20 anos (240 meses)
-future_data = data[-seq_length:].copy()
-future_predictions = []
-
-for i in range(240):
-    next_month = model.predict(future_data.reshape(1, seq_length, 1))
-    future_predictions.append(next_month[0][0])
-    future_data = np.append(future_data[1:], next_month, axis=0)
-
-# Inverter a escala das previsões futuras
-future_predictions = scaler.inverse_transform(np.array(future_predictions).reshape(-1, 1))
+train_predict = train_predict * (data_max - data_min) + data_min
+test_predict = test_predict * (data_max - data_min) + data_min
 
 # Plotar os resultados
 plt.figure(figsize=(12, 6))
-plt.plot(df["DATE"].values, df["PCOFFOTMUSDM"].values, label="Dados Reais")
-plt.plot(df["DATE"].values[train_size+seq_length:], np.concatenate((train_predict, test_predict, future_predictions)),
-         label="Previsões", color="red")
+plt.plot(df["DATE"].values[seq_length:train_size], train_predict, label="Previsões de Treinamento", color="blue")
+plt.plot(df["DATE"].values[train_size + seq_length:], test_predict, label="Previsões de Teste", color="green")
+plt.plot(df["DATE"].values[seq_length:train_size], df["PCOFFOTMUSDM"].values[seq_length:train_size], label="Dados Reais de Treinamento", color="gray")
+plt.plot(df["DATE"].values[train_size + seq_length:], df["PCOFFOTMUSDM"].values[train_size + seq_length:], label="Dados Reais de Teste", color="red")
 plt.title("Previsão de Preços do Café")
 plt.xlabel("Data")
 plt.ylabel("Preço (USDM)")
