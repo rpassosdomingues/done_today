@@ -9,46 +9,60 @@ Author: Rafael Passos Domingues
 -- =============================================================================================
 -- Questão 1 --
 -- =============================================================================================
+ehPar :: Int -> Bool
+ehPar numero = mod numero 2 == 0
+
+ehDivisivel :: Int -> Int -> Bool
+ehDivisivel numerador denominador = mod numerador denominador == 0
+
+temDivisorImpar :: Int -> Int -> Bool
+temDivisorImpar num divisor
+    | divisor * divisor > num = True
+    | ehDivisivel num divisor = False
+    | otherwise               = temDivisorImpar num (divisor + 2)
+
 ehPrimo :: Int -> Bool
 ehPrimo n
     | n <= 1    = False
     | n == 2    = True
-    | even n    = False
-    | otherwise = not $ temDivisor n 3
-    where
-        temDivisor :: Int -> Int -> Bool
-        temDivisor n' divisor
-            | divisor * divisor > n'    = True
-            | n' `mod` divisor == 0     = False
-            | otherwise                 = temDivisor n' (divisor + 2)
+    | ehPar n   = False
+    | otherwise = not (temDivisorImpar n 3)
 
 -- =============================================================================================
 -- Questão 2 --
 -- =============================================================================================
+minimo :: Int -> Int -> Int
+minimo a b
+    | a < b     = a
+    | otherwise = b
+
+maximo :: Int -> Int -> Int
+maximo a b
+    | a > b     = a
+    | otherwise = b
+
 ordenaEmTupla :: Int -> Int -> Int -> Int -> (Int, Int, Int, Int)
-ordenaEmTupla a b c d = (min4 a b c d, min3 a b c d, min2 a b c d, max4 a b c d)
+ordenaEmTupla a b c d = (menor4, menor3, menor2, maior4)
     where
-        min2 x y z w = min (min x y) (min z w)
-        min3 x y z w = min (min2 x y z w) (max4 x y z w)
-        min4 x y z w = min (min3 x y z w) (max4 x y z w)
-        max4 x y z w = max (max3 x y z w) w
-        max3 x y z w = max (max2 x y z w) w
-        max2 x y z w = max (max x y) (max z w)
+        menor4 = minimo a (minimo b (minimo c d))
+        menor3 = minimo a (minimo b c)
+        menor2 = minimo a b
+        maior4 = maximo a (maximo b (maximo c d))
 
 -- =============================================================================================
 -- Questão 3 --
 -- =============================================================================================
+ehBissexto :: Int -> Bool
+ehBissexto ano = mod ano 4 == 0
+
 quantosDias :: Int -> Int
 quantosDias ano
-    | (ano `mod` 4 == 0 && ano `mod` 100 /= 0) || (ano `mod` 400 == 0) = 366
+    | ehBissexto ano = 366
     | otherwise = 365
 
 -- =============================================================================================
 -- Questão 4 --
 -- =============================================================================================
-ehBissexto :: Int -> Bool
-ehBissexto ano = (ano `mod` 4 == 0 && ano `mod` 100 /= 0) || (ano `mod` 400 == 0)
-
 diasMes :: Int -> Int -> Int
 diasMes ano mes
     | mes `elem` [1, 3, 5, 7, 8, 10, 12] = 31
