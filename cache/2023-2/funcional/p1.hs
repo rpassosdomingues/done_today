@@ -96,16 +96,17 @@ ehMaior a b = a > b
 ehMenor :: Int -> Int -> Bool
 ehMenor a b = a < b
 
+recMaiorMenor :: Int -> Int -> [Int] -> (Int, Int)
+recMaiorMenor maior menor [] = (menor, maior)
+recMaiorMenor maior menor (x:xs)
+    | ehMenor x menor = recMaiorMenor maior x xs
+    | ehMaior x maior = recMaiorMenor x menor xs
+    | otherwise = recMaiorMenor maior menor xs
+
 encontraMaiorEMenor :: [Int] -> (Int, Int)
-encontraMaiorEMenor [] = ((-1),(-1))
+encontraMaiorEMenor [] = ((-1), (-1))
 encontraMaiorEMenor [x] = (x, x)
 encontraMaiorEMenor (x:xs) = recMaiorMenor x x xs
-    where
-        recMaiorMenor maior menor [] = (menor, maior)
-        recMaiorMenor maior menor (x:xs)
-            | ehMenor x menor = recMaiorMenor maior x xs
-            | ehMaior x maior = recMaiorMenor x menor xs
-            | otherwise = recMaiorMenor maior menor xs
 
 -- =============================================================================================
 -- Questão 7 --
