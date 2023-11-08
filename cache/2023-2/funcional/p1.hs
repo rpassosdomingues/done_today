@@ -65,47 +65,39 @@ quantosDias ano
 -- =============================================================================================
 diasMes :: Int -> Int -> Int
 diasMes ano mes
-    | mes `elem` [1, 3, 5, 7, 8, 10, 12] = 31
-    | mes `elem` [4, 6, 9, 11] = 30
-    | mes == 2 && ehBissexto ano = 29
-    | mes == 2 = 28
-    | otherwise = 0
+    | mes == 2 && ehBissexto ano                    = 29
+    | mes == 2                                      = 28
+    | mes == 4 || mes == 6 || mes == 9 || mes == 11 = 30
+    | otherwise = 31
 
 -- =============================================================================================
 -- Questão 5 --
 -- =============================================================================================
-dia :: Int -> Int -> Int -> Int
-dia ano mes dia
-    | not (dataValida ano mes dia) = -1
-    | otherwise = diaNoAno ano mes dia
-
 dataValida :: Int -> Int -> Int -> Bool
 dataValida ano mes dia = mesValido && diaValido
     where
         mesValido = mes >= 1 && mes <= 12
-        diaValido = dia >= 1 && dia <= diasNoMes ano mes
+        diaValido = dia >= 1 && dia <= diasMes ano mes
 
-diasNoMes :: Int -> Int -> Int
-diasNoMes ano mes = case mes of
-    2 -> if ehBissexto ano then 29 else 28
-    m | m `elem` [1, 3, 5, 7, 8, 10, 12] -> 31
-      | m `elem` [4, 6, 9, 11] -> 30
-      | otherwise -> 0
+diasPassados :: Int -> Int -> Int -> Int
+diasPassados ano mes dia = sum [diasMes ano m | m <- [1..mes-1]] + dia
 
-diaNoAno :: Int -> Int -> Int -> Int
-diaNoAno ano mes dia = sum [diasNoMes ano m | m <- [1..mes-1]] + dia
+dia :: Int -> Int -> Int -> Int
+dia ano mes dia
+    | not (dataValida ano mes dia) = -1
+    | otherwise = diasPassados ano mes dia
 
 -- =============================================================================================
 -- Questão 6 --
 -- =============================================================================================
-ehMaior :: Ord a => a -> a -> Bool
+ehMaior :: Int -> Int -> Bool
 ehMaior a b = a > b
 
-ehMenor :: Ord a => a -> a -> Bool
+ehMenor :: Int -> Int -> Bool
 ehMenor a b = a < b
 
-encontraMaiorEMenor :: Ord a => [a] -> (a, a)
-encontraMaiorEMenor [] = error "A lista está vazia."
+encontraMaiorEMenor :: [Int] -> (Int, Int)
+encontraMaiorEMenor [] = ((-1),(-1))
 encontraMaiorEMenor [x] = (x, x)
 encontraMaiorEMenor (x:xs) = recMaiorMenor x x xs
     where
