@@ -3,16 +3,16 @@ import numpy as np
 
 # Habilidades e valores para 2015 e 2020
 habilidades = [
-    "Conhecimento de Scrum",
-    "Facilitação de reuniões",
-    "Comunicação",
-    "Resolução de conflitos",
-    "Liderança",
-    "Conhecimento técnico",
-    "Empoderamento da equipe",
-    "Remoção de obstáculos",
-    "Foco no cliente",
-    "Melhoria contínua"
+    "Scrum Knowledge",
+     "Meeting Facilitation",
+     "Communication",
+     "Conflict resolution",
+     "Leadership",
+     "Technical knowledge",
+     "Team empowerment",
+     "Removing obstacles",
+     "Customer Focus",
+     "Continuous improvement"
 ]
 
 valores_2015 = [8, 7, 8, 7, 6, 5, 6, 7, 6, 6]  # Valores em 2015
@@ -35,7 +35,7 @@ ax.fill(angulos, valores_2015, 'b', alpha=0.1, label='2015')
 ax.fill(angulos, valores_2020, 'r', alpha=0.1, label='2023')
 ax.set_xticks(angulos[:-1])
 ax.set_xticklabels(habilidades)
-ax.set_title('Comparativo de Habilidades Scrum (2015 vs. 2023)')
+ax.set_title('Scrum Skills Comparison (2015 vs. 2023)')
 
 # Adicione uma legenda
 plt.legend(loc='upper right')
