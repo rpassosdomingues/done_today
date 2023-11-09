@@ -9,18 +9,6 @@ Author: Rafael Passos Domingues
 -- =============================================================================================
 -- Questão 1 --
 -- =============================================================================================
-ehPar :: Int -> Bool
-ehPar numero = mod numero 2 == 0
-
-ehDivisivel :: Int -> Int -> Bool
-ehDivisivel numerador denominador = mod numerador denominador == 0
-
-temDivisorImpar :: Int -> Int -> Bool
-temDivisorImpar num divisor
-    | divisor * divisor > num = True
-    | ehDivisivel num divisor = False
-    | otherwise               = temDivisorImpar num (divisor + 2)
-
 ehPrimo :: Int -> Bool
 ehPrimo n
     | n <= 1    = False
@@ -28,9 +16,29 @@ ehPrimo n
     | ehPar n   = False
     | otherwise = not (temDivisorImpar n 3)
 
+temDivisorImpar :: Int -> Int -> Bool
+temDivisorImpar num divisor
+    | divisor * divisor > num = True
+    | ehDivisivel num divisor = False
+    | otherwise               = temDivisorImpar num (divisor + 2)
+
+ehDivisivel :: Int -> Int -> Bool
+ehDivisivel numerador denominador = mod numerador denominador == 0
+
+ehPar :: Int -> Bool
+ehPar numero = mod numero 2 == 0
+
 -- =============================================================================================
 -- Questão 2 --
 -- =============================================================================================
+ordenaEmTupla :: Int -> Int -> Int -> Int -> (Int, Int, Int, Int)
+ordenaEmTupla a b c d = (menor4, menor3, menor2, maior4)
+    where
+        menor4 = minimo a (minimo b (minimo c d))
+        menor3 = minimo a (minimo b c)
+        menor2 = minimo a b
+        maior4 = maximo a (maximo b (maximo c d))
+
 minimo :: Int -> Int -> Int
 minimo a b
     | a < b     = a
@@ -41,30 +49,22 @@ maximo a b
     | a > b     = a
     | otherwise = b
 
-ordenaEmTupla :: Int -> Int -> Int -> Int -> (Int, Int, Int, Int)
-ordenaEmTupla a b c d = (menor4, menor3, menor2, maior4)
-    where
-        menor4 = minimo a (minimo b (minimo c d))
-        menor3 = minimo a (minimo b c)
-        menor2 = minimo a b
-        maior4 = maximo a (maximo b (maximo c d))
-
 -- =============================================================================================
 -- Questão 3 --
 -- =============================================================================================
-ehBissexto :: Int -> Bool
-ehBissexto ano = mod ano 4 == 0
-
-quantosDias :: Int -> Int
-quantosDias ano
+quantosDiasAno :: Int -> Int
+quantosDiasAno ano
     | ehBissexto ano = 366
     | otherwise = 365
+
+ehBissexto :: Int -> Bool
+ehBissexto ano = mod ano 4 == 0
 
 -- =============================================================================================
 -- Questão 4 --
 -- =============================================================================================
-diasMes :: Int -> Int -> Int
-diasMes ano mes
+quantosDiasMes :: Int -> Int -> Int
+quantosDiasMes ano mes
     | mes == 2 && ehBissexto ano                    = 29
     | mes == 2                                      = 28
     | mes == 4 || mes == 6 || mes == 9 || mes == 11 = 30
@@ -73,71 +73,81 @@ diasMes ano mes
 -- =============================================================================================
 -- Questão 5 --
 -- =============================================================================================
-dataValida :: Int -> Int -> Int -> Bool
-dataValida ano mes dia = mesValido && diaValido
-    where
-        mesValido = mes >= 1 && mes <= 12
-        diaValido = dia >= 1 && dia <= diasMes ano mes
-
-diasPassados :: Int -> Int -> Int -> Int
-diasPassados ano mes dia = sum [diasMes ano m | m <- [1..mes-1]] + dia
-
 dia :: Int -> Int -> Int -> Int
 dia ano mes dia
-    | not (dataValida ano mes dia) = -1
+    | not (ehDataValida ano mes dia) = -1
     | otherwise = diasPassados ano mes dia
+
+diasPassados :: Int -> Int -> Int -> Int
+diasPassados ano mes dia = somaDias [quantosDiasMes ano m | m <- [1..mes-1]] + dia
+
+somaDias :: [Int] -> Int
+somaDias [] = 0
+somaDias (x:xs) = x + somaDias xs
+
+ehDataValida :: Int -> Int -> Int -> Bool
+ehDataValida ano mes dia = mesValido && diaValido
+    where
+        mesValido = mes >= 1 && mes <= 12
+        diaValido = dia >= 1 && dia <= quantosDiasMes ano mes
 
 -- =============================================================================================
 -- Questão 6 --
 -- =============================================================================================
+encontraMaiorMenor :: [Int] -> (Int, Int)
+encontraMaiorMenor [] = ((-1), (-1))
+encontraMaiorMenor [x] = (x, x)
+encontraMaiorMenor (x:xs) = recipiente x x xs
+
+recipiente :: Int -> Int -> [Int] -> (Int, Int)
+recipiente maior menor [] = (menor, maior)
+recipiente maior menor (x:xs)
+    | ehMenor x menor = recipiente maior x xs
+    | ehMaior x maior = recipiente x menor xs
+    | otherwise = recipiente maior menor xs
+
 ehMaior :: Int -> Int -> Bool
 ehMaior a b = a > b
 
 ehMenor :: Int -> Int -> Bool
 ehMenor a b = a < b
 
-recMaiorMenor :: Int -> Int -> [Int] -> (Int, Int)
-recMaiorMenor maior menor [] = (menor, maior)
-recMaiorMenor maior menor (x:xs)
-    | ehMenor x menor = recMaiorMenor maior x xs
-    | ehMaior x maior = recMaiorMenor x menor xs
-    | otherwise = recMaiorMenor maior menor xs
-
-encontraMaiorEMenor :: [Int] -> (Int, Int)
-encontraMaiorEMenor [] = ((-1), (-1))
-encontraMaiorEMenor [x] = (x, x)
-encontraMaiorEMenor (x:xs) = recMaiorMenor x x xs
-
 -- =============================================================================================
 -- Questão 7 --
 -- =============================================================================================
-quicksort :: (Ord a) => [a] -> [a]
-quicksort [] = []
-quicksort (x:xs) = quicksort [y | y <- xs, y <= x] ++ [x] ++ quicksort [y | y <- xs, y > x]
-
-ordena :: (Ord a) => [a] -> [a]
-ordena = quicksort
+quickSort :: [Int] -> [Int]
+quickSort [] = []
+quickSort (x:xs) = quickSort [y | y <- xs, y <= x] ++ [x] ++ quickSort [y | y <- xs, y > x]
 
 -- =============================================================================================
 -- Questão 8 --
 -- =============================================================================================
-repeteElemento :: [Int] -> [Int]
-repeteElemento [] = []
-repeteElemento (x:xs) = replicate x x ++ repeteElemento xs
+replicante :: [Int] -> [Int]
+replicante [] = []
+replicante (x:xs) = espelho x x ++ replicante xs
+
+espelho :: Int -> Int -> [Int]
+espelho 0 _ = []
+espelho n x = x : espelho (n-1) x
 
 -- =============================================================================================
--- Questão 9 --
+-- Questão 9 -- [Realizada com ajuda do BING AI]
 -- =============================================================================================
 serie :: Int -> Int -> Int
 serie _ 0 = 0
-serie x n = somaSerie x n 1 0 True
+serie x n = somaTermos x n 1 0 True
 
-somaSerie :: Int -> Int -> Int -> Int -> Bool -> Int
-somaSerie _ 0 _ soma _ = soma
-somaSerie x n i soma divisao = somaSerie x (n - 1) (i + 2) (somaTermo x i soma divisao) (not divisao)
+somaTermos :: Int -> Int -> Int -> Int -> Bool -> Int
+somaTermos _ 0 _ soma _ = soma
+somaTermos x n i soma inverteDivisao = somaTermos x (n - 1) (i + 2) (acumulador x i soma inverteDivisao) (not inverteDivisao)
 
-somaTermo :: Int -> Int -> Int -> Bool -> Int
-somaTermo x i acumulador divisao
-    | divisao = acumulador + (x `div` i)
-    | otherwise = acumulador + (i `div` x)
+acumulador :: Int -> Int -> Int -> Bool -> Int
+acumulador x i acumula inverteDivisao = acumula + termo x i inverteDivisao
 
+termo :: Int -> Int -> Bool -> Int
+termo x i inverteDivisao
+    | inverteDivisao = divisaoInteira x i
+    | otherwise = divisaoInteira i x
+
+divisaoInteira :: Int -> Int -> Int
+divisaoInteira a b = a `div` b
