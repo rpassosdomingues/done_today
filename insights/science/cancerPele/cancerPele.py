@@ -4,11 +4,12 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 from astropy.wcs import WCS
 
+# Função para obter manualmente as coordenadas (x, y) do centro
+# da mancha suspeita de câncer de pele a partir do software DS9.
 def obter_centro_ds9():
-    # Função para obter manualmente as coordenadas (x, y) do centro da mancha suspeita de câncer de pele no DS9.
-    # Substitua as coordenadas abaixo pelos valores obtidos no DS9.
-    x_centro = 100
-    y_centro = 100
+    # Substitua as coordenadas (x_centro, y_centro) abaixo pelos valores obtidos no DS9.
+    x_centro = 0
+    y_centro = 0
     return x_centro, y_centro
 
 def cortar_regiao_ao_redor_do_centro(image_data):
@@ -16,7 +17,7 @@ def cortar_regiao_ao_redor_do_centro(image_data):
     x_centro, y_centro = obter_centro_ds9()
 
     # Define o tamanho da região de corte ao redor do centro.
-    tamanho_regiao = 200  # Tamanho da região ao redor do centro
+    tamanho_regiao = 400  # Tamanho da região ao redor do centro
 
     # Limites da região cortada
     x_min = int(x_centro - tamanho_regiao / 2)
