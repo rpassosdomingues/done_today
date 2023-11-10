@@ -6,6 +6,7 @@ from astropy.wcs import WCS
 
 # Função para obter manualmente as coordenadas (x, y) do centro
 # da mancha suspeita de câncer de pele a partir do software DS9.
+# Software ds9 disponível para download em: \url{https://sites.google.com/cfa.harvard.edu/saoimageds9/download}
 def obter_centro_ds9():
     # Substitua as coordenadas (x_centro, y_centro) abaixo pelos valores obtidos no DS9.
     x_centro = 0
