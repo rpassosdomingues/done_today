@@ -87,7 +87,7 @@ def plotar_perfil_intensidade(intensity_profile):
 
 def main(argv=None):
     # Substitua o caminho do arquivo pela sua imagem FITS
-    caminho_arquivo = "C:/computacao/github/done_today/insights/science/cancerPele.fits"
+    caminho_arquivo = "C:/computacao/github/done_today/insights/science/cancerPele/cancerPele.fits"
 
     # Abrir o arquivo FITS
     hdul = fits.open(caminho_arquivo)
