@@ -2,7 +2,6 @@
 #define PRIORITYQUEUE_H
 
 typedef struct queue {
-    int key;
     int *players;
     int front;
     int back;
@@ -17,18 +16,14 @@ typedef struct player {
 } Player;
 
 // Instance Reader
-int readPlayers(struct Player playersArray[], int maxPlayers);
-void printPlayer(struct Player player);
+int readPlayers(Player playersArray[], int maxPlayers);
 
 void initQueue(Queue *queue, int size);
-
 int isFull(Queue *queue);
 int isEmpty(Queue *queue);
 
-void insertPlayer(Queue *queue, int data);
+void insertPlayer(Queue *queue, Player player);
 int removePlayer(Queue *queue);
-
-void printPlayer(Player player);
 
 void displayMenu();
 

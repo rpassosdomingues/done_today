@@ -39,11 +39,6 @@ int readPlayers(Player playersArray[], int maxPlayers) {
     return (count);
 }
 
-// Function to print a player
-void printPlayer(Player player) {
-    printf("Name: %s, Position: %s, Naturalness: %s, Age: %d\n", player.name, player.position, player.naturalness, player.age);
-}
-
 void initQueue(Queue *queue, int size) {
     queue->players = (int *)malloc(sizeof(int) * size);
     queue->front = -1;
@@ -94,16 +89,15 @@ int removePlayer(Queue *queue) {
 
 // Function to display the menu
 void display_menu() {
-    printf("---------------------------\n");
-    printf("\t Menu \n");
-    printf("---------------------------\n");
-    printf("0. Quit\n");
-    printf("...........................\n");
-    printf("1. Insert into the queue\n");
-    printf("2. Remove from the queue\n");
-    printf("3. Print the player\n");
-    printf("---------------------------\n");
-    printf("Choose an option: ");
+    printf("\n===========================");
+    printf("\n\t Menu");
+    printf("\n===========================");
+    printf("\n0. Quit");
+    printf("\n...........................");
+    printf("\n1. Insert into the queue");
+    printf("\n2. Remove from the queue");
+    printf("\n===========================");
+    printf("\nChoose an option: ");
 }
 
 int main() {
@@ -117,6 +111,7 @@ int main() {
     int playerCount = readPlayers(playersArray, numPlayers);
 
     int option;
+
     do {
         display_menu();
         scanf("%d", &option);
@@ -124,7 +119,7 @@ int main() {
         switch (option) {
             case 0:
                 free(myQueue.players);
-	    	    return 0;
+                return 0;
             case 1:
                 double time_insert = 0;
 
@@ -139,7 +134,6 @@ int main() {
 
                 break;
             case 2:
-                // Remove from the queue
                 double time_remove = 0;
 
                 clock_t begin_remove = clock();
@@ -149,10 +143,6 @@ int main() {
                 time_remove += (double)(end_remove - begin_remove) / CLOCKS_PER_SEC;
                 printf("\n\t Time Removed = %lf ms", 1000 * time_remove);
 
-                break;
-            case 3:
-                // Print the player
-                printPlayer(playersArray[0]); // Assuming you want to print the first player in the array
                 break;
             default:
                 printf("Invalid option. Please try again.\n");
