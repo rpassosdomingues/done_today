@@ -77,6 +77,7 @@ int insertionSort(Player array[], int length, int* comparisons, int* exchanges, 
 // Function to perform Merge Sort and count merge operations
 int mergeSort(Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
     int mergeUsage = 0; // Counter for Merge Sort usage
+    *memoryUsage = sizeof(Player) * length; // Memory usage is the size of the array
 
     if (length <= 1) {
         return mergeUsage; // No need to sort an array of length 0 or 1
@@ -136,6 +137,7 @@ int mergeSort(Player array[], int length, int* comparisons, int* exchanges, int*
 // Function to perform Quick Sort
 int quickSort(Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
     int quickUsage = 0; // Counter for Quick Sort usage
+    *memoryUsage = sizeof(Player) * length; // Memory usage is the size of the array
 
     if (length <= 1) {
         return quickUsage; // No need to sort an array of length 0 or 1
@@ -255,6 +257,7 @@ void printSortedPlayers(Player playersArray[], int numPlayers) {
     }
 }
 
+// Instance Reader
 int readPlayers(Player playersArray[], int maxPlayers) {
     FILE *file = fopen("players.csv", "r");
     if (file == NULL) {
@@ -272,7 +275,12 @@ int readPlayers(Player playersArray[], int maxPlayers) {
         return 0;
     }
 
-    while (count < maxPlayers && fgets(line, sizeof(line), file)) {
+    while (fgets(line, sizeof(line), file)) {
+        if (count >= maxPlayers) {
+            printf("Warning: Maximum player limit reached. Some players may not be loaded.\n");
+            break;
+        }
+
         // Parse the CSV line into struct fields
         char *token = strtok(line, ",");
         if (token == NULL) {
@@ -354,7 +362,7 @@ void displayMenu() {
 
 int main() {
     // Read player data from the file
-    int maxPlayers = 100; // Maximum number of players to read
+    int maxPlayers = 1148; // Maximum number of players to read
     Player playersArray[maxPlayers];
     int numPlayers = readPlayers(playersArray, maxPlayers);
 
@@ -392,7 +400,7 @@ int main() {
                 sortMetrics("Bubble", cpu_time_used, comparisons, exchanges, memoryUsage);
 
                 // Print the sorted players
-                printSortedPlayers(playersArray, numPlayers);
+                //printSortedPlayers(playersArray, numPlayers);
                 
                 break;
             case 2:
@@ -406,7 +414,7 @@ int main() {
                 sortMetrics("Selection", cpu_time_used, comparisons, exchanges, memoryUsage);
 
                 // Print the sorted players
-                printSortedPlayers(playersArray, numPlayers);
+                //printSortedPlayers(playersArray, numPlayers);
                 
                 break;
             case 3:
@@ -420,7 +428,7 @@ int main() {
                 sortMetrics("Insertion", cpu_time_used, comparisons, exchanges, memoryUsage);
 
                 // Print the sorted players
-                printSortedPlayers(playersArray, numPlayers);
+                //printSortedPlayers(playersArray, numPlayers);
                 
                 break;
             case 4:
@@ -434,7 +442,7 @@ int main() {
                 sortMetrics("Merge", cpu_time_used, comparisons, exchanges, memoryUsage);
 
                 // Print the sorted players
-                printSortedPlayers(playersArray, numPlayers);
+                //printSortedPlayers(playersArray, numPlayers);
                 
                 break;
             case 5:
@@ -448,7 +456,7 @@ int main() {
                 sortMetrics("Quick", cpu_time_used, comparisons, exchanges, memoryUsage);
 
                 // Print the sorted players
-                printSortedPlayers(playersArray, numPlayers);
+                //printSortedPlayers(playersArray, numPlayers);
                 
                 break;
             case 6:
@@ -462,7 +470,7 @@ int main() {
                 sortMetrics("Radix", cpu_time_used, comparisons, exchanges, memoryUsage);
 
                 // Print the sorted players
-                printSortedPlayers(playersArray, numPlayers);
+                //printSortedPlayers(playersArray, numPlayers);
                 
                 break;
             default:
