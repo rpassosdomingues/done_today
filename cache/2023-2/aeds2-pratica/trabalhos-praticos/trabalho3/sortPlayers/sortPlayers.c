@@ -4,59 +4,18 @@
 #include <time.h>
 #include "sortPlayers.h"
 
-// Function to read player data from the file
-int readPlayers(struct Player playersArray[], int maxPlayers) {
-    FILE *file = fopen("players.csv", "r");
-    if (file == NULL) {
-        perror("Error opening the file");
-        return (0);
-    }
-
-    int count = 0;
-    char line[256]; // Assuming each line is at most 256 characters
-
-    // Skip the header line
-    fgets(line, sizeof(line), file);
-
-    while (count < maxPlayers && fgets(line, sizeof(line), file)) {
-        // Parse the CSV line into struct fields
-        char *token = strtok(line, ",");
-        strcpy(playersArray[count].name, token);
-
-        token = strtok(NULL, ",");
-        strcpy(playersArray[count].position, token);
-
-        token = strtok(NULL, ",");
-        strcpy(playersArray[count].naturalness, token);
-
-        token = strtok(NULL, ",");
-        playersArray[count].age = atoi(token);
-
-        count++;
-    }
-    fclose(file);
-
-    return (count);
-}
-
-// Function to print a player
-void printPlayer(struct Player player) {
-    printf("Name: %s, Position: %s, Naturalness: %s, Age: %d\n", player.name, player.position, player.naturalness, player.age);
-}
-
 // Function to swap two players
-void swapPlayers(struct Player *a, struct Player *b) {
-    struct Player temp = *a;
+void swapPlayers(Player *a, Player *b) {
+    Player temp = *a;
     *a = *b;
     *b = temp;
 }
 
-int bubbleSort(struct Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
+// Function to perform Bubble Sort
+int bubbleSort(Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
     int bubbleUsage = 0; // Counter for Bubble Sort usage
     int i, j;
-    *comparisons = 0; // Initialize comparisons count
-    *exchanges = 0;   // Initialize exchanges count
-    *memoryUsage = sizeof(struct Player) * length; // Memory usage is the size of the array
+    *memoryUsage = sizeof(Player) * length; // Memory usage is the size of the array
 
     for (i = 0; i < length - 1; i++) {
         for (j = 0; j < length - i - 1; j++) {
@@ -65,18 +24,17 @@ int bubbleSort(struct Player array[], int length, int* comparisons, int* exchang
                 swapPlayers(&array[j], &array[j + 1]);
                 (*exchanges)++;  // Increment exchanges count
             }
+            bubbleUsage += 3; // Increment bubble usage for each comparison and two exchanges
         }
     }
     return (bubbleUsage);
 }
 
 // Function to perform Selection Sort
-int selectionSort(struct Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
+int selectionSort(Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
     int selectionUsage = 0; // Counter for Selection Sort usage
     int i, j;
-    *comparisons = 0; // Initialize comparisons count
-    *exchanges = 0;   // Initialize exchanges count
-    *memoryUsage = sizeof(struct Player) * length; // Memory usage is the size of the array
+    *memoryUsage = sizeof(Player) * length; // Memory usage is the size of the array
 
     for (i = 0; i < length - 1; i++) {
         int minIndex = i;
@@ -89,27 +47,27 @@ int selectionSort(struct Player array[], int length, int* comparisons, int* exch
         if (minIndex != i) {
             swapPlayers(&array[i], &array[minIndex]);
             (*exchanges)++;  // Increment exchanges count
+            selectionUsage++; // Increment selection usage count
         }
     }
     return (selectionUsage);
 }
 
 // Function to perform Insertion Sort
-int insertionSort(struct Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
+int insertionSort(Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
     int insertionUsage = 0; // Counter for Insertion Sort usage
     int i, j;
-    *comparisons = 0; // Initialize comparisons count
-    *exchanges = 0;   // Initialize exchanges count
-    *memoryUsage = sizeof(struct Player) * length; // Memory usage is the size of the array
+    *memoryUsage = sizeof(Player) * length; // Memory usage is the size of the array
 
     for (i = 1; i < length; i++) {
-        struct Player handle = array[i];
+        Player handle = array[i];
         j = i - 1;
         while (j >= 0 && strcmp(array[j].name, handle.name) > 0) {
             array[j + 1] = array[j];
             (*comparisons)++; // Increment comparisons count
             (*exchanges)++;   // Increment exchanges count
             j--;
+            insertionUsage += 2; // Increment insertion count for one comparison and one exchange
         }
         array[j + 1] = handle;
     }
@@ -117,7 +75,7 @@ int insertionSort(struct Player array[], int length, int* comparisons, int* exch
 }
 
 // Function to perform Merge Sort and count merge operations
-int mergeSort(struct Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
+int mergeSort(Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
     int mergeUsage = 0; // Counter for Merge Sort usage
 
     if (length <= 1) {
@@ -128,8 +86,8 @@ int mergeSort(struct Player array[], int length, int* comparisons, int* exchange
     int leftLength = middle;
     int rightLength = length - middle;
 
-    struct Player leftArray[leftLength];
-    struct Player rightArray[rightLength];
+    Player leftArray[leftLength];
+    Player rightArray[rightLength];
 
     // Copy data to left and right sub-arrays
     for (int i = 0; i < leftLength; i++) {
@@ -176,7 +134,7 @@ int mergeSort(struct Player array[], int length, int* comparisons, int* exchange
 }
 
 // Function to perform Quick Sort
-int quickSort(struct Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
+int quickSort(Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
     int quickUsage = 0; // Counter for Quick Sort usage
 
     if (length <= 1) {
@@ -184,10 +142,10 @@ int quickSort(struct Player array[], int length, int* comparisons, int* exchange
     }
 
     int pivotIndex = length / 2; // Choose a pivot element (e.g., middle element)
-    struct Player pivot = array[pivotIndex];
+    Player pivot = array[pivotIndex];
 
-    struct Player leftArray[length];
-    struct Player rightArray[length];
+    Player leftArray[length];
+    Player rightArray[length];
 
     int leftLength = 0;
     int rightLength = 0;
@@ -223,6 +181,151 @@ int quickSort(struct Player array[], int length, int* comparisons, int* exchange
     return (quickUsage);
 }
 
+// Function to find the maximum value in the array
+int getMax(Player array[], int length) {
+    int max = array[0].age;
+    for (int i = 1; i < length; i++) {
+        if (array[i].age > max) {
+            max = array[i].age;
+        }
+    }
+    return (max);
+}
+
+void countingSort(Player array[], int length, int exp, int* radixUsage, int* comparisons, int* exchanges) {
+    const int radix = 10; // Base 10 for decimal representation
+    Player output[length];
+    int count[radix];
+
+    // Initialize count array
+    for (int i = 0; i < radix; i++) {
+        count[i] = 0;
+    }
+
+    // Count the number of occurrences for each digit
+    for (int i = 0; i < length; i++) {
+        count[(array[i].age / exp) % radix]++;
+    }
+
+    // Cumulative count to determine the position of each element
+    for (int i = 1; i < radix; i++) {
+        count[i] += count[i - 1];
+    }
+
+    // Build the output array
+    for (int i = length - 1; i >= 0; i--) {
+        output[count[(array[i].age / exp) % radix] - 1] = array[i];
+        count[(array[i].age / exp) % radix]--;
+        (*radixUsage)++; // Increment radix usage count
+    }
+
+    // Copy the output array back to the original array and count exchanges
+    for (int i = 0; i < length; i++) {
+        (*exchanges)++; // Increment exchanges count
+        array[i] = output[i];
+    }
+}
+
+// Function to perform Radix Sort
+int radixSort(Player array[], int length, int* comparisons, int* exchanges, int* memoryUsage) {
+    int radixUsage = 0; // Counter for Radix Sort usage
+    *memoryUsage = sizeof(Player) * length; // Memory usage is the size of the array
+
+    // Find the maximum number to determine the number of digits
+    int max = getMax(array, length);
+
+    // Perform counting sort for every digit, starting from the least significant digit
+    for (int exp = 1; max / exp > 0; exp *= 10) {
+        countingSort(array, length, exp, &radixUsage, comparisons, exchanges);
+    }
+
+    return (radixUsage);
+}
+
+// Function to print a player
+void printPlayer(Player player) {
+    printf("\nName: %s, Position: %s, Naturalness: %s, Team: %s, Age: %d", player.name, player.position, player.naturalness, player.team, player.age);
+}
+
+// Function to print sorted players
+void printSortedPlayers(Player playersArray[], int numPlayers) {
+    printf("\n\nSorted Players:\n");
+    for (int i = 0; i < numPlayers; i++) {
+        printPlayer(playersArray[i]);
+    }
+}
+
+int readPlayers(Player playersArray[], int maxPlayers) {
+    FILE *file = fopen("players.csv", "r");
+    if (file == NULL) {
+        perror("Error opening the file");
+        return 0;
+    }
+
+    int count = 0;
+    char line[256]; // Assuming each line is at most 256 characters
+
+    // Skip the header line
+    if (fgets(line, sizeof(line), file) == NULL) {
+        fclose(file);
+        perror("Error reading header");
+        return 0;
+    }
+
+    while (count < maxPlayers && fgets(line, sizeof(line), file)) {
+        // Parse the CSV line into struct fields
+        char *token = strtok(line, ",");
+        if (token == NULL) {
+            fclose(file);
+            perror("Error reading name");
+            return count;
+        }
+        strncpy(playersArray[count].name, token, sizeof(playersArray[count].name) - 1);
+        playersArray[count].name[sizeof(playersArray[count].name) - 1] = '\0'; // Ensure null-termination
+
+        token = strtok(NULL, ",");
+        if (token == NULL) {
+            fclose(file);
+            perror("Error reading position");
+            return count;
+        }
+        strncpy(playersArray[count].position, token, sizeof(playersArray[count].position) - 1);
+        playersArray[count].position[sizeof(playersArray[count].position) - 1] = '\0';
+
+        token = strtok(NULL, ",");
+        if (token == NULL) {
+            fclose(file);
+            perror("Error reading naturalness");
+            return count;
+        }
+        strncpy(playersArray[count].naturalness, token, sizeof(playersArray[count].naturalness) - 1);
+        playersArray[count].naturalness[sizeof(playersArray[count].naturalness) - 1] = '\0';
+
+        token = strtok(NULL, ",");
+        if (token == NULL) {
+            fclose(file);
+            perror("Error reading team");
+            return count;
+        }
+        strncpy(playersArray[count].team, token, sizeof(playersArray[count].team) - 1);
+        playersArray[count].team[sizeof(playersArray[count].team) - 1] = '\0';
+
+        token = strtok(NULL, ",");
+        if (token == NULL) {
+            fclose(file);
+            perror("Error reading age");
+            return count;
+        }
+        playersArray[count].age = atoi(token);
+
+        count++;
+    }
+    fclose(file);
+
+    return (count);
+}
+
+
 // Function to display sorting results
 void sortMetrics(const char *sortName, double timeUsed, int comparisons, int exchanges, int memoryUsage) {
     printf("\n===============================================");
@@ -245,13 +348,14 @@ void displayMenu() {
     printf("\n3. Insertion Sort");
     printf("\n4. Merge Sort");
     printf("\n5. Quick Sort");
+    printf("\n6. Radix Sort");
     printf("\n===============================");
 }
 
 int main() {
     // Read player data from the file
     int maxPlayers = 100; // Maximum number of players to read
-    struct Player playersArray[maxPlayers];
+    Player playersArray[maxPlayers];
     int numPlayers = readPlayers(playersArray, maxPlayers);
 
     if (numPlayers == 0) {
@@ -286,6 +390,10 @@ int main() {
 
                 // Bubble Sort performance metrics
                 sortMetrics("Bubble", cpu_time_used, comparisons, exchanges, memoryUsage);
+
+                // Print the sorted players
+                printSortedPlayers(playersArray, numPlayers);
+                
                 break;
             case 2:
                 // Selection Sort Time benchmark
@@ -296,6 +404,10 @@ int main() {
 
                 // Selection Sort performance metrics
                 sortMetrics("Selection", cpu_time_used, comparisons, exchanges, memoryUsage);
+
+                // Print the sorted players
+                printSortedPlayers(playersArray, numPlayers);
+                
                 break;
             case 3:
                 // Insertion Sort Time benchmark
@@ -306,6 +418,10 @@ int main() {
 
                 // Insertion Sort performance metrics
                 sortMetrics("Insertion", cpu_time_used, comparisons, exchanges, memoryUsage);
+
+                // Print the sorted players
+                printSortedPlayers(playersArray, numPlayers);
+                
                 break;
             case 4:
                 // Merge Sort Time benchmark
@@ -316,6 +432,10 @@ int main() {
 
                 // Merge Sort performance metrics
                 sortMetrics("Merge", cpu_time_used, comparisons, exchanges, memoryUsage);
+
+                // Print the sorted players
+                printSortedPlayers(playersArray, numPlayers);
+                
                 break;
             case 5:
                 // Quick Sort Time benchmark
@@ -326,6 +446,24 @@ int main() {
 
                 // Quick Sort performance metrics
                 sortMetrics("Quick", cpu_time_used, comparisons, exchanges, memoryUsage);
+
+                // Print the sorted players
+                printSortedPlayers(playersArray, numPlayers);
+                
+                break;
+            case 6:
+                // Radix Sort Time benchmark
+                start_time = clock();
+                radixSort(playersArray, numPlayers, &comparisons, &exchanges, &memoryUsage);
+                end_time = clock();
+                cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
+
+                // Radix Sort performance metrics
+                sortMetrics("Radix", cpu_time_used, comparisons, exchanges, memoryUsage);
+
+                // Print the sorted players
+                printSortedPlayers(playersArray, numPlayers);
+                
                 break;
             default:
                 printf("\nInvalid Output!");
