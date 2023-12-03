@@ -30,7 +30,7 @@ typedef struct Hash {
 } Hash;
 
 // Create a hash
-Hash* create_hash(Hash* existingHash, int size, int collision_resolution_strategy);
+Hash* create_hash(Hash* existingHash, int collision_resolution_strategy);
 
 // Function to handle collisions using linked lists
 void hash_LinkedList(Hash* hash, Player player);
@@ -40,7 +40,7 @@ void hash_BalancedTrees(Hash* hash, Player player);
 void hash_OpenAddressing(Hash* hash, Player player);
 
 // Hashing Function
-int hashing(const char* key, int M);
+int hashing(const char* key);
 
 // Gets an player from the hash
 Player search(Hash* hash, Player player, int collision_resolution_strategy);
