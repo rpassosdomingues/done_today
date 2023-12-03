@@ -71,12 +71,21 @@ void hash_LinkedList(Hash* hash, Player player) {
     }
 }
 
-// Function to handle collisions using balanced trees (AVL trees)
 void hash_BalancedTrees(Hash* hash, Player player) {
+    if (hash == NULL) {
+        printf("Error: Hash table is NULL in hash_BalancedTrees.\n");
+        return;
+    }
+
     int index = hashing(player.name, M);
 
-    // Insert the player into the AVL tree at the index
-    ((AVLNode**)(hash->players))[index] = insertAVLNode(((AVLNode**)(hash->players))[index], player);
+    // Check if AVL tree is NULL, and initialize if necessary
+    if (((AVLNode**)(hash->players))[index] == NULL) {
+        ((AVLNode**)(hash->players))[index] = insertAVLNode(NULL, player);
+    } else {
+        // Insert the player into the existing AVL tree at the index
+        ((AVLNode**)(hash->players))[index] = insertAVLNode(((AVLNode**)(hash->players))[index], player);
+    }
 }
 
 // Function to handle collisions using open addressing (linear probing)
@@ -222,6 +231,12 @@ void hash_remove(Hash* hash, Player player, int collision_resolution_strategy) {
 
 // Utility function to search for a player in AVL tree
 AVLNode* searchAVLTree(AVLNode* node, const char* playerName) {
+    // Check for NULL node
+    if (node == NULL) {
+        printf("Error: AVL tree is NULL.\n");
+        return NULL;
+    }
+
     while (node != NULL) {
         int comparisonResult = strcmp(playerName, node->player.name);
 
@@ -236,6 +251,7 @@ AVLNode* searchAVLTree(AVLNode* node, const char* playerName) {
     }
 
     // Player not found in AVL tree
+    printf("Player '%s' not found in AVL tree.\n", playerName);
     return NULL;
 }
 
@@ -244,11 +260,17 @@ AVLNode* insertAVLNode(AVLNode* node, Player player) {
     // Perform standard BST insertion
     if (node == NULL) {
         AVLNode* newNode = (AVLNode*)malloc(sizeof(AVLNode));
+        if (newNode == NULL) {
+            // Handle allocation failure
+            return NULL;
+        }
+
         strcpy(newNode->player.name, player.name);
         newNode->player.age = player.age;
         newNode->left = NULL;
         newNode->right = NULL;
         newNode->height = 1;
+
         return newNode;
     }
 
