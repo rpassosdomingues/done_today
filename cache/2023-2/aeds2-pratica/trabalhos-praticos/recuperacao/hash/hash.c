@@ -16,28 +16,27 @@
 
 int M = 1200; // Hash table size
 
-// Function to create a hash table with the specified size
 Hash* create_hash(int size, int collision_resolution_strategy) {
     M = size;
     Hash* hash = (Hash*)malloc(sizeof(Hash));
 
     if (collision_resolution_strategy == 1) {
         // Linked List strategy
-        hash->players = (void**)malloc(size * sizeof(ListNode*));
+        hash->players = malloc(size * sizeof(ListNode*));
         for (int i = 0; i < size; i++) {
             ((ListNode**)(hash->players))[i] = NULL;
         }
     } else if (collision_resolution_strategy == 2) {
         // Balanced Trees strategy
-        hash->players = (void**)malloc(size * sizeof(AVLNode*));
+        hash->players = malloc(size * sizeof(AVLNode*));
         for (int i = 0; i < size; i++) {
             ((AVLNode**)(hash->players))[i] = NULL;
         }
     } else if (collision_resolution_strategy == 3) {
         // Open Addressing strategy
-        hash->players = (void*)malloc(size * sizeof(Player));
+        hash->players = malloc(size * sizeof(Player));
         for (int i = 0; i < size; i++) {
-            // Initialize name as an empty string, and age as -1 to indicate an empty slot
+            // Initialize name as an empty string
             strcpy(((Player*)(hash->players))[i].name, "");
             ((Player*)(hash->players))[i].age = -1;
         }
@@ -85,8 +84,7 @@ void hash_OpenAddressing(Hash* hash, Player player) {
     }
 
     // Insert the player into the found slot
-    strcpy(((Player*)(hash->players))[index].name, player.name);
-    ((Player*)(hash->players))[index].age = player.age;
+    ((Player*)(hash->players))[index] = player;
 }
 
 // Hashing function for strings (djb2 algorithm) with modulo operation
@@ -129,8 +127,8 @@ Player search(Hash* hash, Player player, int collision_resolution_strategy) {
         // Search for open addressing
         int index = hashing(player.name, M);
 
-        while (((Player*)(hash->players))[index].name != -1) {
-            if (strcmp(((Player*)(hash->players))[index].name, player.name) == 0) {
+        while (strcmp(((Player*)(hash->players))[index].name, "") != 0) {
+            while (strcmp(((Player*)(hash->players))[index].name, "") != 0) {
                 // Player found in open addressing
                 return ((Player*)(hash->players))[index];
             }
@@ -430,6 +428,7 @@ void collision_handling_choice() {
 int main() { 
     clock_t start_time, end_time;
     double cpu_time_used;
+
     // Read player data from the file
     int maxPlayers = 1200; // Maximum number of players to read
     Player playersArray[maxPlayers];
@@ -439,12 +438,9 @@ int main() {
         return 1;
     }
 
+    Hash* hash;
     // Add this variable to store the chosen strategy
     int collision_resolution_strategy = -1;
-
-    Hash* hash;
-    Player player;
-
     do {
         collision_handling_choice();
         printf("\n\tEnter your choice: ");
