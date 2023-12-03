@@ -1,14 +1,6 @@
 #ifndef _H_HASH_
 #define _H_HASH_
 
-typedef struct Item {
-    int valor;
-} Item;
-
-typedef struct Hash {
- struct Item* items;   /* vetor de items da hash */
-} Hash;
-
 // Define a struct to player object
 typedef struct Player {
     char name[256];
@@ -20,51 +12,55 @@ typedef struct Player {
 
 // Node structure for linked list
 typedef struct ListNode {
-    Item item;
+    Player player;
     struct ListNode* next;
 } ListNode;
 
 // Node structure for AVL tree
 typedef struct AVLNode {
-    Item item;
+    Player player;
     struct AVLNode* left;
     struct AVLNode* right;
     int height;
 } AVLNode;
 
+// Structure for Open Addressing
+typedef struct Hash {
+ struct Player* players;
+} Hash;
+
 // Create a hash
 Hash* create_hash(int size, int collision_resolution_strategy);
 
-// Insere um novo elemento na hash
-void hash_insert(Hash* hash, Item item, int collision_resolution_strategy);
+// Function to handle collisions using linked lists
+void hash_LinkedList(Hash* hash, Player player);
+// Function to handle collisions using balanced trees (AVL trees)
+void hash_BalancedTrees(Hash* hash, Player player);
+// Function to handle collisions using open addressing (linear probing)
+void hash_OpenAddressing(Hash* hash, Player player);
 
-// Remove um elemento da hash de acordo com sua chave
-void hash_remove(Hash* hash, Item item, int collision_resolution_strategy);
-
-// Obtém um item da hash
-Item search(Hash* hash, Item item, int collision_resolution_strategy);
-
-// Função de hashing
+// Hashing Function
 int hashing(int key);
 
-// Functions to handle collisions using balanced trees
+// Gets an player from the hash
+Player search(Hash* hash, Player player, int collision_resolution_strategy);
+// Insert a new element in hash
+void hash_insert(Hash* hash, Player player, int collision_resolution_strategy);
+// Remove a element of the hash according to your key
+void hash_remove(Hash* hash, Player player, int collision_resolution_strategy);
+
+// Aux functions to handle collisions using balanced trees
+AVLNode* insertAVLNode(AVLNode* node, Player player);
+AVLNode* rotateLeft(AVLNode* x);
+AVLNode* rotateRight(AVLNode* y);
+int getBalance(AVLNode* node);
 int getHeight(AVLNode* node);
 void updateHeight(AVLNode* node);
-AVLNode* rotateRight(AVLNode* y);
-AVLNode* rotateLeft(AVLNode* x);
-int getBalance(AVLNode* node);
-AVLNode* insertAVLNode(AVLNode* node, Item item);
 
 // Instance Reader
 int readPlayers(Player playersArray[], int maxPlayers);
 
-// Function to handle collisions using linked lists
-void hash_LinkedList(Hash* hash, Item item);
-// Function to handle collisions using balanced trees (AVL trees)
-void hash_BalancedTrees(Hash* hash, Item item);
-// Function to handle collisions using open addressing (linear probing)
-void hash_OpenAddressing(Hash* hash, Item item)
-
-void displayMenu();
+// Show the menu for choices of the Collision Handling
+void collision_handling_choice();
 
 #endif // _H_HASH_
