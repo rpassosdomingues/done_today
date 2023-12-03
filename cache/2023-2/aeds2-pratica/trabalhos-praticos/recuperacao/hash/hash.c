@@ -1,14 +1,39 @@
+/**
+ * ===============================
+ * Hash Table
+ * -------------------------------
+ * Author. Rafael Passos Domingues
+ *     RA. 2023.1.08.036
+ * ===============================
+ */
+
+
 #include <stdio.h> 
 #include <stdlib.h> 
+#include <string.h>
 #include <time.h>
 #include "hash.h"
 
-int M;
+int M; // Hash table size
 
-Hash* create_hash(int size) {
+// Function to create a hash table with the specified size
+Hash* create_hash(int size, int collision_resolution_strategy) {
     M = size;
     Hash* hash = (Hash*) malloc(sizeof(Hash));
-    hash->items = (Item*) malloc(size*sizeof(Item));
+    // Initialize items based on collision resolution strategy (linked list or AVL tree)
+    if (collision_resolution_strategy == 1) {
+        hash->items = (ListNode**) malloc(size * sizeof(ListNode*));
+        for (int i = 0; i < size; i++) {
+            ((ListNode**)(hash->items))[i] = NULL; // Initialize all linked lists to NULL
+        }
+    } else if (collision_resolution_strategy == 2) {
+        hash->items = (AVLNode**) malloc(size * sizeof(AVLNode*));
+        for (int i = 0; i < size; i++) {
+            ((AVLNode**)(hash->items))[i] = NULL; // Initialize all AVL trees to NULL
+        }
+    } else {
+        // Handle other collision resolution strategies if needed
+    }
     return hash;
 }
 
@@ -17,37 +42,20 @@ void hash_LinkedList(Hash* hash, Item item) {
     int index = hashing(item.valor);
 
     // Create a new node for the current item
-    ListNode* newNode = (ListNode*)malloc(sizeof(ListNode));
+    ListNode* newNode = (ListNode*) malloc(sizeof(ListNode));
     newNode->item = item;
     newNode->next = NULL;
 
     // If the linked list at the index is empty, insert the new node
-    if (hash->items[index] == NULL) {
-        hash->items[index] = newNode;
+    if (((ListNode**)(hash->items))[index] == NULL) {
+        ((ListNode**)(hash->items))[index] = newNode;
     } else {
         // If not empty, traverse the linked list and insert at the end
-        ListNode* current = hash->items[index];
+        ListNode* current = ((ListNode**)(hash->items))[index];
         while (current->next != NULL) {
             current = current->next;
         }
         current->next = newNode;
-    }
-}
-
-// Utility function to get the height of an AVL tree node
-int getHeight(AVLNode* node) {
-    if (node == NULL) {
-        return 0;
-    }
-    return node->height;
-}
-
-// Utility function to update the height of an AVL tree node
-void updateHeight(AVLNode* node) {
-    if (node != NULL) {
-        int leftHeight = getHeight(node->left);
-        int rightHeight = getHeight(node->right);
-        node->height = 1 + ((leftHeight > rightHeight) ? leftHeight : rightHeight);
     }
 }
 
@@ -146,7 +154,7 @@ void hash_BalancedTrees(Hash* hash, Item item) {
     int index = hashing(item.valor);
 
     // Insert the item into the AVL tree at the index
-    hash->items[index] = insertAVLNode(hash->items[index], item);
+    ((AVLNode**)(hash->items))[index] = insertAVLNode(((AVLNode**)(hash->items))[index], item);
 }
 
 // Function to handle collisions using open addressing (linear probing)
@@ -154,30 +162,74 @@ void hash_OpenAddressing(Hash* hash, Item item) {
     int index = hashing(item.valor);
 
     // Linear probing to find the next available slot
-    while (hash->items[index].valor != -1) {
+    while (((Item*)(hash->items))[index].valor != -1) {
         index = (index + 1) % M;
     }
 
     // Insert the item into the found slot
-    hash->items[index] = item;
+    ((Item*)(hash->items))[index] = item;
 }
 
-void hash_insert(Hash* hash, Item item) {
-    hash->items[hashing(item.valor)] = item;
+// Function to insert an item into the hash table based on the chosen strategy
+void hash_insert(Hash* hash, Item item, int collision_resolution_strategy) {
+    // Implement based on the chosen collision resolution strategy
+    if (collision_resolution_strategy == 1) {
+        hash_LinkedList(hash, item);
+    } else if (collision_resolution_strategy == 2) {
+        hash_BalancedTrees(hash, item);
+    } else {
+        hash_OpenAddressing(hash, item);
+    }
 }
 
-void hash_remove(Hash* hash, Item item) {
-    Item newItem;
-    newItem.valor = 0;
-    hash->items[hashing(item.valor)] = newItem;
+// Function to remove an item from the hash table based on the chosen strategy
+void hash_remove(Hash* hash, Item item, int collision_resolution_strategy) {
+    // Implement based on the chosen collision resolution strategy
+    if (collision_resolution_strategy == 1) {
+        // Implement removal for linked lists
+    } else if (collision_resolution_strategy == 2) {
+        // Implement removal for balanced trees
+    } else {
+        // Implement removal for open addressing
+    }
 }
 
-Item search(Hash* hash, Item item) {
-    return (hash->items[hashing(item.valor)]);
+// Function to search for an item in the hash table based on the chosen strategy
+Item search(Hash* hash, Item item, int collision_resolution_strategy) {
+    // Implement based on the chosen collision resolution strategy
+    if (collision_resolution_strategy == 1) {
+        // Implement search for linked lists
+    } else if (collision_resolution_strategy == 2) {
+        // Implement search for balanced trees
+    } else {
+        // Implement search for open addressing
+    }
+    // Dummy return; replace with actual logic
+    Item dummyItem;
+    dummyItem.valor = -1;
+    return dummyItem;
 }
 
+// Hashing function
 int hashing(int chave) {
     return (chave % M);
+}
+
+// Utility function to get the height of an AVL tree node
+int getHeight(AVLNode* node) {
+    if (node == NULL) {
+        return 0;
+    }
+    return node->height;
+}
+
+// Utility function to update the height of an AVL tree node
+void updateHeight(AVLNode* node) {
+    if (node != NULL) {
+        int leftHeight = getHeight(node->left);
+        int rightHeight = getHeight(node->right);
+        node->height = 1 + ((leftHeight > rightHeight) ? leftHeight : rightHeight);
+    }
 }
 
 // Instance Reader
@@ -253,12 +305,13 @@ int readPlayers(Player playersArray[], int maxPlayers) {
     }
     fclose(file);
 
-    return (count);
+    return count;
 }
 
+// Display the menu
 void displayMenu() {
     printf("\n===============================");
-    printf("\n\t MENU");
+    printf("\n\t Collision Handling");
     printf("\n===============================");
     printf("\n0. Exit");
     printf("\n1. Linked List");
@@ -268,10 +321,8 @@ void displayMenu() {
 }
 
 int main() { 
-    /* Create a hash with 10 positions */
-    Hash* hash = criar_hash(10);
-    Item item;
-
+    clock_t start_time, end_time;
+    double cpu_time_used;
     // Read player data from the file
     int maxPlayers = 1200; // Maximum number of players to read
     Player playersArray[maxPlayers];
@@ -281,46 +332,54 @@ int main() {
         return (1);
     }
 
-    int choice = -1;
+    // Add this variable to store the chosen strategy
+    int collision_resolution_strategy = -1;
     do {
         displayMenu();
         printf("\n\tEnter your choice: ");
-        scanf("%d", &choice);
-        switch(choice) {
+        scanf("%d", &collision_resolution_strategy);
+
+        // Benchmarking
+        start_time = clock();
+        switch(collision_resolution_strategy) {
             case 0:
                 // </> Halt </>.
                 return 0;
             case 1:
                 // Linked List
-                start_time = clock();
-                hash_LinkedList(hash, item);
-                end_time = clock();
-                cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
-                
-                printf("\nTime taken: %.4f milliseconds", timeUsed);
+                /* Create a hash */
+                Hash* hash = create_hash(10, collision_resolution_strategy);
+                Item item;
+                for (int i = 0; i < numPlayers; i++) {
+                    hash_insert(hash, playersArray[i], collision_resolution_strategy);
+                }
                 break;
             case 2:
                 // Balanced Trees
-                start_time = clock();
-                hash_BalancedTrees(hash, item);
-                end_time = clock();
-                cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
-                
-                printf("\nTime taken: %.4f milliseconds", timeUsed);
+                /* Create a hash */
+                Hash* hash = create_hash(10, collision_resolution_strategy);
+                Item item;
+                for (int i = 0; i < numPlayers; i++) {
+                    hash_insert(hash, playersArray[i], collision_resolution_strategy);
+                }
                 break;
             case 3:
                 // Open Addressing
-                start_time = clock();
-                hash_OpenAddressing(hash, item);
-                end_time = clock();
-                cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
-                
-                printf("\nTime taken: %.4f milliseconds", timeUsed);
+                /* Create a hash */
+                Hash* hash = create_hash(10, collision_resolution_strategy);
+                Item item;
+                for (int i = 0; i < numPlayers; i++) {
+                    hash_insert(hash, playersArray[i], collision_resolution_strategy);
+                }
                 break;
             default:
                 printf("\nInvalid Output!");
-                    break;
-            }
-        } while(1);
-    
+                break;
+        }
+        end_time = clock();
+        cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
+        printf("\nTime taken: %.4f milliseconds", cpu_time_used);
+    } while(1);
+
+    return 0;
 }

@@ -33,16 +33,16 @@ typedef struct AVLNode {
 } AVLNode;
 
 // Create a hash
-Hash* create_hash(int size);
+Hash* create_hash(int size, int collision_resolution_strategy);
 
 // Insere um novo elemento na hash
-void hash_insert(Hash* hash, Item item);
+void hash_insert(Hash* hash, Item item, int collision_resolution_strategy);
 
 // Remove um elemento da hash de acordo com sua chave
-void hash_remove(Hash* hash, Item item);
+void hash_remove(Hash* hash, Item item, int collision_resolution_strategy);
 
 // Obtém um item da hash
-Item search(Hash* hash, Item item);
+Item search(Hash* hash, Item item, int collision_resolution_strategy);
 
 // Função de hashing
 int hashing(int key);
