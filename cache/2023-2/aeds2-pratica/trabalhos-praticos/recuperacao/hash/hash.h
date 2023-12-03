@@ -30,7 +30,7 @@ typedef struct Hash {
 } Hash;
 
 // Create a hash
-Hash* create_hash(int size, int collision_resolution_strategy);
+Hash* create_hash(Hash* existingHash, int size, int collision_resolution_strategy);
 
 // Function to handle collisions using linked lists
 void hash_LinkedList(Hash* hash, Player player);
@@ -50,8 +50,10 @@ void hash_insert(Hash* hash, Player player, int collision_resolution_strategy);
 void hash_remove(Hash* hash, Player player, int collision_resolution_strategy);
 
 // Aux functions to handle collisions using balanced trees
-AVLNode* insertAVLNode(AVLNode* node, Player player);
 AVLNode* searchAVLTree(AVLNode* node, const char* playerName);
+AVLNode* insertAVLNode(AVLNode* node, Player player);
+AVLNode* removeAVLNode(AVLNode* node, const char* playerName);
+AVLNode* minValueNode(AVLNode* node);
 AVLNode* rotateLeft(AVLNode* x);
 AVLNode* rotateRight(AVLNode* y);
 int getBalance(AVLNode* node);
