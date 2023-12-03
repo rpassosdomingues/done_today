@@ -44,22 +44,23 @@ Hash* create_hash(Hash* existingHash, int size, int collision_resolution_strateg
         }
     } else if (collision_resolution_strategy == 3) {
         // Open Addressing strategy
-        hash->players = malloc(size * sizeof(Player));
+        hash->players = malloc(size * sizeof(Player*));  // Use pointers to Player structures
         for (int i = 0; i < size; i++) {
-            // Initialize name as an empty string
-            strcpy(((Player*)(hash->players))[i].name, "");
-            ((Player*)(hash->players))[i].age = -1;
+            ((Player**)(hash->players))[i] = NULL;
         }
+    } else {
+        printf("Error: Invalid collision resolution strategy.\n");
+        free(hash);
+        return NULL;
     }
     return hash;
 }
 
-// Function to handle collisions using linked lists
 void hash_LinkedList(Hash* hash, Player player) {
     int index = hashing(player.name, M);
 
     // Create a new node for the current player
-    ListNode* newNode = (ListNode*) malloc(sizeof(ListNode));
+    ListNode* newNode = (ListNode*)malloc(sizeof(ListNode));
     newNode->player = player;
     newNode->next = NULL;
 
@@ -86,7 +87,7 @@ void hash_BalancedTrees(Hash* hash, Player player) {
 
     // Check if AVL tree is NULL, and initialize if necessary
     if (((AVLNode**)(hash->players))[index] == NULL) {
-        ((AVLNode**)(hash->players))[index] = insertAVLNode(NULL, player);
+        ((AVLNode**)(hash->players))[index] = createAVLNode(player);
     } else {
         // Insert the player into the existing AVL tree at the index
         ((AVLNode**)(hash->players))[index] = insertAVLNode(((AVLNode**)(hash->players))[index], player);
@@ -100,7 +101,7 @@ void hash_OpenAddressing(Hash* hash, Player player) {
 
     // Linear probing to find the next available slot
     do {
-        if (strcmp(((Player*)(hash->players))[index].name, "") == 0 || index == initialIndex) {
+        if (((Player**)(hash->players))[index] == NULL || index == initialIndex) {
             // Break the loop if an empty slot is found or looped back to the starting index
             break;
         }
@@ -108,7 +109,9 @@ void hash_OpenAddressing(Hash* hash, Player player) {
     } while (index != initialIndex);
 
     // Insert the player into the found slot
-    ((Player*)(hash->players))[index] = player;
+    ((Player**)(hash->players))[index] = malloc(sizeof(Player));
+    strcpy(((Player**)(hash->players))[index]->name, player.name);
+    ((Player**)(hash->players))[index]->age = -1;  // Set age to a specific value
 }
 
 // Hashing function for strings (djb2 algorithm) with modulo operation
@@ -260,22 +263,27 @@ AVLNode* searchAVLTree(AVLNode* node, const char* playerName) {
     return NULL;
 }
 
+// Utility function to create an AVL node
+AVLNode* createAVLNode(Player player) {
+    AVLNode* newNode = (AVLNode*)malloc(sizeof(AVLNode));
+    if (newNode == NULL) {
+        // Handle allocation failure
+        return NULL;
+    }
+
+    strcpy(newNode->player.name, player.name);
+    newNode->player.age = player.age;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    newNode->height = 1;
+
+    return newNode;
+}
+
 AVLNode* insertAVLNode(AVLNode* node, Player player) {
     // Perform standard BST insertion
     if (node == NULL) {
-        AVLNode* newNode = (AVLNode*)malloc(sizeof(AVLNode));
-        if (newNode == NULL) {
-            // Handle allocation failure
-            return NULL;
-        }
-
-        strcpy(newNode->player.name, player.name);
-        newNode->player.age = player.age;
-        newNode->left = NULL;
-        newNode->right = NULL;
-        newNode->height = 1;
-
-        return newNode;
+        return createAVLNode(player);
     }
 
     // Compare player names using strcmp
@@ -409,7 +417,7 @@ AVLNode* rotateLeft(AVLNode* x) {
     y->left = x;
     x->right = T2;
 
-    // Update heights
+    // Update heights after rotation
     updateHeight(x);
     updateHeight(y);
 
@@ -425,7 +433,7 @@ AVLNode* rotateRight(AVLNode* y) {
     x->right = y;
     y->left = T2;
 
-    // Update heights
+    // Update heights after rotation
     updateHeight(y);
     updateHeight(x);
 

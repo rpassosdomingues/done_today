@@ -51,6 +51,7 @@ void hash_remove(Hash* hash, Player player, int collision_resolution_strategy);
 
 // Aux functions to handle collisions using balanced trees
 AVLNode* searchAVLTree(AVLNode* node, const char* playerName);
+AVLNode* createAVLNode(Player player);
 AVLNode* insertAVLNode(AVLNode* node, Player player);
 AVLNode* removeAVLNode(AVLNode* node, const char* playerName);
 AVLNode* minValueNode(AVLNode* node);
