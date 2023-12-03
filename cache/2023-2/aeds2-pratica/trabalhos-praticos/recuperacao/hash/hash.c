@@ -1,6 +1,6 @@
 /**
  * ===============================
- * Hash Table
+ * Collision Handling | Hash Table
  * -------------------------------
  * Author. Rafael Passos Domingues
  *     RA. 2023.1.08.036
@@ -56,6 +56,7 @@ Hash* create_hash(Hash* existingHash, int collision_resolution_strategy) {
     return hash;
 }
 
+// Function to handle collisions using separate thread
 void hash_LinkedList(Hash* hash, Player player) {
     int index = hashing(player.name);
 
@@ -77,6 +78,7 @@ void hash_LinkedList(Hash* hash, Player player) {
     }
 }
 
+// Function to handle collisions using an AVL Tree
 void hash_BalancedTrees(Hash* hash, Player player) {
     // Calculate the index using the hash function
     int index = hashing(player.name);
@@ -219,13 +221,14 @@ void hash_remove(Hash* hash, Player player, int collision_resolution_strategy) {
         // If the player is found, remove the node
         if (current != NULL) {
             if (prev == NULL) {
-                // The player is in the first node
-                ((ListNode**)(hash->players))[index] = current->next;
-            } else {
-                // The player is in a middle or last node
-                prev->next = current->next;
-            }
-            free(current);
+            // The player is in the first node
+            ((ListNode**)(hash->players))[index] = current->next;
+        } else {
+            // The player is in a middle or last node
+            prev->next = current->next;
+        }
+        free(current->player.name);  // Free the player's name
+        free(current);
         }
     } else if (collision_resolution_strategy == 2) {
         // Balanced Trees strategy
@@ -298,7 +301,7 @@ AVLNode* createAVLNode(Player player) {
     return newNode;
 }
 
-// Utility function to insert a player from an AVL tree
+// Utility function to insert a player into an AVL tree
 AVLNode* insertAVLNode(AVLNode* node, Player player) {
     if (node == NULL) {
         return createAVLNode(player);
@@ -591,7 +594,7 @@ int readPlayers(Player playersArray[], int maxPlayers) {
 // Display the menu
 void collision_handling_choice() {
     printf("\n===============================");
-    printf("\n   Collision Handling");
+    printf("\n     Collision Handling");
     printf("\n===============================");
     printf("\n0. Exit");
     printf("\n1. Linked List");
