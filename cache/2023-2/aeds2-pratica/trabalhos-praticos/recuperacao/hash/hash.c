@@ -100,11 +100,11 @@ int hashing(const char* key, int M) {
     return (int)(hash % M);
 }
 
-// Function to search for a player in the hash table based on the chosen strategy
 Player search(Hash* hash, Player player, int collision_resolution_strategy) {
+    int index = hashing(player.name, M);
+
     if (collision_resolution_strategy == 1) {
         // Search for linked lists
-        int index = hashing(player.name, M);
         ListNode* current = ((ListNode**)(hash->players))[index];
 
         while (current != NULL) {
@@ -116,7 +116,6 @@ Player search(Hash* hash, Player player, int collision_resolution_strategy) {
         }
     } else if (collision_resolution_strategy == 2) {
         // Search for balanced trees
-        int index = hashing(player.name, M);
         AVLNode* result = searchAVLTree(((AVLNode**)(hash->players))[index], player.name);
 
         if (result != NULL) {
@@ -125,15 +124,19 @@ Player search(Hash* hash, Player player, int collision_resolution_strategy) {
         }
     } else {
         // Search for open addressing
-        int index = hashing(player.name, M);
+        int start_index = index;  // Save the starting index for loop termination
 
-        while (strcmp(((Player*)(hash->players))[index].name, "") != 0) {
-            while (strcmp(((Player*)(hash->players))[index].name, "") != 0) {
+        do {
+            if (strcmp(((Player*)(hash->players))[index].name, "") == 0) {
+                // Empty slot reached, player not found
+                break;
+            }
+            if (strcmp(((Player*)(hash->players))[index].name, player.name) == 0) {
                 // Player found in open addressing
                 return ((Player*)(hash->players))[index];
             }
             index = (index + 1) % M;
-        }
+        } while (index != start_index);
     }
 
     // Player not found, return a dummy player
@@ -430,7 +433,7 @@ int main() {
     double cpu_time_used;
 
     // Read player data from the file
-    int maxPlayers = 1200; // Maximum number of players to read
+    int maxPlayers = 1149; // Maximum number of players to read
     Player playersArray[maxPlayers];
     int numPlayers = readPlayers(playersArray, maxPlayers);
 
@@ -438,8 +441,7 @@ int main() {
         return 1;
     }
 
-    Hash* hash;
-    // Add this variable to store the chosen strategy
+    Hash* hash = NULL;
     int collision_resolution_strategy = -1;
     do {
         collision_handling_choice();
@@ -484,6 +486,10 @@ int main() {
         }
         end_time = clock();
         cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
+
+        // Output
         printf("\nTime taken: %.4f milliseconds", cpu_time_used);
+
     } while(1);
+
 }
