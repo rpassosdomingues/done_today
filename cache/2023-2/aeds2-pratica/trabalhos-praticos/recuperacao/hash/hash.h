@@ -40,7 +40,7 @@ void hash_BalancedTrees(Hash* hash, Player player);
 void hash_OpenAddressing(Hash* hash, Player player);
 
 // Hashing Function
-int hashing(int key);
+int hashing(const char* key, int M);
 
 // Gets an player from the hash
 Player search(Hash* hash, Player player, int collision_resolution_strategy);
@@ -57,6 +57,10 @@ AVLNode* rotateRight(AVLNode* y);
 int getBalance(AVLNode* node);
 int getHeight(AVLNode* node);
 void updateHeight(AVLNode* node);
+
+// Free Memory allocated for hash table
+void free_hash(Hash* hash, int collision_resolution_strategy);
+void freeAVLTree(AVLNode* node);
 
 // Instance Reader
 int readPlayers(Player playersArray[], int maxPlayers);

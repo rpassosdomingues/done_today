@@ -47,7 +47,7 @@ Hash* create_hash(int size, int collision_resolution_strategy) {
 
 // Function to handle collisions using linked lists
 void hash_LinkedList(Hash* hash, Player player) {
-    int index = hashing(player.name);
+    int index = hashing(player.name, M);
 
     // Create a new node for the current player
     ListNode* newNode = (ListNode*) malloc(sizeof(ListNode));
@@ -69,7 +69,7 @@ void hash_LinkedList(Hash* hash, Player player) {
 
 // Function to handle collisions using balanced trees (AVL trees)
 void hash_BalancedTrees(Hash* hash, Player player) {
-    int index = hashing(player.name);
+    int index = hashing(player.name, M);
 
     // Insert the player into the AVL tree at the index
     ((AVLNode**)(hash->players))[index] = insertAVLNode(((AVLNode**)(hash->players))[index], player);
@@ -77,7 +77,7 @@ void hash_BalancedTrees(Hash* hash, Player player) {
 
 // Function to handle collisions using open addressing (linear probing)
 void hash_OpenAddressing(Hash* hash, Player player) {
-    int index = hashing(player.name);
+    int index = hashing(player.name, M);
 
     // Linear probing to find the next available slot
     while (strcmp(((Player*)(hash->players))[index].name, "") != 0) {
@@ -85,19 +85,28 @@ void hash_OpenAddressing(Hash* hash, Player player) {
     }
 
     // Insert the player into the found slot
-    ((Player*)(hash->players))[index] = player;
+    strcpy(((Player*)(hash->players))[index].name, player.name);
+    ((Player*)(hash->players))[index].age = player.age;
 }
 
-// Hashing function
-int hashing(int key) {
-    return (key % M);
+// Hashing function for strings (djb2 algorithm) with modulo operation
+int hashing(const char* key, int M) {
+    unsigned long hash = 5381;
+    int c;
+
+    while ((c = *key++)) {
+        hash = ((hash << 5) + hash) + c; // hash * 33 + c
+    }
+
+    // Take modulo with the size of the hash table to ensure compatibility
+    return (int)(hash % M);
 }
 
 // Function to search for a player in the hash table based on the chosen strategy
 Player search(Hash* hash, Player player, int collision_resolution_strategy) {
     if (collision_resolution_strategy == 1) {
         // Search for linked lists
-        int index = hashing(player.name);
+        int index = hashing(player.name, M);
         ListNode* current = ((ListNode**)(hash->players))[index];
 
         while (current != NULL) {
@@ -109,7 +118,7 @@ Player search(Hash* hash, Player player, int collision_resolution_strategy) {
         }
     } else if (collision_resolution_strategy == 2) {
         // Search for balanced trees
-        int index = hashing(player.name);
+        int index = hashing(player.name, M);
         AVLNode* result = searchAVLTree(((AVLNode**)(hash->players))[index], player.name);
 
         if (result != NULL) {
@@ -118,7 +127,7 @@ Player search(Hash* hash, Player player, int collision_resolution_strategy) {
         }
     } else {
         // Search for open addressing
-        int index = hashing(player.name);
+        int index = hashing(player.name, M);
 
         while (((Player*)(hash->players))[index].name != -1) {
             if (strcmp(((Player*)(hash->players))[index].name, player.name) == 0) {
@@ -291,6 +300,45 @@ void updateHeight(AVLNode* node) {
     }
 }
 
+// Function to free the memory allocated for the hash table
+void free_hash(Hash* hash, int collision_resolution_strategy) {
+    if (hash == NULL) {
+        return;
+    }
+
+    if (collision_resolution_strategy == 1) {
+        // Linked List strategy
+        for (int i = 0; i < M; i++) {
+            ListNode* current = ((ListNode**)(hash->players))[i];
+            while (current != NULL) {
+                ListNode* temp = current;
+                current = current->next;
+                free(temp);
+            }
+        }
+    } else if (collision_resolution_strategy == 2) {
+        // Balanced Trees strategy
+        for (int i = 0; i < M; i++) {
+            freeAVLTree(((AVLNode**)(hash->players))[i]);
+        }
+    } else if (collision_resolution_strategy == 3) {
+        // Open Addressing strategy
+        free(hash->players);
+    }
+
+    // Free the hash structure itself
+    free(hash);
+}
+
+// Function to free the memory allocated for an AVL tree
+void freeAVLTree(AVLNode* node) {
+    if (node != NULL) {
+        freeAVLTree(node->left);
+        freeAVLTree(node->right);
+        free(node);
+    }
+}
+
 // Instance Reader
 int readPlayers(Player playersArray[], int maxPlayers) {
     FILE *file = fopen("players.csv", "r");
@@ -406,6 +454,8 @@ int main() {
         start_time = clock();
         switch(collision_resolution_strategy) {
             case 0:
+                // Free the memory allocated for the hash table
+                free_hash(hash, collision_resolution_strategy);
                 // </> Halt </>.
                 return 0;
             case 1:
