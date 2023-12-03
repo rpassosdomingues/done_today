@@ -14,25 +14,33 @@
 #include <time.h>
 #include "hash.h"
 
-int M; // Hash table size
+int M = 1200; // Hash table size
 
 // Function to create a hash table with the specified size
 Hash* create_hash(int size, int collision_resolution_strategy) {
     M = size;
-    Hash* hash = (Hash*) malloc(sizeof(Hash));
-    // Initialize players based on collision resolution strategy (linked list or AVL tree)
+    Hash* hash = (Hash*)malloc(sizeof(Hash));
+
     if (collision_resolution_strategy == 1) {
-        hash->players = (ListNode**) malloc(size * sizeof(ListNode*));
+        // Linked List strategy
+        hash->players = (void**)malloc(size * sizeof(ListNode*));
         for (int i = 0; i < size; i++) {
-            ((ListNode**)(hash->players))[i] = NULL; // Initialize all linked lists to NULL
+            ((ListNode**)(hash->players))[i] = NULL;
         }
     } else if (collision_resolution_strategy == 2) {
-        hash->players = (AVLNode**) malloc(size * sizeof(AVLNode*));
+        // Balanced Trees strategy
+        hash->players = (void**)malloc(size * sizeof(AVLNode*));
         for (int i = 0; i < size; i++) {
-            ((AVLNode**)(hash->players))[i] = NULL; // Initialize all AVL trees to NULL
+            ((AVLNode**)(hash->players))[i] = NULL;
         }
-    } else {
-        // Handle other collision resolution strategies if needed
+    } else if (collision_resolution_strategy == 3) {
+        // Open Addressing strategy
+        hash->players = (void*)malloc(size * sizeof(Player));
+        for (int i = 0; i < size; i++) {
+            // Initialize name as an empty string, and age as -1 to indicate an empty slot
+            strcpy(((Player*)(hash->players))[i].name, "");
+            ((Player*)(hash->players))[i].age = -1;
+        }
     }
     return hash;
 }
@@ -72,7 +80,7 @@ void hash_OpenAddressing(Hash* hash, Player player) {
     int index = hashing(player.name);
 
     // Linear probing to find the next available slot
-    while (((Player*)(hash->players))[index].name != -1) {
+    while (strcmp(((Player*)(hash->players))[index].name, "") != 0) {
         index = (index + 1) % M;
     }
 
@@ -81,21 +89,47 @@ void hash_OpenAddressing(Hash* hash, Player player) {
 }
 
 // Hashing function
-int hashing(int chave) {
-    return (chave % M);
+int hashing(int key) {
+    return (key % M);
 }
 
-// Function to search for an player in the hash table based on the chosen strategy
+// Function to search for a player in the hash table based on the chosen strategy
 Player search(Hash* hash, Player player, int collision_resolution_strategy) {
-    // Implement based on the chosen collision resolution strategy
     if (collision_resolution_strategy == 1) {
-        // Implement search for linked lists
+        // Search for linked lists
+        int index = hashing(player.name);
+        ListNode* current = ((ListNode**)(hash->players))[index];
+
+        while (current != NULL) {
+            if (strcmp(current->player.name, player.name) == 0) {
+                // Player found in linked list
+                return current->player;
+            }
+            current = current->next;
+        }
     } else if (collision_resolution_strategy == 2) {
-        // Implement search for balanced trees
+        // Search for balanced trees
+        int index = hashing(player.name);
+        AVLNode* result = searchAVLTree(((AVLNode**)(hash->players))[index], player.name);
+
+        if (result != NULL) {
+            // Player found in AVL tree
+            return result->player;
+        }
     } else {
-        // Implement search for open addressing
+        // Search for open addressing
+        int index = hashing(player.name);
+
+        while (((Player*)(hash->players))[index].name != -1) {
+            if (strcmp(((Player*)(hash->players))[index].name, player.name) == 0) {
+                // Player found in open addressing
+                return ((Player*)(hash->players))[index];
+            }
+            index = (index + 1) % M;
+        }
     }
-    // Dummy return; replace with actual logic
+
+    // Player not found, return a dummy player
     Player dummyPlayer;
     strcpy(dummyPlayer.name, "");  // Initialize name as an empty string
     return dummyPlayer;
@@ -179,6 +213,25 @@ AVLNode* insertAVLNode(AVLNode* node, Player player) {
     }
 
     return node;
+}
+
+// Utility function to search for a player in AVL tree
+AVLNode* searchAVLTree(AVLNode* node, const char* playerName) {
+    while (node != NULL) {
+        int comparisonResult = strcmp(playerName, node->player.name);
+
+        if (comparisonResult < 0) {
+            node = node->left;
+        } else if (comparisonResult > 0) {
+            node = node->right;
+        } else {
+            // Player found in AVL tree
+            return node;
+        }
+    }
+
+    // Player not found in AVL tree
+    return NULL;
 }
 
 // Utility function to perform left rotation in AVL tree
@@ -335,11 +388,15 @@ int main() {
     int numPlayers = readPlayers(playersArray, maxPlayers);
 
     if (numPlayers == 0) {
-        return (1);
+        return 1;
     }
 
     // Add this variable to store the chosen strategy
     int collision_resolution_strategy = -1;
+
+    Hash* hash;
+    Player player;
+
     do {
         collision_handling_choice();
         printf("\n\tEnter your choice: ");
@@ -354,8 +411,7 @@ int main() {
             case 1:
                 // Linked List
                 /* Create a hash */
-                Hash* hash = create_hash(10, collision_resolution_strategy);
-                Player player;
+                hash = create_hash(10, collision_resolution_strategy);
                 for (int i = 0; i < numPlayers; i++) {
                     hash_insert(hash, playersArray[i], collision_resolution_strategy);
                 }
@@ -363,8 +419,7 @@ int main() {
             case 2:
                 // Balanced Trees
                 /* Create a hash */
-                Hash* hash = create_hash(10, collision_resolution_strategy);
-                Player player;
+                hash = create_hash(10, collision_resolution_strategy);
                 for (int i = 0; i < numPlayers; i++) {
                     hash_insert(hash, playersArray[i], collision_resolution_strategy);
                 }
@@ -372,8 +427,7 @@ int main() {
             case 3:
                 // Open Addressing
                 /* Create a hash */
-                Hash* hash = create_hash(10, collision_resolution_strategy);
-                Player player;
+                hash = create_hash(10, collision_resolution_strategy);
                 for (int i = 0; i < numPlayers; i++) {
                     hash_insert(hash, playersArray[i], collision_resolution_strategy);
                 }
@@ -386,6 +440,4 @@ int main() {
         cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
         printf("\nTime taken: %.4f milliseconds", cpu_time_used);
     } while(1);
-
-    return 0;
 }
