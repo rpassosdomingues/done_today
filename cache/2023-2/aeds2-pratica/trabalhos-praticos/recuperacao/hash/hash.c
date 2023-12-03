@@ -22,6 +22,11 @@ Hash* create_hash(Hash* existingHash, int size, int collision_resolution_strateg
         free_hash(existingHash, collision_resolution_strategy);
     }
 
+    if (size <= 0) {
+        printf("Error: Invalid hash table size.\n");
+        return NULL;
+    }
+
     M = size;
     Hash* hash = (Hash*)malloc(sizeof(Hash));
 
@@ -255,7 +260,6 @@ AVLNode* searchAVLTree(AVLNode* node, const char* playerName) {
     return NULL;
 }
 
-// Utility function to insert a player into an AVL tree
 AVLNode* insertAVLNode(AVLNode* node, Player player) {
     // Perform standard BST insertion
     if (node == NULL) {
