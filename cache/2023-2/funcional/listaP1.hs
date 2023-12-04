@@ -10,23 +10,16 @@ Author: Rafael Passos Domingues
 -- Questão 1 --
 -- =============================================================================================
 ehPrimo :: Int -> Bool
-ehPrimo n
-    | n <= 1    = False
-    | n == 2    = True
-    | ehPar n   = False
-    | otherwise = not (temDivisorImpar n 3)
-
-temDivisorImpar :: Int -> Int -> Bool
-temDivisorImpar num divisor
-    | divisor * divisor > num = True
-    | ehDivisivel num divisor = False
-    | otherwise               = temDivisorImpar num (divisor + 2)
-
-ehDivisivel :: Int -> Int -> Bool
-ehDivisivel numerador denominador = mod numerador denominador == 0
+ehPrimo z
+    | (z /= 2) && (ehPar z) = False
+    | otherwise = (ehDivisivel z z)
 
 ehPar :: Int -> Bool
-ehPar numero = mod numero 2 == 0
+ehPar y = (mod y 2) == 0
+
+ehDivisivel :: Int -> Int -> Bool
+ehDivisivel _ 0 = False
+ehDivisivel a b = (mod a b) == 0
 
 -- =============================================================================================
 -- Questão 2 --
