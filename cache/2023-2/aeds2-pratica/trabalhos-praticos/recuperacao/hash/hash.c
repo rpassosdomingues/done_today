@@ -32,9 +32,9 @@ Hash* create_hash(Hash* existingHash, int collision_resolution_strategy) {
 
     if (collision_resolution_strategy == 1) {
         // Linked List strategy
-        hash->players = malloc(HASH_TABLE_SIZE * sizeof(ListNode*));
+        hash->players = malloc(HASH_TABLE_SIZE * sizeof(List*));
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            ((ListNode**)(hash->players))[i] = NULL;
+            ((List**)(hash->players))[i] = NULL;
         }
     } else if (collision_resolution_strategy == 2) {
         // Balanced Trees strategy
@@ -61,16 +61,16 @@ void hash_LinkedList(Hash* hash, Player player) {
     int index = hashing(player.name);
 
     // Create a new node for the current player
-    ListNode* newNode = (ListNode*)malloc(sizeof(ListNode));
+    List* newNode = (List*)malloc(sizeof(List));
     newNode->player = player;
     newNode->next = NULL;
 
     // If the linked list at the index is empty, insert the new node
-    if (((ListNode**)(hash->players))[index] == NULL) {
-        ((ListNode**)(hash->players))[index] = newNode;
+    if (((List**)(hash->players))[index] == NULL) {
+        ((List**)(hash->players))[index] = newNode;
     } else {
         // If not empty, traverse the linked list and insert at the end
-        ListNode* current = ((ListNode**)(hash->players))[index];
+        List* current = ((List**)(hash->players))[index];
         while (current->next != NULL) {
             current = current->next;
         }
@@ -152,7 +152,7 @@ Player search(Hash* hash, Player player, int collision_resolution_strategy) {
 
     if (collision_resolution_strategy == 1) {
         // Search for linked lists
-        ListNode* current = ((ListNode**)(hash->players))[index];
+        List* current = ((List**)(hash->players))[index];
 
         while (current != NULL) {
             if (strcmp(current->player.name, player.name) == 0) {
@@ -209,8 +209,8 @@ void hash_remove(Hash* hash, Player player, int collision_resolution_strategy) {
         // Linked List strategy
         int index = hashing(player.name);
 
-        ListNode* current = ((ListNode**)(hash->players))[index];
-        ListNode* prev = NULL;
+        List* current = ((List**)(hash->players))[index];
+        List* prev = NULL;
 
         // Traverse the linked list to find the player
         while (current != NULL && strcmp(current->player.name, player.name) != 0) {
@@ -222,7 +222,7 @@ void hash_remove(Hash* hash, Player player, int collision_resolution_strategy) {
         if (current != NULL) {
             if (prev == NULL) {
             // The player is in the first node
-            ((ListNode**)(hash->players))[index] = current->next;
+            ((List**)(hash->players))[index] = current->next;
         } else {
             // The player is in a middle or last node
             prev->next = current->next;
@@ -469,9 +469,9 @@ void free_hash(Hash* hash, int collision_resolution_strategy) {
     if (collision_resolution_strategy == 1) {
         // Linked List strategy
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            ListNode* current = ((ListNode**)(hash->players))[i];
+            List* current = ((List**)(hash->players))[i];
             while (current != NULL) {
-                ListNode* temp = current;
+                List* temp = current;
                 current = current->next;
                 free(temp);
             }

@@ -15,8 +15,10 @@
 #include "hash.h"
 
 #define HASH_TABLE_SIZE 1200 // M
+#define MAX_PLAYERS 1149
 
-Hash* create_hash(Hash* existingHash, int collision_resolution_strategy) {
+// Creates and initializes a hash table according to a specific collision resolution strategy.
+Hash* create_hash(Hash* existingHash, Player player[], int collision_resolution_strategy) {
     // Free the old hash memory if not NULL
     if (existingHash != NULL) {
         free_hash(existingHash, collision_resolution_strategy);
@@ -27,20 +29,26 @@ Hash* create_hash(Hash* existingHash, int collision_resolution_strategy) {
         return NULL;
     }
 
-    //M = size;
+    // Allocate memory for the Hash structure
     Hash* hash = (Hash*)malloc(sizeof(Hash));
+    if (hash == NULL) {
+        // Handle allocation failure
+        printf("Memory Allocation Error\n");
+        return NULL;
+    }
 
+    // Initialize the players array based on the collision resolution strategy
     if (collision_resolution_strategy == 1) {
         // Linked List strategy
         hash->players = malloc(HASH_TABLE_SIZE * sizeof(List*));
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            ((List**)(hash->players))[i] = NULL;
+            ((List**)(hash->players))[i] = createList(player[i]);
         }
     } else if (collision_resolution_strategy == 2) {
         // Balanced Trees strategy
         hash->players = malloc(HASH_TABLE_SIZE * sizeof(AVLTree*));
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            ((AVLTree**)(hash->players))[i] = NULL;
+            ((AVLTree**)(hash->players))[i] = createAVLTree(player[i]);
         }
     } else if (collision_resolution_strategy == 3) {
         // Open Addressing strategy
@@ -53,6 +61,7 @@ Hash* create_hash(Hash* existingHash, int collision_resolution_strategy) {
         free(hash);
         return NULL;
     }
+
     return hash;
 }
 
@@ -132,7 +141,7 @@ int hashing(const char* key) {
     return (int)(hash % HASH_TABLE_SIZE);
 }
 
-Player search(Hash* hash, Player player, int collision_resolution_strategy) {
+Player hash_search(Hash* hash, Player player, int collision_resolution_strategy) {
     int index = hashing(player.name);
 
     if (collision_resolution_strategy == 1) {
@@ -334,7 +343,7 @@ AVLTree* createAVLTree(Player player) {
 }
 
 // Function to search for a player in AVL Tree
-AVLTree* searchAVLTree(AVLTree* node) {
+AVLTree* searchAVLTree(AVLTree* node, Player player) {
     // Check for NULL node
     if (node == NULL) {
         printf("Error: AVL Tree is NULL.\n");
@@ -342,7 +351,7 @@ AVLTree* searchAVLTree(AVLTree* node) {
     }
 
     while (node != NULL) {
-        int comparisonResult = strcmp(node->player.name);
+        int comparisonResult = strcmp(player.name, node->player.name);
 
         if (comparisonResult < 0) {
             node = node->left;
@@ -355,7 +364,7 @@ AVLTree* searchAVLTree(AVLTree* node) {
     }
 
     // Player not found in AVL Tree
-    printf("Player '%s' not found in AVL Tree.\n", node->player.name);
+    printf("Player '%s' not found in AVL Tree.\n", player.name);
     return NULL;
 }
 
@@ -377,25 +386,25 @@ AVLTree* searchFather(AVLTree* root, AVLTree* node, AVLTree* parent) {
 }
 
 // Function to insert a node into an AVL Tree
-AVLTree* insertAVLTree(AVLTree* root) {
+AVLTree* insertAVLTree(AVLTree* root, Player player) {
     if (root == NULL) {
-        return createAVLTree(player.name);
+        return createAVLTree(player);
     }
 
-    int comparisonResult = strcmp(root->player.name);
+    int comparisonResult = strcmp(player.name, root->player.name);
 
     if (comparisonResult < 0) {
-        root->left = insertAVLTree(root->left);
+        root->left = insertAVLTree(root->left, player);
     } else if (comparisonResult > 0) {
-        root->right = insertAVLTree(root->right);
+        root->right = insertAVLTree(root->right, player);
     }
 
     return balanceNode(root);
 }
 
 // Function to remove a node from an AVL Tree
-AVLTree* removeAVLTree(AVLTree* root) {
-    AVLTree *oldNode = searchAVLTree(root);
+AVLTree* removeAVLTree(AVLTree* root, Player player) {
+    AVLTree *oldNode = searchAVLTree(root, player);
 
     if (oldNode == NULL) {
         //printf("\nSub-Tree not found");
@@ -433,9 +442,9 @@ AVLTree* removeAVLTree(AVLTree* root) {
     } else {
         // Case 3: Two children.
         AVLTree *successor = minValueNode(oldNode->right);
-        oldNode->player.name = successor->player.name;
-        root = removeAVLTree(root);
-        oldNode->player.name = player.name;
+        player = successor->player;
+        root = removeAVLTree(root, player);
+        oldNode->player = player;
     }
 
     return balanceNode(root);
@@ -551,7 +560,7 @@ void freeList(List* head) {
     while (current != NULL) {
         List* temp = current;
         current = current->next;
-        free(temp->player.name);  // Assuming the player name is dynamically allocated
+        free(temp->player.name);
         free(temp);
     }
 }
@@ -566,7 +575,7 @@ void freeAVLTree(AVLTree* root) {
 }
 
 // Instance Reader
-int readPlayers(Player playersArray[], int maxPlayers) {
+int readPlayers(Player playersArray[]) {
     FILE *file = fopen("players.csv", "r");
     if (file == NULL) {
         perror("Error opening the file");
@@ -574,7 +583,7 @@ int readPlayers(Player playersArray[], int maxPlayers) {
     }
 
     int count = 0;
-    char line[256]; // Assuming each line is at most 256 characters
+    char line[256];
 
     // Skip the header line
     if (fgets(line, sizeof(line), file) == NULL) {
@@ -584,7 +593,7 @@ int readPlayers(Player playersArray[], int maxPlayers) {
     }
 
     while (fgets(line, sizeof(line), file)) {
-        if (count >= maxPlayers) {
+        if (count >= MAX_PLAYERS) {
             printf("Warning: Maximum player limit reached. Some players may not be loaded.\n");
             break;
         }
@@ -644,7 +653,7 @@ int readPlayers(Player playersArray[], int maxPlayers) {
 // Display the menu
 void collision_handling_choice() {
     printf("\n===============================");
-    printf("\n     Collision Handling");
+    printf("\n       Collision Handling");
     printf("\n===============================");
     printf("\n0. Exit");
     printf("\n1. Linked List");
@@ -657,10 +666,9 @@ int main() {
     clock_t start_time, end_time;
     double cpu_time_used;
 
+    Player playersArray[MAX_PLAYERS];
     // Read player data from the file
-    int maxPlayers = 1149; // Maximum number of players to read
-    Player playersArray[maxPlayers];
-    int numPlayers = readPlayers(playersArray, maxPlayers);
+    int numPlayers = readPlayers(playersArray);
 
     if (numPlayers == 0) {
         return 1;
@@ -683,21 +691,21 @@ int main() {
                 return 0;
             case 1:
                 // Linked List
-                hash = create_hash(hash, collision_resolution_strategy);
+                hash = create_hash(hash, playersArray, collision_resolution_strategy);
                 for (int i = 0; i < numPlayers; i++) {
                     hash_insert(hash, playersArray[i], collision_resolution_strategy);
                 }
                 break;
             case 2:
                 // Balanced Trees
-                hash = create_hash(hash, collision_resolution_strategy);
+                hash = create_hash(hash, playersArray, collision_resolution_strategy);
                 for (int i = 0; i < numPlayers; i++) {
                     hash_insert(hash, playersArray[i], collision_resolution_strategy);
                 }
                 break;
             case 3:
                 // Open Addressing
-                hash = create_hash(hash, collision_resolution_strategy);
+                hash = create_hash(hash, playersArray, collision_resolution_strategy);
                 for (int i = 0; i < numPlayers; i++) {
                     hash_insert(hash, playersArray[i], collision_resolution_strategy);
                 }

@@ -30,7 +30,7 @@ typedef struct Hash {
 } Hash;
 
 // Create a hash
-Hash* createHash(Hash* existingHash, int collisionResolutionStrategy);
+Hash* create_hash(Hash* existingHash, Player player[], int collision_resolution_strategy);
 
 // Function to handle collisions using linked lists
 void hash_LinkedList(Hash* hash, Player player);
@@ -43,7 +43,7 @@ void hash_OpenAddressing(Hash* hash, Player player);
 int hashing(const char* key);
 
 // Gets a player from the hash
-Player search(Hash* hash, Player player, int collision_resolution_strategy);
+Player hash_search(Hash* hash, Player player, int collision_resolution_strategy);
 // Insert a new element in the hash
 void hash_insert(Hash* hash, Player player, int collisionResolutionStrategy);
 // Remove an element from the hash according to its key
@@ -57,10 +57,10 @@ void removeList(List** head, const char* playerName);
 
 // Auxiliary functions to handle collisions using balanced tree
 AVLTree* createAVLTree(Player player);
-AVLTree* searchAVLTree(AVLTree* node);
+AVLTree* searchAVLTree(AVLTree* node, Player player);
 AVLTree* searchFather(AVLTree* root, AVLTree* node, AVLTree* parent);
-AVLTree* insertAVLTree(AVLTree* root);
-AVLTree* removeAVLTree(AVLTree* root);
+AVLTree* insertAVLTree(AVLTree* root, Player player);
+AVLTree* removeAVLTree(AVLTree* root, Player player);
 AVLTree* minValueNode(AVLTree* node);
 AVLTree* rotateRight(AVLTree* node);
 AVLTree* rotateLeft(AVLTree* node);
@@ -75,7 +75,7 @@ void freeList(List* chain);
 void freeAVLTree(AVLTree* node);
 
 // Instance Reader
-int readPlayers(Player playersArray[], int maxPlayers);
+int readPlayers(Player playersArray[]);
 
 // Show the menu for choices of Collision Handling
 void collision_handling_choice();

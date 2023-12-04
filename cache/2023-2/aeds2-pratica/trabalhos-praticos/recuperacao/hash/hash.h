@@ -11,10 +11,10 @@ typedef struct Player {
 } Player;
 
 // Node structure for linked list
-typedef struct ListNode {
+typedef struct List {
     Player player;
-    struct ListNode* next;
-} ListNode;
+    struct List* next;
+} List;
 
 // Node structure for AVL tree
 typedef struct AVLTree {
