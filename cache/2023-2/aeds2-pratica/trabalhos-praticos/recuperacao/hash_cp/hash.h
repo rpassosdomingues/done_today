@@ -57,10 +57,10 @@ void removeList(List** head, const char* playerName);
 
 // Auxiliary functions to handle collisions using balanced tree
 AVLTree* createAVLTree(Player player);
-AVLTree* searchAVLTree(AVLTree* node, Player player);
+AVLTree* searchAVLTree(AVLTree* node);
 AVLTree* searchFather(AVLTree* root, AVLTree* node, AVLTree* parent);
-AVLTree* insertAVLTree(AVLTree* root, Player player);
-AVLTree* removeAVLTree(AVLTree* root, Player player);
+AVLTree* insertAVLTree(AVLTree* root);
+AVLTree* removeAVLTree(AVLTree* root);
 AVLTree* minValueNode(AVLTree* node);
 AVLTree* rotateRight(AVLTree* node);
 AVLTree* rotateLeft(AVLTree* node);

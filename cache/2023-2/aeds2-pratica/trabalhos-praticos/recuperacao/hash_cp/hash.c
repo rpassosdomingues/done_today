@@ -334,7 +334,7 @@ AVLTree* createAVLTree(Player player) {
 }
 
 // Function to search for a player in AVL Tree
-AVLTree* searchAVLTree(AVLTree* node, Player player) {
+AVLTree* searchAVLTree(AVLTree* node) {
     // Check for NULL node
     if (node == NULL) {
         printf("Error: AVL Tree is NULL.\n");
@@ -342,7 +342,7 @@ AVLTree* searchAVLTree(AVLTree* node, Player player) {
     }
 
     while (node != NULL) {
-        int comparisonResult = strcmp(player.name, node->player.name);
+        int comparisonResult = strcmp(node->player.name);
 
         if (comparisonResult < 0) {
             node = node->left;
@@ -355,7 +355,7 @@ AVLTree* searchAVLTree(AVLTree* node, Player player) {
     }
 
     // Player not found in AVL Tree
-    printf("Player '%s' not found in AVL Tree.\n", player.name);
+    printf("Player '%s' not found in AVL Tree.\n", node->player.name);
     return NULL;
 }
 
@@ -377,25 +377,25 @@ AVLTree* searchFather(AVLTree* root, AVLTree* node, AVLTree* parent) {
 }
 
 // Function to insert a node into an AVL Tree
-AVLTree* insertAVLTree(AVLTree* root, Player player) {
+AVLTree* insertAVLTree(AVLTree* root) {
     if (root == NULL) {
-        return createAVLTree(player);
+        return createAVLTree(player.name);
     }
 
-    int comparisonResult = strcmp(player.name, root->player.name);
+    int comparisonResult = strcmp(root->player.name);
 
     if (comparisonResult < 0) {
-        root->left = insertAVLTree(root->left, player);
+        root->left = insertAVLTree(root->left);
     } else if (comparisonResult > 0) {
-        root->right = insertAVLTree(root->right, player);
+        root->right = insertAVLTree(root->right);
     }
 
     return balanceNode(root);
 }
 
 // Function to remove a node from an AVL Tree
-AVLTree* removeAVLTree(AVLTree* root, Player player) {
-    AVLTree *oldNode = searchAVLTree(root, player);
+AVLTree* removeAVLTree(AVLTree* root) {
+    AVLTree *oldNode = searchAVLTree(root);
 
     if (oldNode == NULL) {
         //printf("\nSub-Tree not found");
@@ -433,9 +433,9 @@ AVLTree* removeAVLTree(AVLTree* root, Player player) {
     } else {
         // Case 3: Two children.
         AVLTree *successor = minValueNode(oldNode->right);
-        player = successor->player;
-        root = removeAVLTree(root, player);
-        oldNode->player = player;
+        oldNode->player.name = successor->player.name;
+        root = removeAVLTree(root);
+        oldNode->player.name = player.name;
     }
 
     return balanceNode(root);
