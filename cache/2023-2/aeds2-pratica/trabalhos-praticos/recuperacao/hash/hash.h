@@ -1,22 +1,23 @@
 #ifndef _H_HASH_
 #define _H_HASH_
 
-// Define a struct to player object
+// Define a struct for the player object
 typedef struct Player {
     char name[256];
     char position[64];
     char naturalness[64];
     char team[64];
     int age;
+    int deleted;
 } Player;
 
-// Node structure for linked list
+// Node structure for the linked list
 typedef struct List {
     Player player;
     struct List* next;
 } List;
 
-// Node structure for AVL tree
+// Node structure for the AVL Tree
 typedef struct AVLTree {
     Player player;
     struct AVLTree* left;
@@ -26,35 +27,46 @@ typedef struct AVLTree {
 
 // Structure for Open Addressing
 typedef struct Hash {
- struct Player* players;
+    AVLTree** playerL;
+    Player* players;
 } Hash;
 
-// Create a hash
-Hash* create_hash(Hash* existingHash, int collision_resolution_strategy);
+// Instance Reader
+int readPlayers(Player playersArray[]);
+
+// Creates and initializes a hash table according to a specific collision resolution strategy.
+Hash* createHash(Hash* existingHash, Player player[], int collision_resolution_strategy);
 
 // Function to handle collisions using linked lists
-void hash_LinkedList(Hash* hash, Player player);
-// Function to handle collisions using balanced trees (AVL trees)
-void hash_BalancedTrees(Hash* hash, Player player);
+Hash* hash_LinkedList(Hash* hash, Player player);
+// Function to handle collisions using balanced Trees (AVL Trees)
+Hash* hash_BalancedTrees(Hash* hash, Player player);
 // Function to handle collisions using open addressing (linear probing)
-void hash_OpenAddressing(Hash* hash, Player player);
+Hash* hash_OpenAddressing(Hash* hash, Player player);
 
 // Hashing Function
 int hashing(const char* key);
 
-// Gets an player from the hash
-Player search(Hash* hash, Player player, int collision_resolution_strategy);
-// Insert a new element in hash
-void hash_insert(Hash* hash, Player player, int collision_resolution_strategy);
-// Remove a element of the hash according to your key
-void hash_remove(Hash* hash, Player player, int collision_resolution_strategy);
+// Gets a player from the hash
+Hash* searchHash(Hash* hash, Player player, int collision_resolution_strategy);
+// Insert a new element in the hash
+Hash* insertHash(Hash* hash, Player player, int collision_resolution_strategy);
+// Remove an element from the hash according to its key
+Hash* removeHash(Hash* hash, Player player, int collision_resolution_strategy);
 
-// Auxiliary functions to handle collisions using balanced tree
-AVLTree* createAVLTree(Player player);
+// Auxiliary functions to handle collisions using Linked List
+List* createList(Player player[]);
+List* searchList(List* head, const char* playerName);
+List* insertList(List* head, Player player);
+List* removeList(List* head, const char* playerName);
+
+// Auxiliary functions to handle collisions using AVL tree
+AVLTree* createAVLTree(Player player[]);
 AVLTree* searchAVLTree(AVLTree* node, Player player);
 AVLTree* searchFather(AVLTree* root, AVLTree* node, AVLTree* parent);
 AVLTree* insertAVLTree(AVLTree* root, Player player);
 AVLTree* removeAVLTree(AVLTree* root, Player player);
+AVLTree* removeMinValueNode(AVLTree* root);
 AVLTree* minValueNode(AVLTree* node);
 AVLTree* rotateRight(AVLTree* node);
 AVLTree* rotateLeft(AVLTree* node);
@@ -63,14 +75,21 @@ int height(AVLTree* node);
 int balanceFactor(AVLTree* node);
 void updateHeight(AVLTree* node);
 
-// Free Memory allocated for hash table
-void free_hash(Hash* hash, int collision_resolution_strategy);
-void freeAVLTree(AVLTree* node);
+// Auxiliary functions to handle collisions using Open Addressing
+Player* createOpenAddressing(const char* playerName, int age);
+Player* searchOpenAddressing(Hash* hash, const char* playerName);
+void insertOpenAddressing(Hash* hash, Player* player, int index);
+Player* removeOpenAddressing(Hash* hash, const char* playerName);
+Player* markAsDeleted(Hash* hash, int index);
+int isEmptySlot(Hash* hash, int index);
 
-// Instance Reader
-int readPlayers(Player playersArray[], int maxPlayers);
+// Free Memory allocated for the hash table
+void freeHash(Hash* hash, int collision_resolution_strategy);
+void freeList(List* head);
+void freeAVLTree(AVLTree* root);
+void freeOpenAddressing(Hash* hash);
 
-// Show the menu for choices of the Collision Handling
+// Show the menu for choices of Collision Handling
 void collision_handling_choice();
 
 #endif // _H_HASH_
