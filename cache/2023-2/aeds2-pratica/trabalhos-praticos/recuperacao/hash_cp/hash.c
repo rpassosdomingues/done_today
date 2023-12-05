@@ -124,7 +124,7 @@ Hash* createHash(Hash* existingHash, Player player[], int collision_resolution_s
         // Balanced Trees strategy
         hash->players = malloc(HASH_TABLE_SIZE * sizeof(AVLTree*));
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            ((AVLTree**)(hash->players))[i] = createAVLTree(player[i]);
+            ((AVLTree**)(hash->players))[i] = createAVLTree(player);
         }
     } else if (collision_resolution_strategy == 3) {
         // Open Addressing strategy
@@ -152,17 +152,30 @@ Hash* hash_LinkedList(Hash* hash, Player player) {
     return hash;
 }
 
-// Function to handle collisions using an AVL Tree
+// Function to handle collisions using AVL Tree
 Hash* hash_BalancedTrees(Hash* hash, Player player) {
+    // Create a new hash table if it doesn't exist
+    if (hash == NULL) {
+        hash = (Hash*)malloc(sizeof(Hash));
+        if (hash == NULL) {
+            printf("Error: Unable to create hash table. Memory Allocation Error.\n");
+            return NULL;
+        }
+
+        for (int i = 0; i < MAX_PLAYERS; i++) {
+            hash->playerL[i] = NULL;
+        }
+    }
+
     // Calculate the index using the hash function
     int index = hashing(player.name);
 
     // Access the AVL Tree at the calculated index
-    AVLTree** avlTree = &(((AVLTree**)(hash->players))[index]);
+    AVLTree** avlTree = &hash->playerL[index];
 
     // Check if AVL Tree is NULL, and initialize if necessary
     if (*avlTree == NULL) {
-        *avlTree = createAVLTree(player);
+        *avlTree = insertAVLTree(NULL, player);
         if (*avlTree == NULL) {
             printf("Error: AVL node creation failed.\n");
             return hash;
@@ -301,6 +314,12 @@ Hash* removeHash(Hash* hash, Player player, int collision_resolution_strategy) {
     return hash;
 }
 
+/**
+ * =========================================================================
+ * Utility functions to collision handling using Linked List
+ * =========================================================================
+ */
+
 // Function to create a new node for the linked list and insert an array of players
 List* createList(Player player[]) {
     // Create a new node for the first player
@@ -419,19 +438,22 @@ List* removeList(List* head, const char* playerName) {
     return head;  // Return the updated head after removal
 }
 
-// Utility function to create an AVL node
-AVLTree* createAVLTree(Player player) {
-    AVLTree* newNode = (AVLTree*)malloc(sizeof(AVLTree));
-    if (newNode == NULL) {
-        printf("\nMemory Allocation Error");
-        exit(1);
+/**
+ * =========================================================================
+ * Utility functions to collision handling using AVL Tree
+ * =========================================================================
+ */
+
+// Utility function to create an AVL node and balance the tree
+AVLTree* createAVLTree(Player player[]) {
+    AVLTree* root = NULL;
+
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        root = insertAVLTree(root, player[i]);
+        root = balanceNode(root);  // Ensure balancing after each insertion
     }
 
-    newNode->player = player;
-    newNode->height = 1;
-    newNode->left = newNode->right = NULL;
-
-    return newNode;
+    return root;
 }
 
 // Function to search for a player in AVL Tree
@@ -547,11 +569,19 @@ AVLTree* removeAVLTree(AVLTree* root, Player player) {
     } else {
         // Case 3: Two children.
         AVLTree *successor = minValueNode(oldNode->right);
-        player = successor->player;
-        root = removeAVLTree(root, player);
-        oldNode->player = player;
+        oldNode->player = successor->player;
+        oldNode->right = removeMinValueNode(oldNode->right);
     }
 
+    return balanceNode(root);
+}
+
+AVLTree* removeMinValueNode(AVLTree* root) {
+    if (root == NULL || root->left == NULL) {
+        return root->right;
+    }
+
+    root->left = removeMinValueNode(root->left);
     return balanceNode(root);
 }
 
@@ -633,6 +663,12 @@ void updateHeight(AVLTree* node) {
     int rightHeight = height(node->right);
     node->height = (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
 }
+
+/**
+ * =========================================================================
+ * Utility functions to collision handling using Open Addressing
+ * =========================================================================
+ */
 
 // Function to create a open addressing
 Player* createOpenAddressing(const char* playerName, int age) {

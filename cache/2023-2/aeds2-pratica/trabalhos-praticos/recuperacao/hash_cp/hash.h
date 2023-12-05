@@ -26,6 +26,7 @@ typedef struct AVLTree {
 
 // Structure for Open Addressing
 typedef struct Hash {
+    AVLTree** playerL;
     Player* players;
 } Hash;
 
@@ -59,11 +60,12 @@ List* insertList(List* head, Player player);
 List* removeList(List* head, const char* playerName);
 
 // Auxiliary functions to handle collisions using AVL tree
-AVLTree* createAVLTree(Player player);
+AVLTree* createAVLTree(Player player[]);
 AVLTree* searchAVLTree(AVLTree* node, Player player);
 AVLTree* searchFather(AVLTree* root, AVLTree* node, AVLTree* parent);
 AVLTree* insertAVLTree(AVLTree* root, Player player);
 AVLTree* removeAVLTree(AVLTree* root, Player player);
+AVLTree* removeMinValueNode(AVLTree* root);
 AVLTree* minValueNode(AVLTree* node);
 AVLTree* rotateRight(AVLTree* node);
 AVLTree* rotateLeft(AVLTree* node);
