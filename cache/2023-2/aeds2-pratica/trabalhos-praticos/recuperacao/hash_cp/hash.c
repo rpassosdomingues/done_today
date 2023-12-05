@@ -118,7 +118,7 @@ Hash* createHash(Hash* existingHash, Player player[], int collision_resolution_s
         // Linked List strategy
         hash->players = malloc(HASH_TABLE_SIZE * sizeof(List*));
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            ((List**)(hash->players))[i] = createList(player[i]);
+            ((List**)(hash->players))[i] = createList(player);
         }
     } else if (collision_resolution_strategy == 2) {
         // Balanced Trees strategy
@@ -141,15 +141,19 @@ Hash* createHash(Hash* existingHash, Player player[], int collision_resolution_s
     return hash;
 }
 
-// Function to handle collisions using separate thread
-void hash_LinkedList(Hash* hash, Player player) {
+// Function to handle collisions using separate linked list
+Hash* hash_LinkedList(Hash* hash, Player player) {
     int index = hashing(player.name);
-    insertList(&((List**)(hash->players))[index], player);
+    
+    // Update the hash table with the new head returned by insertList
+    ((List**)(hash->players))[index] = insertList(((List**)(hash->players))[index], player);
+
+    // Return the modified hash table
+    return hash;
 }
 
-
 // Function to handle collisions using an AVL Tree
-void hash_BalancedTrees(Hash* hash, Player player) {
+Hash* hash_BalancedTrees(Hash* hash, Player player) {
     // Calculate the index using the hash function
     int index = hashing(player.name);
 
@@ -161,20 +165,23 @@ void hash_BalancedTrees(Hash* hash, Player player) {
         *avlTree = createAVLTree(player);
         if (*avlTree == NULL) {
             printf("Error: AVL node creation failed.\n");
-            return;
+            return hash;
         }
     } else {
         // Insert the player into the existing AVL Tree at the index
         *avlTree = insertAVLTree(*avlTree, player);
         if (*avlTree == NULL) {
             printf("Error: AVL node insertion failed.\n");
-            return;
+            return hash;
         }
     }
+
+    // Return the modified hash table
+    return hash;
 }
 
 // Function to handle collisions using open addressing (linear probing)
-void hash_OpenAddressing(Hash* hash, Player player) {
+Hash* hash_OpenAddressing(Hash* hash, Player player) {
     int index = hashing(player.name);
     int initialIndex = index;
 
@@ -189,6 +196,9 @@ void hash_OpenAddressing(Hash* hash, Player player) {
 
     // Insert the player into the found slot
     insertOpenAddressing(hash, &player, index);
+
+    // Return the modified hash table
+    return hash;
 }
 
 /**
@@ -215,7 +225,8 @@ int hashing(const char* key) {
     return (int)(hash % HASH_TABLE_SIZE);
 }
 
-Player searchHash(Hash* hash, Player player, int collision_resolution_strategy) {
+// Function to search for a player in the hash table based on the chosen strategy
+Hash* searchHash(Hash* hash, Player player, int collision_resolution_strategy) {
     int index = hashing(player.name);
 
     if (collision_resolution_strategy == 1) {
@@ -224,7 +235,7 @@ Player searchHash(Hash* hash, Player player, int collision_resolution_strategy) 
 
         if (current != NULL) {
             // Player found in linked list
-            return current->player;
+            return hash;
         }
     } else if (collision_resolution_strategy == 2) {
         // Search for balanced Trees
@@ -232,7 +243,7 @@ Player searchHash(Hash* hash, Player player, int collision_resolution_strategy) 
 
         if (result != NULL) {
             // Player found in AVL Tree
-            return result->player;
+            return hash;
         }
     } else if (collision_resolution_strategy == 3) {
         // Search for open addressing
@@ -245,35 +256,34 @@ Player searchHash(Hash* hash, Player player, int collision_resolution_strategy) 
             }
             if (strcmp(((Player*)(hash->players))[index].name, player.name) == 0) {
                 // Player found in open addressing
-                return ((Player*)(hash->players))[index];
+                return hash;
             }
             index = (index + 1) % HASH_TABLE_SIZE;
         } while (index != start_index);
     }
 
-    // Player not found, return NULL
-    Player dummyPlayer;
-    strcpy(dummyPlayer.name, "");  // Initialize name as an empty string
-    return dummyPlayer;
+    // Player not found, return the original hash table
+    return hash;
 }
 
-// Function to insert an player into the hash table based on the chosen strategy
-void insertHash(Hash* hash, Player player, int collision_resolution_strategy) {
+// Function to insert a player into the hash table based on the chosen strategy
+Hash* insertHash(Hash* hash, Player player, int collision_resolution_strategy) {
     // Implement based on the chosen collision resolution strategy
     if (collision_resolution_strategy == 1) {
-        hash_LinkedList(hash, player);
+        return hash_LinkedList(hash, player);
     } else if (collision_resolution_strategy == 2) {
-        hash_BalancedTrees(hash, player);
+        return hash_BalancedTrees(hash, player);
     } else {
-        hash_OpenAddressing(hash, player);
+        return hash_OpenAddressing(hash, player);
     }
 }
 
-void removeHash(Hash* hash, Player player, int collision_resolution_strategy) {
+// Function to remove a player from the hash table based on the chosen strategy
+Hash* removeHash(Hash* hash, Player player, int collision_resolution_strategy) {
     if (collision_resolution_strategy == 1) {
         // Linked List strategy
         int index = hashing(player.name);
-        removeList(&((List**)(hash->players))[index], player.name);
+        ((List**)(hash->players))[index] = removeList(((List**)(hash->players))[index], player.name);
     } else if (collision_resolution_strategy == 2) {
         // Balanced Trees strategy
         int index = hashing(player.name);
@@ -284,23 +294,59 @@ void removeHash(Hash* hash, Player player, int collision_resolution_strategy) {
     } else {
         // Handle unknown collision resolution strategy
         printf("Invalid collision resolution strategy\n");
+        return hash;
     }
+
+    // Return the modified hash table
+    return hash;
 }
 
-// Function to create a new node for the linked list
-List* createList(Player player) {
-    // Create a new node for the current player
-    List* newNode = (List*)malloc(sizeof(List));
-    if (newNode == NULL) {
+// Function to create a new node for the linked list and insert an array of players
+List* createList(Player player[]) {
+    // Create a new node for the first player
+    List* head = (List*)malloc(sizeof(List));
+    if (head == NULL) {
         // Handle allocation failure
         printf("Memory Allocation Error\n");
         return NULL;
     }
 
-    newNode->player = player;
-    newNode->next = NULL;
+    // Copy the player information to the allocated memory
+    strcpy(head->player.name, player[0].name);
+    strcpy(head->player.position, player[0].position);
+    strcpy(head->player.naturalness, player[0].naturalness);
+    strcpy(head->player.team, player[0].team);
+    head->player.age = player[0].age;
 
-    return newNode;
+    head->next = NULL;
+
+    // Insert the remaining players into the linked list
+    List* current = head;  // Maintain a pointer to the current end of the list
+    for (int i = 1; i < MAX_PLAYERS; i++) {
+        List* newNode = (List*)malloc(sizeof(List));
+        if (newNode == NULL) {
+            // Handle allocation failure
+            printf("Memory Allocation Error\n");
+            // Clean up: Free the memory used by the linked list
+            freeList(head);
+            return NULL;
+        }
+
+        // Copy the player information to the allocated memory
+        strcpy(newNode->player.name, player[i].name);
+        strcpy(newNode->player.position, player[i].position);
+        strcpy(newNode->player.naturalness, player[i].naturalness);
+        strcpy(newNode->player.team, player[i].team);
+        newNode->player.age = player[i].age;
+
+        newNode->next = NULL;  // Set the next pointer of the new node to NULL
+
+        // Link the new node to the end of the list
+        current->next = newNode;
+        current = newNode;  // Update the current pointer to the new end of the list
+    }
+
+    return head;
 }
 
 // Function to search for a node with a specific player name in a linked list
@@ -316,13 +362,13 @@ List* searchList(List* head, const char* playerName) {
 }
 
 // Function to insert a new node into a linked list using createList
-void insertList(List** head, Player player) {
+List* insertList(List* head, Player player) {
     // Create a new node for the current player
     List* newNode = (List*)malloc(sizeof(List));
     if (newNode == NULL) {
         // Handle allocation failure
         printf("Unable to insert player. Memory Allocation Error\n");
-        return;
+        return head;  // Return the original head unchanged
     }
 
     // Assign player to the new node
@@ -330,30 +376,35 @@ void insertList(List** head, Player player) {
     newNode->next = NULL;
 
     // If the linked list is empty, insert the new node as the head
-    if (*head == NULL) {
-        *head = newNode;
+    if (head == NULL) {
+        return newNode;  // Return the new node as the new head
     } else {
-        // If not empty, insert at the end
-        List* lastNode = searchList(*head, NULL); // Find the last node
+        // If not empty, find the last node and insert at the end
+        List* lastNode = head;
+        while (lastNode->next != NULL) {
+            lastNode = lastNode->next;
+        }
         lastNode->next = newNode;
+
+        return head;  // Return the original head unchanged
     }
 }
 
 // Function to remove a node with a specific player name from a linked list
-void removeList(List** head, const char* playerName) {
+List* removeList(List* head, const char* playerName) {
     // Use the searchList function to find the node to be removed
-    List* current = searchList(*head, playerName);
+    List* current = searchList(head, playerName);
     if (current == NULL) {
         // Player not found in the linked list
-        return;
+        return head;  // Return the original head unchanged
     }
 
     // If the node to be removed is the head
-    if (current == *head) {
-        *head = (*head)->next;
+    if (current == head) {
+        head = head->next;
     } else {
         // Traverse the linked list to find the previous node
-        List* prev = *head;
+        List* prev = head;
         while (prev->next != current) {
             prev = prev->next;
         }
@@ -362,8 +413,10 @@ void removeList(List** head, const char* playerName) {
         prev->next = current->next;
     }
 
-    // Free the memory used by the removed node and the entire list
+    // Free the memory used by the removed node
     freeList(current);
+
+    return head;  // Return the updated head after removal
 }
 
 // Utility function to create an AVL node
@@ -616,30 +669,21 @@ Player* searchOpenAddressing(Hash* hash, const char* playerName) {
 }
 
 // Function to insert a player into the hash table based on open addressing
-void insertOpenAddressing(Hash* hash, Player* player, int index) {
+Player* insertOpenAddressing(Hash* hash, Player* player, int index) {
     // Check if the slot is empty before inserting
     if (isEmptySlot(hash, index)) {
-        // Allocate memory for the new player
-        Player* newPlayer = (Player*)malloc(sizeof(Player));
-        if (newPlayer == NULL) {
-            // Handle allocation failure
-            printf("Unable to insert player. Memory Allocation Error\n");
-            return;
-        }
-
-        // Copy player information to the new player
-        strcpy(newPlayer->name, player->name);
-        newPlayer->age = player->age;
-
-        // Assign the new player to the hash table
-        ((Player**)(hash->players))[index] = newPlayer;
+        // Copy player information to the hash table
+        ((Player*)(hash->players))[index] = *player;
+        return &((Player*)(hash->players))[index];
     } else {
         // Handle collision or attempt to insert in a non-empty slot
         printf("Collision or non-empty slot at index %d\n", index);
+        return NULL;
     }
 }
 
-void removeOpenAddressing(Hash* hash, const char* playerName) {
+// Function to remove a player from the hash table based on open addressing
+Player* removeOpenAddressing(Hash* hash, const char* playerName) {
     int index = hashing(playerName);
     int start_index = index;
 
@@ -647,9 +691,7 @@ void removeOpenAddressing(Hash* hash, const char* playerName) {
         // Check if the slot is not empty and the player's name matches
         if (!isEmptySlot(hash, index) && strcmp(((Player*)(hash->players))[index].name, playerName) == 0) {
             // Player found in open addressing, mark the slot as deleted
-            strcpy(((Player*)(hash->players))[index].name, "");
-            ((Player*)(hash->players))[index].age = -1;
-            return;
+            return markAsDeleted(hash, index);
         }
 
         index = (index + 1) % HASH_TABLE_SIZE;
@@ -657,6 +699,26 @@ void removeOpenAddressing(Hash* hash, const char* playerName) {
 
     // Player not found
     printf("Player '%s' not found in open addressing\n", playerName);
+    return NULL;
+}
+
+// Function to mark a slot as deleted in open addressing
+Player* markAsDeleted(Hash* hash, int index) {
+    Player* deletedPlayer = (Player*)malloc(sizeof(Player));
+    if (deletedPlayer == NULL) {
+        // Handle allocation failure
+        printf("Memory Allocation Error\n");
+        return NULL;
+    }
+
+    // Copy the deleted player information
+    *deletedPlayer = ((Player*)(hash->players))[index];
+
+    // Mark the slot as deleted
+    strcpy(((Player*)(hash->players))[index].name, "");
+    ((Player*)(hash->players))[index].age = -1;
+
+    return deletedPlayer;
 }
 
 // Function to check if a slot in open addressing is empty
@@ -691,10 +753,9 @@ void freeHash(Hash* hash, int collision_resolution_strategy) {
 
 // Function to free the memory used by the linked list
 void freeList(List* head) {
-    List* current = head;
-    while (current != NULL) {
-        List* temp = current;
-        current = current->next;
+    while (head != NULL) {
+        List* temp = head;
+        head = head->next;
         free(temp->player.name);
         free(temp);
     }
