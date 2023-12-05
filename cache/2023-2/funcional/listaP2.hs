@@ -21,9 +21,41 @@ somaDivisores m = acumulador [divisor | divisor <- [1..m-1], (ehDivisivel m divi
 -- Função auxiliar para acumular a soma dos divisores
 acumulador :: [Int] -> Int
 acumulador [] = 0
-acumulador (x:xs) = foldr (+) x xs
+acumulador (x:xs) = foldr (+) x xs -- x + acumulador xs
 
 -- Função auxiliar para verificar se um número é divisível por outro, evitando divisão por zero.
 ehDivisivel :: Int -> Int -> Bool
 ehDivisivel _ 0 = False
 ehDivisivel a b = (mod a b) == 0
+
+-- =============================================================================================
+-- Questão 2 --
+-- =============================================================================================
+
+-- Função principal
+contaString :: [Char] -> [(Char, Int)]
+contaString xs = contaStringAux xs xs
+
+-- Função auxiliar recursiva
+contaStringAux :: [Char] -> [Char] -> [(Char, Int)]
+contaStringAux _ [] = []
+contaStringAux original (x:xs) =
+  (x, contaChar x original) : contaStringAux original xs
+
+-- Função auxiliar para somar as letras
+contaChar :: Char -> [Char] -> Int
+contaChar l xs = foldr (somaSeIgual l) 0 xs
+
+-- Função auxiliar para somar se o caractere for igual
+somaSeIgual :: Char -> Char -> Int -> Int
+somaSeIgual l x acc
+  | x == l = acc + 1
+  | otherwise = acc
+
+-- =============================================================================================
+-- Questão 3 --
+-- =============================================================================================
+
+inverteString :: [Char] -> [Char]
+inverteString [] = []
+inverteString (x:xs) = inverteString xs ++ [x]
