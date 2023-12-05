@@ -8,6 +8,7 @@ typedef struct Player {
     char naturalness[64];
     char team[64];
     int age;
+    int deleted;
 } Player;
 
 // Node structure for the linked list
@@ -77,7 +78,7 @@ void updateHeight(AVLTree* node);
 // Auxiliary functions to handle collisions using Open Addressing
 Player* createOpenAddressing(const char* playerName, int age);
 Player* searchOpenAddressing(Hash* hash, const char* playerName);
-Player* insertOpenAddressing(Hash* hash, Player* player, int index);
+void insertOpenAddressing(Hash* hash, Player* player, int index);
 Player* removeOpenAddressing(Hash* hash, const char* playerName);
 Player* markAsDeleted(Hash* hash, int index);
 int isEmptySlot(Hash* hash, int index);

@@ -107,6 +107,7 @@ Hash* createHash(Hash* existingHash, Player player[], int collision_resolution_s
 
     // Allocate memory for the Hash structure
     Hash* hash = (Hash*)malloc(sizeof(Hash));
+    hash->players = (Player*)malloc(HASH_TABLE_SIZE * sizeof(Player));
     if (hash == NULL) {
         // Handle allocation failure
         printf("Memory Allocation Error\n");
@@ -286,8 +287,11 @@ Hash* insertHash(Hash* hash, Player player, int collision_resolution_strategy) {
         return hash_LinkedList(hash, player);
     } else if (collision_resolution_strategy == 2) {
         return hash_BalancedTrees(hash, player);
-    } else {
+    } else if (collision_resolution_strategy == 3) {
         return hash_OpenAddressing(hash, player);
+    } else {
+        printf("\n\t No attack handling strategy chosen. \n");
+        return NULL;
     }
 }
 
@@ -705,16 +709,16 @@ Player* searchOpenAddressing(Hash* hash, const char* playerName) {
 }
 
 // Function to insert a player into the hash table based on open addressing
-Player* insertOpenAddressing(Hash* hash, Player* player, int index) {
+void insertOpenAddressing(Hash* hash, Player* player, int index) {
     // Check if the slot is empty before inserting
     if (isEmptySlot(hash, index)) {
         // Copy player information to the hash table
         ((Player*)(hash->players))[index] = *player;
-        return &((Player*)(hash->players))[index];
+        // Optionally print a success message or handle success in some way
     } else {
         // Handle collision or attempt to insert in a non-empty slot
         printf("Collision or non-empty slot at index %d\n", index);
-        return NULL;
+        // Optionally return an error code or handle the error in some way
     }
 }
 
@@ -740,21 +744,19 @@ Player* removeOpenAddressing(Hash* hash, const char* playerName) {
 
 // Function to mark a slot as deleted in open addressing
 Player* markAsDeleted(Hash* hash, int index) {
-    Player* deletedPlayer = (Player*)malloc(sizeof(Player));
-    if (deletedPlayer == NULL) {
-        // Handle allocation failure
-        printf("Memory Allocation Error\n");
+    // Check if the slot is already marked as deleted
+    if (((Player*)(hash->players))[index].deleted) {
+        // Optionally handle this case differently (e.g., return an error code)
+        printf("Slot at index %d is already marked as deleted\n", index);
         return NULL;
     }
 
-    // Copy the deleted player information
-    *deletedPlayer = ((Player*)(hash->players))[index];
-
     // Mark the slot as deleted
-    strcpy(((Player*)(hash->players))[index].name, "");
-    ((Player*)(hash->players))[index].age = -1;
+    ((Player*)(hash->players))[index].deleted = 1;
 
-    return deletedPlayer;
+    // No need to allocate memory for deletedPlayer, as the original slot is not cleared
+
+    return &((Player*)(hash->players))[index];
 }
 
 // Function to check if a slot in open addressing is empty
@@ -809,18 +811,11 @@ void freeAVLTree(AVLTree* root) {
 // Function to free the memory used by open addressing
 void freeOpenAddressing(Hash* hash) {
     if (hash == NULL || hash->players == NULL) {
-        return; // Nothing to free
-    }
-
-    for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-        if (((Player**)(hash->players))[i] != NULL) {
-            free(((Player**)(hash->players))[i]);
-        }
+        return;
     }
 
     // Free the array itself
     free(hash->players);
-    free(hash);
 }
 
 // Display the menu
