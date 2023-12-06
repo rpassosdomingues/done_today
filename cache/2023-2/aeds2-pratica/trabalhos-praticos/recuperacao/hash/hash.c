@@ -135,6 +135,7 @@ Hash* createHash(Hash* existingHash, Player player[], int collision_resolution_s
         }
     } else {
         printf("Error: Invalid collision resolution strategy.\n");
+        free(hash); // Free allocated memory in case of an error
         return NULL;
     }
 
