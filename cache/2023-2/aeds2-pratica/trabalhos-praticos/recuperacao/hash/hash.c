@@ -154,42 +154,19 @@ Hash* hash_LinkedList(Hash* hash, Player player) {
 
 // Function to handle collisions using AVL Tree
 Hash* hash_BalancedTrees(Hash* hash, Player player) {
-    // Create a new hash table if it doesn't exist
-    if (hash == NULL) {
-        hash = (Hash*)malloc(sizeof(Hash));
-        if (hash == NULL) {
-            printf("Error: Unable to create hash table. Memory Allocation Error.\n");
-            return NULL;
-        }
-
-        for (int i = 0; i < MAX_PLAYERS; i++) {
-            hash->playerL[i] = NULL;
-        }
-    }
-
     // Calculate the index using the hash function
     int index = hashing(player.name);
 
     // Access the AVL Tree at the calculated index
-    AVLTree** avlTree = &hash->playerL[index];
+    AVLTree** avlTree = &(((AVLTree**)(hash->players))[index]);
 
-    // Check if AVL Tree is NULL, and initialize if necessary
+    // Insert the player into the AVL Tree at the index
+    *avlTree = insertAVLTree(*avlTree, player);
     if (*avlTree == NULL) {
-        *avlTree = insertAVLTree(NULL, player);
-        if (*avlTree == NULL) {
-            printf("Error: AVL node creation failed.\n");
-            return hash;
-        }
-    } else {
-        // Insert the player into the existing AVL Tree at the index
-        *avlTree = insertAVLTree(*avlTree, player);
-        if (*avlTree == NULL) {
-            printf("Error: AVL node insertion failed.\n");
-            return hash;
-        }
+        printf("Error: AVL node insertion failed.\n");
     }
 
-    // Return the modified hash table
+    // Return the original or modified hash table
     return hash;
 }
 
@@ -260,19 +237,12 @@ Hash* searchHash(Hash* hash, Player player, int collision_resolution_strategy) {
         }
     } else if (collision_resolution_strategy == 3) {
         // Search for open addressing
-        int start_index = index;  // Save the starting index for loop termination
+        Player* result = searchOpenAddressing(hash, player.name);
 
-        do {
-            if (strcmp(((Player*)(hash->players))[index].name, "") == 0) {
-                // Empty slot reached, player not found
-                break;
-            }
-            if (strcmp(((Player*)(hash->players))[index].name, player.name) == 0) {
-                // Player found in open addressing
-                return hash;
-            }
-            index = (index + 1) % HASH_TABLE_SIZE;
-        } while (index != start_index);
+        if (result != NULL) {
+            // Player found in open addressing
+            return hash;
+        }
     }
 
     // Player not found, return the original hash table
@@ -350,7 +320,7 @@ List* createList(Player player[]) {
             // Handle allocation failure
             printf("Memory Allocation Error\n");
             // Clean up: Free the memory used by the linked list
-            freeList(head);
+            //freeList(head);
             return NULL;
         }
 
@@ -436,7 +406,7 @@ List* removeList(List* head, const char* playerName) {
     }
 
     // Free the memory used by the removed node
-    freeList(current);
+    //freeList(current);
 
     return head;  // Return the updated head after removal
 }
@@ -447,7 +417,7 @@ List* removeList(List* head, const char* playerName) {
  * =========================================================================
  */
 
-// Utility function to create an AVL node and balance the tree
+// Function to create an AVL tree from an array of players
 AVLTree* createAVLTree(Player player[]) {
     AVLTree* root = NULL;
 
@@ -457,6 +427,22 @@ AVLTree* createAVLTree(Player player[]) {
     }
 
     return root;
+}
+
+// Utility function to create an AVL node
+AVLTree* createAVLNode(Player player) {
+    AVLTree* newNode = (AVLTree*)malloc(sizeof(AVLTree));
+    if (newNode == NULL) {
+        // Handle memory allocation failure
+        return NULL;
+    }
+
+    newNode->player = player;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    newNode->height = 1;
+
+    return newNode;
 }
 
 // Function to search for a player in AVL Tree
@@ -509,19 +495,7 @@ AVLTree* searchFather(AVLTree* root, AVLTree* node, AVLTree* parent) {
 AVLTree* insertAVLTree(AVLTree* root, Player player) {
     if (root == NULL) {
         // Create a new AVL node for the current player
-        AVLTree* newNode = (AVLTree*)malloc(sizeof(AVLTree));
-        if (newNode == NULL) {
-            // Handle allocation failure
-            printf("Unable to insert player. Memory Allocation Error\n");
-            return NULL;
-        }
-
-        // Assign player to the new node
-        newNode->player = player;
-        newNode->left = newNode->right = NULL;
-        newNode->height = 1;
-
-        return newNode;
+        return createAVLNode(player);
     }
 
     int comparisonResult = strcmp(player.name, root->player.name);
@@ -563,7 +537,7 @@ AVLTree* removeAVLTree(AVLTree* root, Player player) {
         // Case 2: One child
         AVLTree *child = (oldNode->left != NULL) ? oldNode->left : oldNode->right;
         if (father == NULL) {
-            free(root);
+            //free(root);
             return child;
         } else if (father->left == oldNode) {
             free(father->left);
@@ -833,9 +807,7 @@ void collision_handling_choice() {
 }
 
 int main() { 
-    clock_t start_time, end_time;
-    double cpu_time_used;
-
+    
     Player playersArray[MAX_PLAYERS];
     // Read player data from the file
     int numPlayers = readPlayers(playersArray);
@@ -851,9 +823,11 @@ int main() {
         printf("\n\tEnter your choice: ");
         scanf("%d", &collision_resolution_strategy);
 
-        freeHash(hash, collision_resolution_strategy);
-        // Benchmarking
-        start_time = clock();
+        // Initialize clock to time benckmark
+        clock_t start_time, end_time;
+        double cpu_time_used = 0;
+
+        // Benchmarking cases
         switch(collision_resolution_strategy) {
             case 0:
                 // Free the memory allocated for the hash table
@@ -862,36 +836,47 @@ int main() {
                 return 0;
             case 1:
                 // Linked List
+                start_time = clock();
                 hash = createHash(hash, playersArray, collision_resolution_strategy);
                 for (int i = 0; i < numPlayers; i++) {
                     insertHash(hash, playersArray[i], collision_resolution_strategy);
                 }
+                end_time = clock();
+                cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
+
+                // Output
+                printf("\nTime taken: %.4f milliseconds", cpu_time_used);
                 break;
             case 2:
                 // Balanced Trees
+                start_time = clock();
                 hash = createHash(hash, playersArray, collision_resolution_strategy);
                 for (int i = 0; i < numPlayers; i++) {
                     insertHash(hash, playersArray[i], collision_resolution_strategy);
                 }
+                end_time = clock();
+                cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
+
+                // Output
+                printf("\nTime taken: %.4f milliseconds", cpu_time_used);
                 break;
             case 3:
                 // Open Addressing
+                start_time = clock();
                 hash = createHash(hash, playersArray, collision_resolution_strategy);
                 for (int i = 0; i < numPlayers; i++) {
                     insertHash(hash, playersArray[i], collision_resolution_strategy);
                 }
+                end_time = clock();
+                cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
+
+                // Output
+                printf("\nTime taken: %.4f milliseconds", cpu_time_used);
                 break;
             default:
                 printf("\nInvalid Output!");
                 break;
         }
-        end_time = clock();
-        cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
-
-        // Output
-        printf("\nTime taken: %.4f milliseconds", cpu_time_used);
-
-        //freeHash(hash, collision_resolution_strategy);
 
     } while(1);
 

@@ -62,6 +62,7 @@ List* removeList(List* head, const char* playerName);
 
 // Auxiliary functions to handle collisions using AVL tree
 AVLTree* createAVLTree(Player player[]);
+AVLTree* createAVLNode(Player player);
 AVLTree* searchAVLTree(AVLTree* node, Player player);
 AVLTree* searchFather(AVLTree* root, AVLTree* node, AVLTree* parent);
 AVLTree* insertAVLTree(AVLTree* root, Player player);
