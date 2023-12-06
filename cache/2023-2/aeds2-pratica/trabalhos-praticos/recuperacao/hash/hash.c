@@ -135,7 +135,6 @@ Hash* createHash(Hash* existingHash, Player player[], int collision_resolution_s
         }
     } else {
         printf("Error: Invalid collision resolution strategy.\n");
-        free(hash);
         return NULL;
     }
 
@@ -492,15 +491,18 @@ AVLTree* searchFather(AVLTree* root, AVLTree* node, AVLTree* parent) {
         return NULL;  // Node not found or Tree is empty
     }
 
-    if (root->left == node || root->right == node) {
-        return root;  // Found the parent of the given node
+    AVLTree* foundNode = searchAVLTree(root, node->player);
+
+    if (foundNode != NULL) {
+        // Node found, check if it is the child of the provided parent
+        if (parent == NULL || (root->left == foundNode || root->right == foundNode)) {
+            return root;  // Found the parent of the given node
+        }
     }
 
-    if (node->height < root->height) {
-        return searchFather(root->left, node, root);
-    } else {
-        return searchFather(root->right, node, root);
-    }
+    // Search recursively
+    AVLTree* nextRoot = (strcmp(node->player.name, root->player.name) < 0) ? root->left : root->right;
+    return searchFather(nextRoot, node, root);
 }
 
 // Function to insert a node into an AVL Tree
@@ -577,7 +579,7 @@ AVLTree* removeAVLTree(AVLTree* root, Player player) {
         oldNode->right = removeMinValueNode(oldNode->right);
     }
 
-    return balanceNode(root);
+    return balanceNode(father);
 }
 
 AVLTree* removeMinValueNode(AVLTree* root) {
@@ -782,11 +784,12 @@ void freeHash(Hash* hash, int collision_resolution_strategy) {
         }
     } else if (collision_resolution_strategy == 3) {
         // Open Addressing strategy
-        freeOpenAddressing(hash);
+        for (int i = 0; i < HASH_TABLE_SIZE; i++) {
+            freeOpenAddressing(((Hash**)(hash->players))[i]);
+        }
+    } else {
+        free(hash);
     }
-
-    // Free the hash structure itself
-    free(hash);
 }
 
 // Function to free the memory used by the linked list
@@ -813,7 +816,6 @@ void freeOpenAddressing(Hash* hash) {
     if (hash == NULL || hash->players == NULL) {
         return;
     }
-
     // Free the array itself
     free(hash->players);
 }
@@ -841,7 +843,7 @@ int main() {
     if (numPlayers == 0) {
         return 1;
     }
-
+    
     Hash* hash = NULL;
     int collision_resolution_strategy = -1;
     do {
@@ -849,6 +851,7 @@ int main() {
         printf("\n\tEnter your choice: ");
         scanf("%d", &collision_resolution_strategy);
 
+        freeHash(hash, collision_resolution_strategy);
         // Benchmarking
         start_time = clock();
         switch(collision_resolution_strategy) {
@@ -887,6 +890,8 @@ int main() {
 
         // Output
         printf("\nTime taken: %.4f milliseconds", cpu_time_used);
+
+        //freeHash(hash, collision_resolution_strategy);
 
     } while(1);
 
