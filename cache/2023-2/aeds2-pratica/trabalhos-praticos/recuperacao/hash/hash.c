@@ -131,7 +131,7 @@ Hash* createHash(Hash* existingHash, Player player[], int collision_resolution_s
         // Open Addressing strategy
         hash->players = malloc(HASH_TABLE_SIZE * sizeof(Player*));  // Use pointers to Player structures
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            ((Player**)(hash->players))[i] = createOpenAddressing(player[i].name, player[i].age);
+            ((Player**)(hash->players))[i] = createOpenAddressing(player);
         }
     } else {
         printf("Error: Invalid collision resolution strategy.\n");
@@ -178,15 +178,19 @@ Hash* hash_OpenAddressing(Hash* hash, Player player) {
 
     // Linear probing to find the next available slot
     do {
-        if (((Player**)(hash->players))[index] == NULL || index == initialIndex) {
-            // Break the loop if an empty slot is found or looped back to the starting index
+        if (((Player**)(hash->players))[index] == NULL) {
+            // Empty slot found, insert the player and break the loop
+            insertOpenAddressing(hash, &player, index);
+            break;
+        } else if (index == initialIndex) {
+            // Loop back to the starting index, indicating that the hash table is full
+            printf("Error: Hash table is full. Unable to insert player '%s'.\n", player.name);
             break;
         }
+
+        // Move to the next slot using linear probing
         index = (index + 1) % HASH_TABLE_SIZE;
     } while (index != initialIndex);
-
-    // Insert the player into the found slot
-    insertOpenAddressing(hash, &player, index);
 
     // Return the modified hash table
     return hash;
@@ -652,17 +656,44 @@ void updateHeight(AVLTree* node) {
  */
 
 // Function to create a open addressing
-Player* createOpenAddressing(const char* playerName, int age) {
-    Player* newPlayer = (Player*)malloc(sizeof(Player));
+Player* createOpenAddressing(Player player[]) {
+    Player* newPlayer = malloc(HASH_TABLE_SIZE * sizeof(Player));
+
     if (newPlayer == NULL) {
-        // Handle allocation failure
-        printf("Unable to create player. Memory Allocation Error\n");
+        // Handle memory allocation failure if necessary
+        printf("Memory Allocation Error\n");
         return NULL;
     }
 
-    // Copy player information to the new player
-    strcpy(newPlayer->name, playerName);
-    newPlayer->age = age;
+    // Initialize hash table slots
+    for (int i = 0; i < HASH_TABLE_SIZE; i++) {
+        // Initialize each player in the slot as empty
+        newPlayer[i].name[0] = '\0';
+        newPlayer[i].position[0] = '\0';
+        newPlayer[i].naturalness[0] = '\0';
+        newPlayer[i].team[0] = '\0';
+        newPlayer[i].age = 0;
+    }
+
+    // Insert players into the array using open addressing
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        int index = hashing(newPlayer[i].name);
+        int initialIndex = index;
+
+        do {
+            if (newPlayer[index].name[0] == '\0' || index == initialIndex) {
+                // Found an empty slot or returned to the starting index
+                // Insert player into slot
+                strcpy(newPlayer[index].name, player[i].name);
+                strcpy(newPlayer[index].position, player[i].position);
+                strcpy(newPlayer[index].naturalness, player[i].naturalness);
+                strcpy(newPlayer[index].team, player[i].team);
+                newPlayer[index].age = player[i].age;
+                break;
+            }
+            index = (index + 1) % HASH_TABLE_SIZE;
+        } while (index != initialIndex);
+    }
 
     return newPlayer;
 }
@@ -691,11 +722,9 @@ void insertOpenAddressing(Hash* hash, Player* player, int index) {
     if (isEmptySlot(hash, index)) {
         // Copy player information to the hash table
         ((Player*)(hash->players))[index] = *player;
-        // Optionally print a success message or handle success in some way
     } else {
         // Handle collision or attempt to insert in a non-empty slot
         printf("Collision or non-empty slot at index %d\n", index);
-        // Optionally return an error code or handle the error in some way
     }
 }
 
@@ -764,6 +793,7 @@ void freeHash(Hash* hash, int collision_resolution_strategy) {
         }
     } else {
         free(hash);
+        hash->players = NULL;
     }
 }
 

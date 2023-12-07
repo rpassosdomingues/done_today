@@ -77,7 +77,7 @@ int balanceFactor(AVLTree* node);
 void updateHeight(AVLTree* node);
 
 // Auxiliary functions to handle collisions using Open Addressing
-Player* createOpenAddressing(const char* playerName, int age);
+Player* createOpenAddressing(Player player[]);
 Player* searchOpenAddressing(Hash* hash, const char* playerName);
 void insertOpenAddressing(Hash* hash, Player* player, int index);
 Player* removeOpenAddressing(Hash* hash, const char* playerName);
