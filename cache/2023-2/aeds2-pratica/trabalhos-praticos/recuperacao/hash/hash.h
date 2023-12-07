@@ -29,7 +29,7 @@ typedef struct AVLTree {
 typedef struct Hash {
     List** playerList;
     AVLTree** playerTree;
-    Player* playerOpen;
+    Player** playerOpen;
     Player* players;
 } Hash;
 

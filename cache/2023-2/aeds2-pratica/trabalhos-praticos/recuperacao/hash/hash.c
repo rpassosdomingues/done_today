@@ -789,7 +789,6 @@ void freeHash(Hash* hash, int collision_resolution_strategy) {
         }
     } else {
         free(hash);
-        hash->players = NULL;
     }
 }
 
