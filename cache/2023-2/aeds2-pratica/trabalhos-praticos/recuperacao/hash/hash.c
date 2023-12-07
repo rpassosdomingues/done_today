@@ -450,7 +450,7 @@ AVLTree* createAVLNode(Player player) {
 AVLTree* searchAVLTree(AVLTree* node, Player player) {
     // Check for NULL node
     if (node == NULL) {
-        printf("Error: AVL Tree is NULL.\n");
+        //printf("Error: AVL Tree is NULL.\n");
         return NULL;
     }
 
@@ -740,7 +740,7 @@ Player* removeOpenAddressing(Hash* hash, const char* playerName) {
     } while (index != start_index);
 
     // Player not found
-    printf("Player '%s' not found in open addressing\n", playerName);
+    //printf("Player '%s' not found in open addressing\n", playerName);
     return NULL;
 }
 
@@ -872,6 +872,7 @@ int main() {
                 hash = createHash(hash, playersArray, collision_resolution_strategy);
                 for (int i = 0; i < numPlayers; i++) {
                     insertHash(hash, playersArray[i], collision_resolution_strategy);
+                    removeHash(hash, playersArray[i], collision_resolution_strategy);
                 }
                 end_time = clock();
                 cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
@@ -885,6 +886,7 @@ int main() {
                 hash = createHash(hash, playersArray, collision_resolution_strategy);
                 for (int i = 0; i < numPlayers; i++) {
                     insertHash(hash, playersArray[i], collision_resolution_strategy);
+                    removeHash(hash, playersArray[i], collision_resolution_strategy);
                 }
                 end_time = clock();
                 cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;
@@ -898,6 +900,7 @@ int main() {
                 hash = createHash(hash, playersArray, collision_resolution_strategy);
                 for (int i = 0; i < numPlayers; i++) {
                     insertHash(hash, playersArray[i], collision_resolution_strategy);
+                    removeHash(hash, playersArray[i], collision_resolution_strategy);
                 }
                 end_time = clock();
                 cpu_time_used = ((double)(1000 * (end_time - start_time))) / CLOCKS_PER_SEC;

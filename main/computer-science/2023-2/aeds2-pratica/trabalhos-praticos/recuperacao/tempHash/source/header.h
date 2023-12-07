@@ -1,5 +1,5 @@
-#ifndef _H_HASH_
-#define _H_HASH_
+#ifndef HEADER_H
+#define HEADER_H
 
 // Define a struct for the player object
 typedef struct Player {
@@ -27,7 +27,9 @@ typedef struct AVLTree {
 
 // Structure for Open Addressing
 typedef struct Hash {
-    AVLTree** playerL;
+    List** playerList;
+    AVLTree** playerTree;
+    Player** playerOpen;
     Player* players;
 } Hash;
 
@@ -60,7 +62,7 @@ int balanceFactor(AVLTree* node);
 void updateHeight(AVLTree* node);
 
 // Auxiliary functions to handle collisions using Open Addressing
-Player* createOpenAddressing(const char* playerName, int age);
+Player* createOpenAddressing(Player player[]);
 Player* searchOpenAddressing(Hash* hash, const char* playerName);
 void insertOpenAddressing(Hash* hash, Player* player, int index);
 Player* removeOpenAddressing(Hash* hash, const char* playerName);
@@ -72,4 +74,4 @@ void freeList(List* head);
 void freeAVLTree(AVLTree* root);
 void freeOpenAddressing(Hash* hash);
 
-#endif // _H_HASH_
+#endif // HEADER_H

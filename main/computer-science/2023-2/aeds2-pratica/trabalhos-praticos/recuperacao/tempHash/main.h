@@ -27,8 +27,9 @@ typedef struct AVLTree {
 
 // Structure for Open Addressing
 typedef struct Hash {
-    AVLTree** playerL;
-    Player* players;
+    List** playerList;
+    AVLTree** playerTree;
+    Player** playerOpen;
 } Hash;
 
 // Instance Reader

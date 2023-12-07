@@ -14,7 +14,8 @@
 #include <time.h>
 #include "main.h"
 
-#include "source/instanceReader.c"
+#include "data/instanceReader.c"
+
 #include "source/linkedList.c"
 #include "source/avlTree.c"
 #include "source/openAddressing.c"
@@ -36,7 +37,6 @@ Hash* createHash(Hash* existingHash, Player player[], int collision_resolution_s
 
     // Allocate memory for the Hash structure
     Hash* hash = (Hash*)malloc(sizeof(Hash));
-    hash->players = (Player*)malloc(HASH_TABLE_SIZE * sizeof(Player));
     if (hash == NULL) {
         // Handle allocation failure
         printf("Memory Allocation Error\n");
@@ -46,25 +46,26 @@ Hash* createHash(Hash* existingHash, Player player[], int collision_resolution_s
     // Initialize the players array based on the collision resolution strategy
     if (collision_resolution_strategy == 1) {
         // Linked List strategy
-        hash->players = malloc(HASH_TABLE_SIZE * sizeof(List*));
+        hash->playerList = (List*)malloc(HASH_TABLE_SIZE * sizeof(List*));
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            ((List**)(hash->players))[i] = createList(player);
+            ((List**)(hash->playerList))[i] = createList(player);
         }
     } else if (collision_resolution_strategy == 2) {
         // Balanced Trees strategy
-        hash->players = malloc(HASH_TABLE_SIZE * sizeof(AVLTree*));
+        hash->playerTree = (AVLTree*)malloc(HASH_TABLE_SIZE * sizeof(AVLTree*));
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            ((AVLTree**)(hash->players))[i] = createAVLTree(player);
+            ((AVLTree**)(hash->playerTree))[i] = createAVLTree(player);
         }
     } else if (collision_resolution_strategy == 3) {
         // Open Addressing strategy
-        hash->players = malloc(HASH_TABLE_SIZE * sizeof(Player*));  // Use pointers to Player structures
+        hash->playerOpen = (Player*)malloc(HASH_TABLE_SIZE * sizeof(Player*));
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            ((Player**)(hash->players))[i] = createOpenAddressing(player[i].name, player[i].age);
+            ((Player**)(hash->playerOpen))[i] = createOpenAddressing(player);
         }
     } else {
+        // Free allocated memory in case of an error
         printf("Error: Invalid collision resolution strategy.\n");
-        free(hash); // Free allocated memory in case of an error
+        free(hash);
         return NULL;
     }
 
@@ -76,7 +77,7 @@ Hash* hash_LinkedList(Hash* hash, Player player) {
     int index = hashing(player.name);
     
     // Update the hash table with the new head returned by insertList
-    ((List**)(hash->players))[index] = insertList(((List**)(hash->players))[index], player);
+    ((List**)(hash->playerList))[index] = insertList(((List**)(hash->playerList))[index], player);
 
     // Return the modified hash table
     return hash;
@@ -88,7 +89,7 @@ Hash* hash_BalancedTrees(Hash* hash, Player player) {
     int index = hashing(player.name);
 
     // Access the AVL Tree at the calculated index
-    AVLTree** avlTree = &(((AVLTree**)(hash->players))[index]);
+    AVLTree** avlTree = &(((AVLTree**)(hash->playerTree))[index]);
 
     // Insert the player into the AVL Tree at the index
     *avlTree = insertAVLTree(*avlTree, player);
@@ -107,15 +108,14 @@ Hash* hash_OpenAddressing(Hash* hash, Player player) {
 
     // Linear probing to find the next available slot
     do {
-        if (((Player**)(hash->players))[index] == NULL || index == initialIndex) {
-            // Break the loop if an empty slot is found or looped back to the starting index
-            break;
+        if (((Player**)(hash->playerOpen))[index] == NULL) {
+            // Empty slot found, insert the player and break the loop
+            insertOpenAddressing(hash, &player, index);
+            //break;  // Uncomment this line to break out of the loop
         }
+        // Move to the next slot using linear probing
         index = (index + 1) % HASH_TABLE_SIZE;
     } while (index != initialIndex);
-
-    // Insert the player into the found slot
-    insertOpenAddressing(hash, &player, index);
 
     // Return the modified hash table
     return hash;
@@ -151,7 +151,7 @@ Hash* searchHash(Hash* hash, Player player, int collision_resolution_strategy) {
 
     if (collision_resolution_strategy == 1) {
         // Search for linked lists
-        List* current = searchList(((List**)(hash->players))[index], player.name);
+        List* current = searchList(((List**)(hash->playerList))[index], player.name);
 
         if (current != NULL) {
             // Player found in linked list
@@ -159,7 +159,7 @@ Hash* searchHash(Hash* hash, Player player, int collision_resolution_strategy) {
         }
     } else if (collision_resolution_strategy == 2) {
         // Search for balanced Trees
-        AVLTree* result = searchAVLTree(((AVLTree**)(hash->players))[index], player);
+        AVLTree* result = searchAVLTree(((AVLTree**)(hash->playerTree))[index], player);
 
         if (result != NULL) {
             // Player found in AVL Tree
@@ -167,7 +167,7 @@ Hash* searchHash(Hash* hash, Player player, int collision_resolution_strategy) {
         }
     } else if (collision_resolution_strategy == 3) {
         // Search for open addressing
-        Player* result = searchOpenAddressing(hash, player.name);
+        Player* result = searchOpenAddressing(hash->playerOpen, player.name);
 
         if (result != NULL) {
             // Player found in open addressing
@@ -199,14 +199,14 @@ Hash* removeHash(Hash* hash, Player player, int collision_resolution_strategy) {
     if (collision_resolution_strategy == 1) {
         // Linked List strategy
         int index = hashing(player.name);
-        ((List**)(hash->players))[index] = removeList(((List**)(hash->players))[index], player.name);
+        ((List**)(hash->playerList))[index] = removeList(((List**)(hash->playerList))[index], player.name);
     } else if (collision_resolution_strategy == 2) {
         // Balanced Trees strategy
         int index = hashing(player.name);
-        ((AVLTree**)(hash->players))[index] = removeAVLTree(((AVLTree**)(hash->players))[index], player);
+        ((AVLTree**)(hash->playerTree))[index] = removeAVLTree(((AVLTree**)(hash->playerTree))[index], player);
     } else if (collision_resolution_strategy == 3) {
         // Open Addressing strategy
-        removeOpenAddressing(hash, player.name);
+        removeOpenAddressing(hash->playerOpen, player.name);
     } else {
         // Handle unknown collision resolution strategy
         printf("Invalid collision resolution strategy\n");
@@ -226,17 +226,17 @@ void freeHash(Hash* hash, int collision_resolution_strategy) {
     if (collision_resolution_strategy == 1) {
         // Linked List strategy
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            freeList(((List**)(hash->players))[i]);
+            freeList(((List**)(hash->playerList))[i]);
         }
     } else if (collision_resolution_strategy == 2) {
         // Balanced Trees strategy
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            freeAVLTree(((AVLTree**)(hash->players))[i]);
+            freeAVLTree(((AVLTree**)(hash->playerTree))[i]);
         }
     } else if (collision_resolution_strategy == 3) {
         // Open Addressing strategy
         for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-            freeOpenAddressing(((Hash**)(hash->players))[i]);
+            freeOpenAddressing(((Hash**)(hash->playerOpen))[i]);
         }
     } else {
         free(hash);

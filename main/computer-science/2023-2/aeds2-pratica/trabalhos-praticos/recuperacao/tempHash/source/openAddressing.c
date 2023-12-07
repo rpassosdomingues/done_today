@@ -8,22 +8,49 @@
 #include <string.h>
 #include "header.h"
 
-#include "instanceReader.c"
+#include "../data/instanceReader.c"
 
 #define HASH_TABLE_SIZE 1200 // M
 
 // Function to create a open addressing
-Player* createOpenAddressing(const char* playerName, int age) {
-    Player* newPlayer = (Player*)malloc(sizeof(Player));
+Player* createOpenAddressing(Player player[]) {
+    Player* newPlayer = malloc(HASH_TABLE_SIZE * sizeof(Player));
+
     if (newPlayer == NULL) {
-        // Handle allocation failure
-        printf("Unable to create player. Memory Allocation Error\n");
+        // Handle memory allocation failure if necessary
+        printf("Memory Allocation Error\n");
         return NULL;
     }
 
-    // Copy player information to the new player
-    strcpy(newPlayer->name, playerName);
-    newPlayer->age = age;
+    // Initialize hash table slots
+    for (int i = 0; i < HASH_TABLE_SIZE; i++) {
+        // Initialize each player in the slot as empty
+        newPlayer[i].name[0] = '\0';
+        newPlayer[i].position[0] = '\0';
+        newPlayer[i].naturalness[0] = '\0';
+        newPlayer[i].team[0] = '\0';
+        newPlayer[i].age = 0;
+    }
+
+    // Insert players into the array using open addressing
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        int index = hashing(newPlayer[i].name);
+        int initialIndex = index;
+
+        do {
+            if (newPlayer[index].name[0] == '\0' || index == initialIndex) {
+                // Found an empty slot or returned to the starting index
+                // Insert player into slot
+                strcpy(newPlayer[index].name, player[i].name);
+                strcpy(newPlayer[index].position, player[i].position);
+                strcpy(newPlayer[index].naturalness, player[i].naturalness);
+                strcpy(newPlayer[index].team, player[i].team);
+                newPlayer[index].age = player[i].age;
+                break;
+            }
+            index = (index + 1) % HASH_TABLE_SIZE;
+        } while (index != initialIndex);
+    }
 
     return newPlayer;
 }
@@ -52,11 +79,9 @@ void insertOpenAddressing(Hash* hash, Player* player, int index) {
     if (isEmptySlot(hash, index)) {
         // Copy player information to the hash table
         ((Player*)(hash->players))[index] = *player;
-        // Optionally print a success message or handle success in some way
     } else {
         // Handle collision or attempt to insert in a non-empty slot
         printf("Collision or non-empty slot at index %d\n", index);
-        // Optionally return an error code or handle the error in some way
     }
 }
 
@@ -102,11 +127,17 @@ int isEmptySlot(Hash* hash, int index) {
     return strcmp(((Player*)(hash->players))[index].name, "") == 0;
 }
 
-// Function to free the memory used by open addressing
 void freeOpenAddressing(Hash* hash) {
-    if (hash == NULL || hash->players == NULL) {
+    if (hash == NULL || hash->playerOpen == NULL) {
         return;
     }
+
+    for (int i = 0; i < HASH_TABLE_SIZE; i++) {
+        if (((Hash**)(hash->playerOpen))[i] != NULL) {
+            free(((Hash**)(hash->playerOpen))[i]);
+        }
+    }
+
     // Free the array itself
-    free(hash->players);
+    free(hash->playerOpen);
 }
