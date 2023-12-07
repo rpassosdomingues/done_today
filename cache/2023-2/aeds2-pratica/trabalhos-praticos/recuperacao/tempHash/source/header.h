@@ -1,5 +1,5 @@
-#ifndef _H_HASH_
-#define _H_HASH_
+#ifndef HEADER_H
+#define HEADER_H
 
 // Define a struct for the player object
 typedef struct Player {
@@ -72,4 +72,4 @@ void freeList(List* head);
 void freeAVLTree(AVLTree* root);
 void freeOpenAddressing(Hash* hash);
 
-#endif // _H_HASH_
+#endif // HEADER_H

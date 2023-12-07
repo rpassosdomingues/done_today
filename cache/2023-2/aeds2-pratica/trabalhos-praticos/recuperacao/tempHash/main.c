@@ -15,6 +15,7 @@
 #include "main.h"
 
 #include "source/instanceReader.c"
+
 #include "source/linkedList.c"
 #include "source/avlTree.c"
 #include "source/openAddressing.c"
