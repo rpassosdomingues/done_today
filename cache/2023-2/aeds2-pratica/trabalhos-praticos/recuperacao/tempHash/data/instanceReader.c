@@ -7,13 +7,13 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h>
-#include "header.h"
+#include "../source/header.h"
 
 #define MAX_PLAYERS 1149
 
 // Instance Reader
 int readPlayers(Player playersArray[]) {
-    FILE *file = fopen("data/players.csv", "r");
+    FILE *file = fopen("players.csv", "r");
     if (file == NULL) {
         perror("Error opening the file");
         return 0;

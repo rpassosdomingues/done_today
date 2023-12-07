@@ -8,7 +8,7 @@
 #include <string.h>
 #include "header.h"
 
-#include "data/instanceReader.c"
+#include "../data/instanceReader.c"
 
 #define HASH_TABLE_SIZE 1200 // M
 

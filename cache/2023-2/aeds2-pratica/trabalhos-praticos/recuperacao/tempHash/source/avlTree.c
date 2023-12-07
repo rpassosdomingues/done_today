@@ -8,7 +8,7 @@
 #include <string.h>
 #include "header.h"
 
-#include "data/instanceReader.c"
+#include "../data/instanceReader.c"
 
 #define MAX_PLAYERS 1149
 
