@@ -181,13 +181,8 @@ Hash* hash_OpenAddressing(Hash* hash, Player player) {
         if (((Player**)(hash->players))[index] == NULL) {
             // Empty slot found, insert the player and break the loop
             insertOpenAddressing(hash, &player, index);
-            break;
-        } else if (index == initialIndex) {
-            // Loop back to the starting index, indicating that the hash table is full
-            printf("Error: Hash table is full. Unable to insert player '%s'.\n", player.name);
-            break;
+            //break;  // Uncomment this line to break out of the loop
         }
-
         // Move to the next slot using linear probing
         index = (index + 1) % HASH_TABLE_SIZE;
     } while (index != initialIndex);
