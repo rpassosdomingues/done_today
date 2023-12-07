@@ -30,7 +30,6 @@ typedef struct Hash {
     List** playerList;
     AVLTree** playerTree;
     Player** playerOpen;
-    Player* players;
 } Hash;
 
 // Instance Reader
