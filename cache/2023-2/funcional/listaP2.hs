@@ -109,3 +109,12 @@ somaDobro lista = map dobro lista
 
 dobro :: Int -> Int
 dobro n = 2 * n
+
+-- =============================================================================================
+-- Questão 8 --
+-- =============================================================================================
+
+juntaSilabas :: [[Char]] -> [Char]
+juntaSilabas = foldr (++) []
+--juntaSilabas [] = []
+--juntaSilabas (x:xs) = x ++ juntaSilabas xs
