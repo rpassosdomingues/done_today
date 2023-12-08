@@ -6,6 +6,12 @@ Author: Rafael Passos Domingues
 ===============================
 -}
 
+listaIntA :: [Int]
+listaIntA = [1..10]
+
+listaIntB :: [Int]
+listaIntB = [100..90]
+
 -- =============================================================================================
 -- Questão 1 --
 -- =============================================================================================
@@ -59,3 +65,32 @@ somaSeIgual l x acc
 inverteString :: [Char] -> [Char]
 inverteString [] = []
 inverteString (x:xs) = inverteString xs ++ [x]
+
+-- =============================================================================================
+-- Questão 4 --
+-- =============================================================================================
+
+listaQuadrados :: [Int] -> [Int]
+listaQuadrados (x:xs) = map quadrado (x:xs)
+
+quadrado :: Int -> Int
+quadrado q = q * q
+
+-- =============================================================================================
+-- Questão 5 --
+-- =============================================================================================
+
+simulaCartesiano :: [Int] -> [Int] -> [(Int, Int)]
+simulaCartesiano [] _ = []
+simulaCartesiano _ [] = []
+simulaCartesiano (x:xs) (y:ys) = [(x, y) | y <- ys] ++ simulaCartesiano xs ys
+
+-- =============================================================================================
+-- Questão 6 --
+-- =============================================================================================
+
+filtraPositivos :: [Int] -> [Int]
+filtraPositivos xs = filter ehPositivo xs
+
+ehPositivo :: Int -> Bool
+ehPositivo n = n >= 0
