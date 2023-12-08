@@ -2,7 +2,7 @@
 ===============================
 Author: Rafael Passos Domingues
     RA: 2023.1.08.036
-  Data: Dec 8 Fri [17h00]
+  Data: Dec 8 Fri [16h00]
 ===============================
 -}
 
@@ -83,7 +83,7 @@ quadrado q = q * q
 simulaCartesiano :: [Int] -> [Int] -> [(Int, Int)]
 simulaCartesiano [] _ = []
 simulaCartesiano _ [] = []
-simulaCartesiano (x:xs) (y:ys) = [(x, y) | y <- ys] ++ simulaCartesiano xs ys
+simulaCartesiano (x:xs) (y:ys) = [(x, y) | y <- ys] ++ simulaCartesiano ys xs
 
 -- =============================================================================================
 -- Questão 6 --
@@ -94,3 +94,18 @@ filtraPositivos xs = filter ehPositivo xs
 
 ehPositivo :: Int -> Bool
 ehPositivo n = n >= 0
+
+-- =============================================================================================
+-- Questão 7 --
+-- =============================================================================================
+
+somaLista :: [Int] -> Int
+somaLista [] = 0
+somaLista [x] = dobro x
+somaLista (x:xs) = foldr (+) (dobro x) (somaDobro xs)
+
+somaDobro :: [Int] -> [Int]
+somaDobro lista = map dobro lista
+
+dobro :: Int -> Int
+dobro n = 2 * n

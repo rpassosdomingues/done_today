@@ -25,6 +25,7 @@ quickSort (x:xs) = quickSort [y | y <- xs, y <= x] ++ [x] ++ quickSort [y | y <-
 ordena :: [Int] -> [Int]
 ordena [] = []
 ordena (x:xs) = ordena (menores xs) ++ [x] ++ ordena (maiores xs)
+--ordena (x:xs) = ordena (filter (<) x) ++ [x] ++ ordena (filter (>) x)
 
 menores :: [Int] -> [Int]
 menores [] = []
