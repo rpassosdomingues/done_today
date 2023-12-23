@@ -2,6 +2,55 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "main.h"
+
+#define MAX_LINE_LENGTH 1024
+
+void readCSV(const char *filename, Instance **instances, int *numInstances) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Erro ao abrir o arquivo");
+        exit(EXIT_FAILURE);
+    }
+
+    char line[MAX_LINE_LENGTH];
+
+    // Conta o número de instâncias no arquivo
+    *numInstances = 0;
+    while (fgets(line, sizeof(line), file) != NULL) {
+        (*numInstances)++;
+    }
+
+    // Volta para o início do arquivo
+    fseek(file, 0, SEEK_SET);
+
+    // Aloca memória para armazenar as instâncias
+    *instances = (Instance *)malloc(*numInstances * sizeof(Instance));
+    if (*instances == NULL) {
+        perror("Erro ao alocar memória");
+        exit(EXIT_FAILURE);
+    }
+
+    // Lê as instâncias do arquivo
+    for (int i = 0; i < *numInstances; i++) {
+        fgets(line, sizeof(line), file);
+
+        // Utilize sscanf para extrair os valores da linha formatada
+        sscanf(line, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
+               &(*instances)[i].target,
+               &(*instances)[i].features[0], &(*instances)[i].features[1], &(*instances)[i].features[2], &(*instances)[i].features[3],
+               &(*instances)[i].features[4], &(*instances)[i].features[5], &(*instances)[i].features[6], &(*instances)[i].features[7],
+               &(*instances)[i].features[8], &(*instances)[i].features[9], &(*instances)[i].features[10], &(*instances)[i].features[11],
+               &(*instances)[i].features[12], &(*instances)[i].features[13], &(*instances)[i].features[14], &(*instances)[i].features[15],
+               &(*instances)[i].features[16], &(*instances)[i].features[17], &(*instances)[i].features[18], &(*instances)[i].features[19],
+               &(*instances)[i].features[20], &(*instances)[i].features[21], &(*instances)[i].features[22], &(*instances)[i].features[23],
+               &(*instances)[i].features[24], &(*instances)[i].features[25], &(*instances)[i].features[26], &(*instances)[i].features[27],
+               &(*instances)[i].features[28], &(*instances)[i].features[29]);
+    }
+
+    fclose(file);
+}
+
 // Função de ativação sigmoide
 double sigmoid(double x) {
     return 1.0 / (1.0 + exp(-x));
@@ -11,12 +60,6 @@ double sigmoid(double x) {
 double binary_cross_entropy(double y_true, double y_pred) {
     return -((y_true * log(y_pred)) + ((1 - y_true) * log(1 - y_pred)));
 }
-
-// Estrutura do modelo do classificador binário
-typedef struct {
-    double weight;
-    double bias;
-} BinaryClassifier;
 
 // Inicializar o classificador binário
 void initialize_classifier(BinaryClassifier* model) {
@@ -57,6 +100,12 @@ int main() {
     // Configurar uma semente aleatória para reprodução
     srand(42);
 
+    const char *filename = "../data/input.csv";
+    int numInstances;
+    Instance *instances;
+
+    readCSV(filename, &instances, &numInstances);
+
     // Criar um modelo de classificador binário
     BinaryClassifier model;
     initialize_classifier(&model);
@@ -75,6 +124,8 @@ int main() {
     // Testar o modelo treinado
     double y_pred = forward_pass(&model, x_train);
     printf("Resultado do Teste: %.4f\n", y_pred);
+
+    free(instances);
 
     return 0;
 }

@@ -36,7 +36,7 @@ compile_source: $(OBJ_SOURCE) | $(BIN_DIR)
 
 # Target: compile files in parent directory
 compile_parent: $(OBJ_PARENT) | $(BIN_DIR)
-	$(CC) -o $(BIN_DIR)/$(PROJ_NAME) $^
+	$(CC) -o $(BIN_DIR)/$(PROJ_NAME) $^ -lm
 
 # Target: individual object files in source directory
 $(BIN_DIR)/%.o: $(SRC_DIR)/%.c $(H_SOURCE) | $(BIN_DIR)
