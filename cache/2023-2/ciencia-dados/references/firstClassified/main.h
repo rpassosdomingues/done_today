@@ -3,13 +3,13 @@
 
 #define NUM_FEATURES 30
 
-// Estrutura do modelo do classificador binário
+// Binary classifier model structure
 typedef struct {
     double weight;
     double bias;
 } BinaryClassifier;
 
-// Estrutura para ler a instância
+// Structure to read the instance
 typedef struct {
     int target;
     float features[NUM_FEATURES];
