@@ -1,3 +1,12 @@
+/**
+ * --------------------------------------------
+ * Simple binary classifier
+ * Using a neural network with a single neuron
+ * --------------------------------------------
+ * Author: Rafael Passos Domingues
+ * --------------------------------------------
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
