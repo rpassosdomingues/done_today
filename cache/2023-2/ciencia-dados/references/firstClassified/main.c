@@ -1,10 +1,10 @@
 /**
- * --------------------------------------------
- * Simple binary classifier
+ * ____________________________________________
+ *      --- Simple binary classifier ---
  * Using a neural network with a single neuron
  * --------------------------------------------
  * Author: Rafael Passos Domingues
- * --------------------------------------------
+ * ____________________________________________
 */
 
 #include <stdio.h>
@@ -18,33 +18,33 @@
 void readCSV(const char *filename, Instance **instances, int *numInstances) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        perror("Erro ao abrir o arquivo");
+        perror("\n\tFile not found.\n");
         exit(EXIT_FAILURE);
     }
 
     char line[MAX_LINE_LENGTH];
 
-    // Conta o número de instâncias no arquivo
+    // Counts the number of instances in the file
     *numInstances = 0;
     while (fgets(line, sizeof(line), file) != NULL) {
         (*numInstances)++;
     }
 
-    // Volta para o início do arquivo
+    // Go back to the beginning of the file
     fseek(file, 0, SEEK_SET);
 
-    // Aloca memória para armazenar as instâncias
+    // Allocates memory to store instances
     *instances = (Instance *)malloc(*numInstances * sizeof(Instance));
     if (*instances == NULL) {
-        perror("Erro ao alocar memória");
+        perror("\n\tMemory Allocation Error.\n");
         exit(EXIT_FAILURE);
     }
 
-    // Lê as instâncias do arquivo
+    // Read file instances
     for (int i = 0; i < *numInstances; i++) {
         fgets(line, sizeof(line), file);
 
-        // Utilize sscanf para extrair os valores da linha formatada
+        // Use scanf to extract values from the formatted line
         sscanf(line, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
                &(*instances)[i].target,
                &(*instances)[i].features[0], &(*instances)[i].features[1], &(*instances)[i].features[2], &(*instances)[i].features[3],
@@ -60,53 +60,87 @@ void readCSV(const char *filename, Instance **instances, int *numInstances) {
     fclose(file);
 }
 
-// Função de ativação sigmoide
+/**
+ * ---------------------------------------------
+ * Sigmoid Activation Function
+ * ---------------------------------------------
+ * Narayan, S. (1997).
+ * 
+ * The generalized sigmoid activation function:
+ * Competitive supervised learning.
+ * 
+ * Information sciences, 99(1-2), 69-82.
+ * ---------------------------------------------
+*/
 double sigmoid(double x) {
     return 1.0 / (1.0 + exp(-x));
 }
 
-// Função de perda de entropia cruzada binária
+/**
+ * ---------------------------------------------
+ * Binary Cross Entropy Loss Function
+ * ---------------------------------------------
+ * Ruby, U., & Yendapalli, V. (2020).
+ * 
+ * Binary cross entropy with deep learning
+ * technique for image classification.
+ * 
+ * Int. J. Adv. Trends Comput. Sci. Eng, 9(10).
+ * ---------------------------------------------
+*/
 double binary_cross_entropy(double y_true, double y_pred) {
     return -((y_true * log(y_pred)) + ((1 - y_true) * log(1 - y_pred)));
 }
 
-// Inicializar o classificador binário
+// Initialize the binary classifier
 void initialize_classifier(BinaryClassifier* model) {
-    model->weight = ((double)rand() / RAND_MAX) * 2.0 - 1.0;  // Inicialização aleatória entre -1 e 1
+    model->weight = ((double)rand() / RAND_MAX) * 2.0 - 1.0;  // Random initialization between -1 and 1
     model->bias = 0.0;
 }
 
-// Realizar o forward pass
+// Perform the forward pass
 double forward_pass(BinaryClassifier* model, double x) {
     return sigmoid(model->weight * x + model->bias);
 }
 
-// Treinar o classificador binário usando gradiente descendente
+/**
+ * -------------------------------------------------------
+ * Binary classifier using gradient descent
+ * -------------------------------------------------------
+ * Pendharkar, P. C. (2007).
+ * 
+ * A comparison of gradient ascent, gradient descent
+ * and genetic‐algorithm‐based artificial neural networks
+ * for the binary classification problem.
+ * 
+ * Expert Systems, 24(2), 65-86.
+ * -------------------------------------------------------
+*/
 void train_classifier(BinaryClassifier* model, double x, double y_true, double learning_rate, int epochs) {
     for (int epoch = 0; epoch < epochs; ++epoch) {
         // Forward pass
         double y_pred = forward_pass(model, x);
 
-        // Calcular a perda
+        // Calculate the loss
         double loss = binary_cross_entropy(y_true, y_pred);
 
-        // Calcular gradientes
+        // Calculate gradients
         double gradient_w = (y_pred - y_true) * x;
         double gradient_b = y_pred - y_true;
 
-        // Atualizar parâmetros usando gradiente descendente
+        // Update parameters using gradient descent
         model->weight -= learning_rate * gradient_w;
         model->bias -= learning_rate * gradient_b;
 
-        // Exibir a perda a cada 100 épocas
+        // Display loss every 100 epochs
         if (epoch % 100 == 0) {
-            printf("Época %d, Perda: %.4f\n", epoch, loss);
+            printf("Epoch %d, Loss: %.4f\n", epoch, loss);
         }
     }
 }
 
 int main() {
-    // Configurar uma semente aleatória para reprodução
+    // Configure a random seed for reproduction
     srand(42);
 
     const char *filename = "../data/input.csv";
@@ -115,24 +149,24 @@ int main() {
 
     readCSV(filename, &instances, &numInstances);
 
-    // Criar um modelo de classificador binário
+    // Create a binary classifier model
     BinaryClassifier model;
     initialize_classifier(&model);
 
-    // Dados de treinamento de exemplo
+    // Example training data
     double x_train = 1.0;
-    double y_true_train = 0.0;  // Rótulo esperado (0 para exemplo de negativo)
+    double y_true_train = 0.0;
 
-    // Hiperparâmetros
+    // Hyperparameters
     double learning_rate = 0.01;
     int epochs = 1000;
 
-    // Treinar o modelo
+    // Train model
     train_classifier(&model, x_train, y_true_train, learning_rate, epochs);
 
-    // Testar o modelo treinado
+    // Test the trained model
     double y_pred = forward_pass(&model, x_train);
-    printf("Resultado do Teste: %.4f\n", y_pred);
+    printf("\nResult: %.4f\n", y_pred);
 
     free(instances);
 
