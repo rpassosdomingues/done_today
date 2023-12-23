@@ -23,6 +23,6 @@ double binary_cross_entropy(double y_true, double y_pred);
 void initialize_classifier(BinaryClassifier* model);
 double forward_pass(BinaryClassifier* model, double x);
 
-void train_classifier(BinaryClassifier* model, double x, double y_true, double learning_rate, int epochs);
+void train_classifier(BinaryClassifier* model, double x, double y_true, double learning_rate, int epochs, FILE *outputFile);
 
 #endif // _H_CLASSIFIED_

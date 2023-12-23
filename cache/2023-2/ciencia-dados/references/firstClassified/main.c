@@ -116,7 +116,7 @@ double forward_pass(BinaryClassifier* model, double x) {
  * Expert Systems, 24(2), 65-86.
  * -------------------------------------------------------
 */
-void train_classifier(BinaryClassifier* model, double x, double y_true, double learning_rate, int epochs) {
+void train_classifier(BinaryClassifier* model, double x, double y_true, double learning_rate, int epochs, FILE *outputFile) {
     for (int epoch = 0; epoch < epochs; ++epoch) {
         // Forward pass
         double y_pred = forward_pass(model, x);
@@ -131,6 +131,9 @@ void train_classifier(BinaryClassifier* model, double x, double y_true, double l
         // Update parameters using gradient descent
         model->weight -= learning_rate * gradient_w;
         model->bias -= learning_rate * gradient_b;
+
+        // Salvar época e perda no arquivo CSV
+        fprintf(outputFile, "%d,%.4f\n", epoch, loss);
 
         // Display loss every 100 epochs
         if (epoch % 100 == 0) {
@@ -161,12 +164,23 @@ int main() {
     double learning_rate = 0.01;
     int epochs = 1000;
 
+    // Open csv file for write results
+    FILE *outputFile = fopen("../data/epochs_losses.csv", "w");
+    if (outputFile == NULL) {
+        perror("\n\tError opening output file.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(outputFile, "Epoch,Loss\n");
+
     // Train model
-    train_classifier(&model, x_train, y_true_train, learning_rate, epochs);
+    train_classifier(&model, x_train, y_true_train, learning_rate, epochs, outputFile);
 
     // Test the trained model
     double y_pred = forward_pass(&model, x_train);
     printf("\nResult: %.4f\n", y_pred);
+
+    fclose(outputFile);
 
     free(instances);
 
