@@ -143,9 +143,7 @@ void train_classifier(BinaryClassifier* model, double x, double y_true, double l
 }
 
 int main() {
-    // Configure a random seed for reproduction
-    srand(42);
-
+    
     const char *filename = "../data/input.csv";
     int numInstances;
     Instance *instances;
