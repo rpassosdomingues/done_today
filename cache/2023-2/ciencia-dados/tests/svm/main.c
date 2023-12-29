@@ -41,7 +41,7 @@ void readData(const char *filename, TimeSeries **data, int *numEntries) {
     // Read Data from file to fill struct
     for (int i = 0; i < *numEntries; i++) {
         if (fscanf(file, "%19[^,],%lf\n", (*data)[i].date, &(*data)[i].price) != 2) {
-            fprintf(stderr, "\n\tError reading data from file.\n");
+            fprintf(stderr, "\n\tError reading data from file.\n\n");
             exit(EXIT_FAILURE);
         }
     }
@@ -111,7 +111,7 @@ int main() {
     TimeSeries *data;
     int numEntries;
 
-    readData("data/input.csv", &data, &numEntries);
+    readData("../data/input.csv", &data, &numEntries);
 
     // Train and evaluate SVM model
     trainAndEvaluateSVM(data, numEntries);

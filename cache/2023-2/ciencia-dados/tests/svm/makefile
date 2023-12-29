@@ -29,7 +29,7 @@ CC=gcc
 CC_FLAGS=-Wall -g -pedantic
 
 # Libsvm library flags
-LIBSVM_FLAGS=-L/wsl.localhost/Ubuntu-22.04/usr/lib -lsvm
+LIBSVM_FLAGS=-L/../../../../usr/include/libsvm -lsvm
 
 # Target: all
 all: clean compile_source compile_parent
