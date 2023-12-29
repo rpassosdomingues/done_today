@@ -1,0 +1,33 @@
+*
+optimization finished, #iter = 162
+nu = 0.996923
+obj = -14266.377598, rho = -135.154091
+nSV = 324, nBSV = 324
+*
+optimization finished, #iter = 162
+nu = 0.996923
+obj = -13819.589692, rho = -130.598636
+nSV = 324, nBSV = 324
+*
+optimization finished, #iter = 162
+nu = 0.996923
+obj = -14567.578020, rho = -135.078182
+nSV = 324, nBSV = 324
+*
+optimization finished, #iter = 162
+nu = 0.996923
+obj = -14295.567220, rho = -128.698696
+nSV = 324, nBSV = 324
+*
+optimization finished, #iter = 162
+nu = 1.000000
+obj = -14491.608210, rho = -128.609348
+nSV = 324, nBSV = 324
+Prob. model for test data: target value = predicted value + z,
+z: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma= 44.5713
+*
+optimization finished, #iter = 203
+nu = 1.000000
+obj = -17889.832265, rho = -131.757671
+nSV = 406, nBSV = 406
+SVM Prediction: 131.757671
