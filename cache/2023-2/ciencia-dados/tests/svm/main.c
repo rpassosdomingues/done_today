@@ -24,12 +24,24 @@ void readData(const char *filename, TimeSeries **data, int *numEntries) {
     // Counts the number of lines in the file
     *numEntries = 0;
     char buffer[256];
+    // Skip the header line
+    if (fgets(buffer, sizeof(buffer), file) == NULL) {
+        fprintf(stderr, "\n\tError reading header from file.\n\n");
+        exit(EXIT_FAILURE);
+    }
+
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         (*numEntries)++;
     }
 
     // Back to start of the file
     fseek(file, 0, SEEK_SET);
+
+    // Skip the header line again
+    if (fgets(buffer, sizeof(buffer), file) == NULL) {
+        fprintf(stderr, "\n\tError reading header from file.\n\n");
+        exit(EXIT_FAILURE);
+    }
 
     // Allocating memory space to store the data
     *data = (TimeSeries *)malloc(*numEntries * sizeof(TimeSeries));
@@ -108,10 +120,12 @@ void trainAndEvaluateSVM(const TimeSeries *data, int numEntries) {
 }
 
 int main() {
+    
+    const char *filename = "../data/input.csv";
     TimeSeries *data;
     int numEntries;
 
-    readData("../data/input.csv", &data, &numEntries);
+    readData(filename, &data, &numEntries);
 
     // Train and evaluate SVM model
     trainAndEvaluateSVM(data, numEntries);
