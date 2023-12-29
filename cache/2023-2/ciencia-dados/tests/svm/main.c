@@ -85,7 +85,7 @@ void trainAndEvaluateSVM(const TimeSeries *data, int numEntries) {
 
     // Set SVM parameters
     struct svm_parameter param;
-    svm_parameter_init(&param);
+    //svm_parameter_init(&param);
     param.svm_type = EPSILON_SVR;
     param.kernel_type = RBF;
     param.eps = 0.001;
