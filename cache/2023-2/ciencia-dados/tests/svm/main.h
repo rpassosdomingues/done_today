@@ -1,11 +1,13 @@
-#ifndef _H_TIMESERIES_
-#define _H_TIMESERIES_
+#ifndef MAIN_H
+#define MAIN_H
 
 typedef struct {
     char date[20];
     double price;
     double subjectiveFeature1;
     double subjectiveFeature2;
+    double subjectiveFeature3;
+    double subjectiveFeature4;
     // Add more subjective features as needed
 } TimeSeries;
 
@@ -24,4 +26,4 @@ void trainAndEvaluateSVM(const TimeSeries *data, int numEntries, struct svm_mode
 
 Forecast* forecast(const TimeSeries *data, int numEntries, int windowSize, int numSteps, const struct svm_model *model);
 
-#endif //_H_TIMESERIES_
+#endif

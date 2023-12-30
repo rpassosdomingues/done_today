@@ -2,9 +2,9 @@
  * ____________________________________________________________
  *             --- Time series forecasting ---
  * ------------------------------------------------------------
- * using a combination of methods including feature extraction,
+ * Using a combination of methods including feature extraction,
  * training a support vector machine (SVM) model,
- * and forecasting with a sliding window
+ * and forecasting with a sliding window.
  * ------------------------------------------------------------
  * Author: Rafael Passos Domingues
  * ____________________________________________________________
@@ -108,7 +108,16 @@ void performFFT(const double *data, int size, double *result) {
 
 // Function to extract features (von Neumann entropy and FFT)
 void extractFeatures(const TimeSeries *data, int numEntries, double *vonNeumannEntropyArray, double *fftResult) {
+    TimeSeries *modifiedData = malloc(numEntries * sizeof(TimeSeries));
+    if (modifiedData == NULL) {
+        perror("\n\tMemory allocation error.\n\n");
+        exit(EXIT_FAILURE);
+    }
+
     for (int i = 0; i < numEntries; i++) {
+        // Copy current structure to a temporary variable
+        TimeSeries temp = data[i];
+
         // Assuming vonNeumannEntropyArray, fftResult are arrays with appropriate sizes
         double vonNeumannData[numEntries]; // Use numEntries as the size
         double fftData[numEntries];        // Use numEntries as the size
@@ -123,10 +132,22 @@ void extractFeatures(const TimeSeries *data, int numEntries, double *vonNeumannE
         // Perform FFT
         performFFT(fftData, numEntries, fftResult);
 
-        // Calculate subjective features (replace with your logic)
-        data[i].subjectiveFeature1 = data[i].price * 0.3;
-        data[i].subjectiveFeature2 = data[i].price * 0.4;
+        // Calculate subjective features
+        // to-do: Fit percent according model
+        temp.subjectiveFeature1 = data[i].price * 0.1;
+        temp.subjectiveFeature2 = data[i].price * 0.2;
+        temp.subjectiveFeature3 = data[i].price * 0.4;
+        temp.subjectiveFeature4 = data[i].price * 0.3;
+
+        // Copy the modified structure back to the array
+        modifiedData[i] = temp;
     }
+
+    // If you need to modify the input data, use the following line
+    memcpy((void*)data, (const void*)modifiedData, numEntries * sizeof(TimeSeries));
+
+    // Free the memory allocated for the modifiedData
+    free(modifiedData);
 }
 
 // Function to train SVM model
@@ -262,8 +283,9 @@ int main() {
     const char *filename = "../data/input.csv";
     TimeSeries *data;
     int numEntries;
-    int windowSize = 10; // Fit an appropriate window size // to-do
-    int numSteps = 100;
+    // Fit an appropriate window size according number of lines input file
+    int windowSize = 406;
+    int numSteps = 406;
 
     readData(filename, &data, &numEntries);
 
@@ -287,10 +309,11 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    fprintf(outputFile, "Date,PredictedPrice,SubjectiveFeature1,SubjectiveFeature2\n");
+    fprintf(outputFile, "Date,SubjectiveFeature1,SubjectiveFeature2,SubjectiveFeature3,SubjectiveFeature4\n");
     for (int i = 0; i < numSteps; i++) {
-        fprintf(outputFile, "%s,%f,%f,%f\n", forecastData[i].date, forecastData[i].predictedPrice,
-                data[numEntries - windowSize + i].subjectiveFeature1, data[numEntries - windowSize + i].subjectiveFeature2);
+        fprintf(outputFile, "%s,%f,%f,%f,%f\n", forecastData[i].date,
+                data[numEntries - windowSize + i].subjectiveFeature1, data[numEntries - windowSize + i].subjectiveFeature2,
+                data[numEntries - windowSize + i].subjectiveFeature3, data[numEntries - windowSize + i].subjectiveFeature4);
     }
 
     // Close the output file
