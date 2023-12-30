@@ -133,11 +133,16 @@ void extractFeatures(const TimeSeries *data, int numEntries, double *vonNeumannE
         performFFT(fftData, numEntries, fftResult);
 
         // Calculate subjective features
-        // to-do: Fit percent according model
         temp.subjectiveFeature1 = data[i].price * 0.1;
         temp.subjectiveFeature2 = data[i].price * 0.2;
         temp.subjectiveFeature3 = data[i].price * 0.4;
         temp.subjectiveFeature4 = data[i].price * 0.3;
+
+        // to-do: Fit percent according model
+        //temp.subjectiveFeature4 = data[i].price * data[i].constant1;
+        //temp.subjectiveFeature4 = data[i].price * data[i].constant2;
+        //temp.subjectiveFeature4 = data[i].price * data[i].constant3;
+        //temp.subjectiveFeature4 = data[i].price * data[i].constant4;
 
         // Copy the modified structure back to the array
         modifiedData[i] = temp;
@@ -163,12 +168,20 @@ struct svm_model* trainSVM(const TimeSeries *data, int numEntries) {
     prob.y = (double *)malloc(numEntries * sizeof(double));
     prob.x = (struct svm_node **)malloc(numEntries * sizeof(struct svm_node *));
     for (int i = 0; i < numEntries; i++) {
-        prob.x[i] = (struct svm_node *)malloc(3 * sizeof(struct svm_node));
+        prob.x[i] = (struct svm_node *)malloc(7 * sizeof(struct svm_node)); // 7 features in total
         prob.x[i][0].index = 1;
         prob.x[i][0].value = vonNeumannEntropy[i];
         prob.x[i][1].index = 2;
         prob.x[i][1].value = fftResult[i];
-        prob.x[i][2].index = -1; // Indicates the end of data
+        prob.x[i][2].index = 3;
+        prob.x[i][2].value = data[i].constant1;
+        prob.x[i][3].index = 4;
+        prob.x[i][3].value = data[i].constant2;
+        prob.x[i][4].index = 5;
+        prob.x[i][4].value = data[i].constant3;
+        prob.x[i][5].index = 6;
+        prob.x[i][5].value = data[i].constant4;
+        prob.x[i][6].index = -1; // Indicates the end of data
         prob.y[i] = data[i].price;
     }
 

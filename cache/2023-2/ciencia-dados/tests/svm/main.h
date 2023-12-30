@@ -8,7 +8,11 @@ typedef struct {
     double subjectiveFeature2;
     double subjectiveFeature3;
     double subjectiveFeature4;
-    // Add more subjective features as needed
+    // Add features as needed
+    double constant1;
+    double constant2;
+    double constant3;
+    double constant4;
 } TimeSeries;
 
 typedef struct {
