@@ -16,4 +16,4 @@ Buscar correlações entre a variação de preços dos insumos e mudanças clim�
 - Dolar                                                       | Fonte: http://www.ipeadata.gov.br/Default.aspx
 - Preço de insumos: Adubo e agentes preventivos contra pragas | Fonte: http://www.ipeadata.gov.br/Default.aspx
 - Soja, Café, Milho, Arroz e Feijão                           | Fonte: https://www.cepea.esalq.usp.br/br/consultas-ao-banco-de-dados-do-site.aspx
-- Índice pluviométrico, umidade e temperatura                 | Fonte: https://brazildatacube.dpi.inpe.br/portal/explore
+- Índice pluviométrico, umidade e temperatura                 | Fonte: http://sinda.crn.inpe.br/PCD/SITE/novo/site/historico/index.php
