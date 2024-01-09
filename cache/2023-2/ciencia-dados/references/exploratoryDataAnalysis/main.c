@@ -60,8 +60,13 @@ void readCSV(const char *filename, Instance **instances, int *numInstances) {
     fclose(file);
 }
 
-// Function to calculate the average of an array of floats
+// Function to calculate the mean of an array of floats
 float calculateMean(float array[], int size) {
+    if (size == 0) {
+        // Handle the case where size is zero (to avoid division by zero)
+        return 0.0;
+    }
+
     float sum = 0.0;
     for (int i = 0; i < size; i++) {
         sum += array[i];
@@ -71,6 +76,11 @@ float calculateMean(float array[], int size) {
 
 // Function to calculate the standard deviation of an array of floats
 float calculateStdDev(float array[], int size, float mean) {
+    if (size == 0) {
+        // Handle the case where size is zero (to avoid division by zero)
+        return 0.0;
+    }
+
     float sum = 0.0;
     for (int i = 0; i < size; i++) {
         sum += pow(array[i] - mean, 2);
@@ -80,6 +90,11 @@ float calculateStdDev(float array[], int size, float mean) {
 
 // Function to calculate the variance of an array of floats
 float calculateVariance(float array[], int size, float mean) {
+    if (size == 0) {
+        // Handle the case where size is zero (to avoid division by zero)
+        return 0.0;
+    }
+
     float sum = 0.0;
     for (int i = 0; i < size; i++) {
         sum += pow(array[i] - mean, 2);
