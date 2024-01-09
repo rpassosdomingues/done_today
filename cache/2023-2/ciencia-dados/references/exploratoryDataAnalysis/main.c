@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #include "main.h"
@@ -43,17 +44,17 @@ void readCSV(const char *filename, Instance **instances, int *numInstances) {
     for (int i = 0; i < *numInstances; i++) {
         fgets(line, sizeof(line), file);
 
-        // Use scanf to extract values from the formatted line
-        sscanf(line, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
-               &(*instances)[i].target,
-               &(*instances)[i].features[0], &(*instances)[i].features[1], &(*instances)[i].features[2], &(*instances)[i].features[3],
-               &(*instances)[i].features[4], &(*instances)[i].features[5], &(*instances)[i].features[6], &(*instances)[i].features[7],
-               &(*instances)[i].features[8], &(*instances)[i].features[9], &(*instances)[i].features[10], &(*instances)[i].features[11],
-               &(*instances)[i].features[12], &(*instances)[i].features[13], &(*instances)[i].features[14], &(*instances)[i].features[15],
-               &(*instances)[i].features[16], &(*instances)[i].features[17], &(*instances)[i].features[18], &(*instances)[i].features[19],
-               &(*instances)[i].features[20], &(*instances)[i].features[21], &(*instances)[i].features[22], &(*instances)[i].features[23],
-               &(*instances)[i].features[24], &(*instances)[i].features[25], &(*instances)[i].features[26], &(*instances)[i].features[27],
-               &(*instances)[i].features[28], &(*instances)[i].features[29]);
+        // Tokenize the line based on commas
+        char *token = strtok(line, ",");
+        
+        // Read target
+        sscanf(token, "%d", &(*instances)[i].target);
+
+        // Read features
+        for (int j = 0; j < 30; j++) {
+            token = strtok(NULL, ",");
+            sscanf(token, "%f", &(*instances)[i].features[j]);
+        }
     }
 
     fclose(file);
@@ -96,32 +97,36 @@ void analyzeData(const Instance *instances, int numInstances) {
     float allFeatureStdDevs[30] = {0};
     float allFeatureVariances[30] = {0};
 
-    // Initialize arrays for calculating the average
+    // Use dynamic memory allocation for featureValues
+    float **featureValues = (float **)malloc(30 * sizeof(float *));
     for (int j = 0; j < 30; j++) {
-        float featureValues[numInstances];
+        featureValues[j] = (float *)malloc(numInstances * sizeof(float));
+
+        // Initialize arrays for calculating the average
         for (int i = 0; i < numInstances; i++) {
-            featureValues[i] = instances[i].features[j];
-            allFeatureMeans[j] += featureValues[i];
+            featureValues[j][i] = instances[i].features[j];
+            allFeatureMeans[j] += featureValues[j][i];
         }
         allFeatureMeans[j] /= numInstances;
+
+        // Calculate variance and standard deviation
+        for (int i = 0; i < numInstances; i++) {
+            float diff = featureValues[j][i] - allFeatureMeans[j];
+            allFeatureVariances[j] += pow(diff, 2);
+            allFeatureStdDevs[j] += pow(diff, 2);
+        }
     }
 
-    // Counting target's 0 and 1 and calculating summary statistics
+    // Counting target's 0 and 1
     for (int i = 0; i < numInstances; i++) {
         if (instances[i].target == 0) {
             targetCount0++;
         } else if (instances[i].target == 1) {
             targetCount1++;
         }
-
-        for (int j = 0; j < 30; j++) {
-            float diff = instances[i].features[j] - allFeatureMeans[j];
-            allFeatureStdDevs[j] += pow(diff, 2);
-            allFeatureVariances[j] += pow(diff, 2);
-        }
     }
 
-    // Calculate final standard deviation and print statistical summary
+    // Calculate final variance and standard deviation and print statistical summary
     printf("\nDatabase Representativeness:\n\n");
     printf("Number of target 0: %d (Percentage: %.2f%%)\n", targetCount0, ((float)targetCount0 / numInstances) * 100);
     printf("Number of target 1: %d (Percentage: %.2f%%)\n", targetCount1, ((float)targetCount1 / numInstances) * 100);
@@ -130,11 +135,17 @@ void analyzeData(const Instance *instances, int numInstances) {
     for (int j = 0; j < 30; j++) {
         allFeatureMeans[j] /= numInstances;
 
-        allFeatureStdDevs[j] = sqrt(allFeatureStdDevs[j] / numInstances);
-        allFeatureVariances[j] = allFeatureVariances[j] / numInstances;
+        allFeatureVariances[j] /= numInstances;
+        allFeatureStdDevs[j] = sqrt(allFeatureVariances[j]);
 
         printf("Feature %d - Mean: %.4f, Variance: %.4f, Standard Deviation: %.4f\n", j + 1, allFeatureMeans[j], allFeatureVariances[j], allFeatureStdDevs[j]);
     }
+
+    // Free dynamically allocated memory
+    for (int j = 0; j < 30; j++) {
+        free(featureValues[j]);
+    }
+    free(featureValues);
 }
 
 int main() {
