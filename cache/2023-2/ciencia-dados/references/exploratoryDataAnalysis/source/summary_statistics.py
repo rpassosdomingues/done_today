@@ -108,7 +108,7 @@ def plot_3d(data):
     plt.show()
 
 if __name__ == "__main__":
-    filename = "boxplot.csv"
+    filename = "summary_statistics.csv"
     dataset = read_data(filename)
 
     plot_boxplots(dataset)
