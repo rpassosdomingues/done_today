@@ -1,0 +1,38 @@
+
+Database Representativeness:
+
+Number of target 0: 357 (Percentage: 62.74%)
+Number of target 1: 212 (Percentage: 37.26%)
+
+Statistical Summary of All Features:
+
+Feature 1 - Mean: 0.0248, Variance: 12.7375, Standard Deviation: 3.5690
+Feature 2 - Mean: 0.0338, Variance: 19.1141, Standard Deviation: 4.3720
+Feature 3 - Mean: 0.1614, Variance: 603.7955, Standard Deviation: 24.5723
+Feature 4 - Mean: 1.1496, Variance: 124284.4453, Standard Deviation: 352.5400
+Feature 5 - Mean: 0.0002, Variance: 0.0002, Standard Deviation: 0.0146
+Feature 6 - Mean: 0.0002, Variance: 0.0028, Standard Deviation: 0.0529
+Feature 7 - Mean: 0.0002, Variance: 0.0064, Standard Deviation: 0.0797
+Feature 8 - Mean: 0.0001, Variance: 0.0015, Standard Deviation: 0.0388
+Feature 9 - Mean: 0.0003, Variance: 0.0008, Standard Deviation: 0.0284
+Feature 10 - Mean: 0.0001, Variance: 0.0001, Standard Deviation: 0.0075
+Feature 11 - Mean: 0.0007, Variance: 0.0771, Standard Deviation: 0.2776
+Feature 12 - Mean: 0.0021, Variance: 0.3055, Standard Deviation: 0.5528
+Feature 13 - Mean: 0.0050, Variance: 4.0950, Standard Deviation: 2.0236
+Feature 14 - Mean: 0.0708, Variance: 2068.4858, Standard Deviation: 45.4806
+Feature 15 - Mean: 0.0000, Variance: 0.0000, Standard Deviation: 0.0030
+Feature 16 - Mean: 0.0000, Variance: 0.0003, Standard Deviation: 0.0179
+Feature 17 - Mean: 0.0001, Variance: 0.0009, Standard Deviation: 0.0302
+Feature 18 - Mean: 0.0000, Variance: 0.0000, Standard Deviation: 0.0062
+Feature 19 - Mean: 0.0000, Variance: 0.0001, Standard Deviation: 0.0083
+Feature 20 - Mean: 0.0000, Variance: 0.0000, Standard Deviation: 0.0026
+Feature 21 - Mean: 0.0286, Variance: 23.7703, Standard Deviation: 4.8755
+Feature 22 - Mean: 0.0450, Variance: 38.8571, Standard Deviation: 6.2335
+Feature 23 - Mean: 0.1882, Variance: 1146.7245, Standard Deviation: 33.8633
+Feature 24 - Mean: 1.5459, Variance: 324770.2500, Standard Deviation: 569.8862
+Feature 25 - Mean: 0.0002, Variance: 0.0006, Standard Deviation: 0.0235
+Feature 26 - Mean: 0.0004, Variance: 0.0248, Standard Deviation: 0.1575
+Feature 27 - Mean: 0.0005, Variance: 0.0435, Standard Deviation: 0.2087
+Feature 28 - Mean: 0.0002, Variance: 0.0043, Standard Deviation: 0.0658
+Feature 29 - Mean: 0.0005, Variance: 0.0040, Standard Deviation: 0.0630
+Feature 30 - Mean: 0.0001, Variance: 0.0003, Standard Deviation: 0.0184

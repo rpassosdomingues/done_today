@@ -164,16 +164,31 @@ void analyzeData(const Instance *instances, int numInstances) {
 }
 
 int main() {
-    
     const char *filename = "../data/input.csv";
     int numInstances;
     Instance *instances;
+
+    // Open a file for writing
+    FILE *outputFile = fopen("../source/summary_statistics.txt", "w");
+    if (outputFile == NULL) {
+        perror("\n\tError opening output file.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Redirect stdout to the output file
+    if (freopen("../source/summary_statistics.txt", "w", stdout) == NULL) {
+        perror("\n\tError redirecting stdout to the output file.\n");
+        exit(EXIT_FAILURE);
+    }
 
     readCSV(filename, &instances, &numInstances);
 
     analyzeData(instances, numInstances);
 
     free(instances);
+
+    // Close the output file
+    fclose(outputFile);
 
     return 0;
 }
