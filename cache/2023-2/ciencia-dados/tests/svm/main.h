@@ -1,5 +1,5 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef _MAIN_H_
+#define _MAIN_H_
 
 typedef struct {
     char date[20];
@@ -30,4 +30,4 @@ void trainAndEvaluateSVM(const TimeSeries *data, int numEntries, struct svm_mode
 
 Forecast* forecast(const TimeSeries *data, int numEntries, int windowSize, int numSteps, const struct svm_model *model);
 
-#endif
+#endif // _MAIN_H_
