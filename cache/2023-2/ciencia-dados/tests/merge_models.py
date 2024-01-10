@@ -32,7 +32,7 @@ class CoffeePricePredictor:
 
     def load_data(self):
         self.df = pd.read_csv(self.file_path, parse_dates=["DATE"])
-        self.data = self.df["PCOFFOTMUSDM"].values.reshape(-1, 1)
+        self.data = self.df["PRICE"].values.reshape(-1, 1)
 
     def normalize_data(self):
         self.scaler = MinMaxScaler()
