@@ -11,8 +11,14 @@ typedef struct {
 
 void readCSV(const char *filename, Instance **instances, int *numInstances);
 
+// Summarization
 float calculateMean(float array[], int size);
+float calculateMode(float array[], int size);
+int compareFloat(const void* a, const void* b);
+float calculateMedian(float array[], int size);
 float calculateStdDev(float array[], int size, float mean);
+float calculateVariance(float array[], int size, float mean);
+
 void analyzeData(const Instance *instances, int numInstances);
 
 #endif // _H_INSTANCE_READER_

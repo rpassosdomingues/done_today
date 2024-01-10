@@ -74,6 +74,51 @@ float calculateMean(float array[], int size) {
     return sum / size;
 }
 
+// Function to calculate the mode of an array of floats
+float calculateMode(float array[], int size) {
+    // Sort the array first
+    qsort(array, size, sizeof(float), compareFloat);
+
+    int maxCount = 0, currentCount = 1;
+    float mode = array[0];
+
+    for (int i = 1; i < size; i++) {
+        if (array[i] == array[i - 1]) {
+            currentCount++;
+        } else {
+            if (currentCount > maxCount) {
+                maxCount = currentCount;
+                mode = array[i - 1];
+            }
+            currentCount = 1;
+        }
+    }
+
+    // Check the last element
+    if (currentCount > maxCount) {
+        mode = array[size - 1];
+    }
+
+    return mode;
+}
+
+// Function to compare floats for qsort
+int compareFloat(const void* a, const void* b) {
+    return (*(float*)a - *(float*)b);
+}
+
+// Function to calculate the median of an array of floats
+float calculateMedian(float array[], int size) {
+    // Sort the array first
+    qsort(array, size, sizeof(float), compareFloat);
+
+    if (size % 2 == 0) {
+        return (array[size / 2 - 1] + array[size / 2]) / 2.0;
+    } else {
+        return array[size / 2];
+    }
+}
+
 // Function to calculate the standard deviation of an array of floats
 float calculateStdDev(float array[], int size, float mean) {
     if (size == 0) {
@@ -109,8 +154,8 @@ void analyzeData(const Instance *instances, int numInstances) {
 
     // Arrays to store the values of all features
     float allFeatureMeans[30] = {0};
-    float allFeatureStdDevs[30] = {0};
     float allFeatureVariances[30] = {0};
+    float allFeatureStdDevs[30] = {0};
 
     // Use dynamic memory allocation for featureValues
     float **featureValues = (float **)malloc(30 * sizeof(float *));
@@ -141,20 +186,37 @@ void analyzeData(const Instance *instances, int numInstances) {
         }
     }
 
-    // Calculate final variance and standard deviation and print statistical summary
+    // Calculate final variance and standard deviation
     printf("\nDatabase Representativeness:\n\n");
     printf("Number of target 0: %d (Percentage: %.2f%%)\n", targetCount0, ((float)targetCount0 / numInstances) * 100);
-    printf("Number of target 1: %d (Percentage: %.2f%%)\n", targetCount1, ((float)targetCount1 / numInstances) * 100);
+    printf("Number of target 1: %d (Percentage: %.2f%%)\n\n", targetCount1, ((float)targetCount1 / numInstances) * 100);
 
-    printf("\nStatistical Summary of All Features:\n\n");
+    // Open a file for writing statistical summary
+    FILE *outputFile = fopen("../data/output.csv", "w");
+    if (outputFile == NULL) {
+        perror("\n\tError opening output file.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Print statistical summary to the file
+    //fprintf(outputFile, "\nStatistical Summary of All Features:\n\n");
     for (int j = 0; j < 30; j++) {
         allFeatureMeans[j] /= numInstances;
-
+        // Calculate mode and median
+        float mode = calculateMode(featureValues[j], numInstances);
+        float median = calculateMedian(featureValues[j], numInstances);
         allFeatureVariances[j] /= numInstances;
         allFeatureStdDevs[j] = sqrt(allFeatureVariances[j]);
 
-        printf("Feature %d - Mean: %.4f, Variance: %.4f, Standard Deviation: %.4f\n", j + 1, allFeatureMeans[j], allFeatureVariances[j], allFeatureStdDevs[j]);
+        //fprintf(outputFile, "Mean: %.4f, Mode: %.4f, Median: %.4f,
+        //                     Variance: %.4f, Standard Deviation: %.4f\n")
+        fprintf(outputFile, "%.4f,%.4f,%.4f,%.4f,%.4f\n",
+               allFeatureMeans[j], mode, median,
+               allFeatureVariances[j], allFeatureStdDevs[j]);
     }
+
+    // Close the output file
+    fclose(outputFile);
 
     // Free dynamically allocated memory
     for (int j = 0; j < 30; j++) {
@@ -168,27 +230,11 @@ int main() {
     int numInstances;
     Instance *instances;
 
-    // Open a file for writing
-    FILE *outputFile = fopen("../data/summary_statistics.txt", "w");
-    if (outputFile == NULL) {
-        perror("\n\tError opening output file.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Redirect stdout to the output file
-    if (freopen("../data/summary_statistics.txt", "w", stdout) == NULL) {
-        perror("\n\tError redirecting stdout to the output file.\n");
-        exit(EXIT_FAILURE);
-    }
-
     readCSV(filename, &instances, &numInstances);
-
+    
     analyzeData(instances, numInstances);
 
     free(instances);
-
-    // Close the output file
-    fclose(outputFile);
 
     return 0;
 }
